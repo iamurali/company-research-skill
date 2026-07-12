@@ -1,0 +1,110 @@
+# company-research-skill
+
+A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a publicly listed company and it produces a rigorous, sourced, visual investment thesis as a PDF — metric cards, financial/ownership charts, a timeline of dated management promises, dense data tables, and a mandatory bear case, all built for fast scanning without losing precision.
+
+## What it produces
+
+A single infographic-style PDF report with:
+
+- **Cover** — company, tickers, a situation badge (bull / growth / watch / bear), report date
+- **Business overview** — what the company does, with a headline stat card grid
+- **Financial history** — revenue/profit charts, quarterly trend, balance sheet snapshot, key ratios, CAGR cards
+- **Ownership & capital structure** — shareholding pattern trend, capital raise detail, promoter pledge status
+- **The situation/catalyst** — turnaround, compounder, cyclical, structural growth, or structural decline
+- **The bull thesis** — evidenced, falsifiable claims, each sourced
+- **What's promised** — a timeline of dated management commitments, marked done/pending
+- **Red flags / bear case** — mandatory, even in a bullish report
+- **Verdict** — one or two honest sentences on confidence level
+- **Sources** — every citation, numbered and linked
+
+The core discipline: **a claim without a source and a date is not evidence, it's marketing.** If the research doesn't support a real thesis, the skill is expected to say so plainly rather than manufacture one.
+
+## Repository layout
+
+```
+company-research-skill/
+└── skills/
+    └── company-thesis-report/
+        ├── SKILL.md                  # the skill definition Claude reads
+        ├── references/
+        │   └── report-format.md      # section-by-section report spec
+        ├── scripts/
+        │   ├── charts.py             # matplotlib chart generators
+        │   └── html_helpers.py       # HTML snippet builders for the report
+        └── assets/
+            └── report_style.css      # visual styling for the rendered PDF
+```
+
+## Requirements
+
+- Claude with Agent Skills support (Claude.ai, Claude Code, or the Claude Agent SDK) and code execution / file access enabled
+- Python 3 with `matplotlib` and [WeasyPrint](https://weasyprint.org/) available in the execution environment:
+
+  ```bash
+  pip install matplotlib weasyprint --break-system-packages
+  ```
+
+## Installation
+
+### Claude Code / Claude Agent SDK (project or personal skills)
+
+Clone this repo and copy (or symlink) the skill directory into your skills folder:
+
+```bash
+git clone git@github.com:iamurali/company-research-skill.git
+mkdir -p ~/.claude/skills
+cp -r company-research-skill/skills/company-thesis-report ~/.claude/skills/
+```
+
+Project-scoped install (skill only available inside a specific repo):
+
+```bash
+mkdir -p .claude/skills
+cp -r company-research-skill/skills/company-thesis-report .claude/skills/
+```
+
+### Claude / Cowork desktop apps
+
+Zip the skill folder and upload it as a custom skill:
+
+```bash
+cd company-research-skill/skills
+zip -r company-thesis-report.skill company-thesis-report
+```
+
+Then, in Settings → Capabilities → Skills, upload `company-thesis-report.skill`.
+
+## Usage
+
+Once installed, just ask naturally — no need to say "report" or use investment jargon:
+
+- "What's the story with `<TICKER>`?"
+- "Build me an investment thesis on `<Company Name>`."
+- "Do a deep dive on `<Company>` — is it a buy?"
+- "Research `<Company>` for a turnaround thesis."
+
+Claude will:
+
+1. Research the company from primary sources first (exchange filings, annual reports, rating actions, screener.in-style structured financials), using aggregators only for discovery, never as a cited source.
+2. Classify the company's situation (turnaround, compounder, cyclical, structural growth, or structural decline).
+3. Build the report using the bundled chart and HTML helpers, render it to PDF with WeasyPrint, and visually verify the output before delivering it.
+4. Deliver the final PDF with a short spoken summary — the document itself is the deliverable, not a chat re-narration.
+
+If you've connected a brokerage/market-data MCP (e.g. Zerodha Kite) in your session, the skill will use it for live price/volume history instead of estimating technicals from search snippets.
+
+## Customizing
+
+- **Section structure** — edit `skills/company-thesis-report/references/report-format.md` to change what each section covers or how it maps to a chart/table/text.
+- **Visual style** — edit `skills/company-thesis-report/assets/report_style.css` (colors, fonts, page size/margins).
+- **Chart types** — add or modify chart generators in `skills/company-thesis-report/scripts/charts.py`.
+- **HTML building blocks** — add new report components (e.g. a new card or badge type) in `skills/company-thesis-report/scripts/html_helpers.py`.
+
+After editing `SKILL.md`, keep the frontmatter `description` field accurate and specific — Claude uses it to decide when to trigger the skill.
+
+## Contributing
+
+Issues and PRs welcome. Please keep changes to the sourcing/verification discipline in `SKILL.md` deliberate — the skill's value depends on it staying strict about citations and honest bear cases.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
