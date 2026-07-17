@@ -219,9 +219,64 @@ def validate_slug(slug: str, html_path: Path | None = None) -> tuple[list[str], 
     if html_path and html_path.exists():
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         from html_helpers import smoke_check_html
+        import re
         html = html_path.read_text(encoding="utf-8", errors="replace")
         for problem in smoke_check_html(html):
             failures.append(f"F/production: HTML smoke — {problem}")
+
+        # --- Prose / research-memo gates (writing-quality.md) ---
+        text = re.sub(r"<script[\s\S]*?</script>", " ", html, flags=re.I)
+        text = re.sub(r"<style[\s\S]*?</style>", " ", text, flags=re.I)
+        plain = re.sub(r"<[^>]+>", " ", text)
+        words = len(plain.split())
+        paras = re.findall(r"<p[^>]*>(.*?)</p>", html, flags=re.I | re.S)
+        lis = len(re.findall(r"<li\b", html, flags=re.I))
+        n_p = len(paras)
+        para_words = []
+        for p in paras:
+            pw = re.sub(r"<[^>]+>", " ", p)
+            pw = re.sub(r"\s+", " ", pw).strip()
+            if pw:
+                para_words.append(len(pw.split()))
+        avg_p = sum(para_words) / max(len(para_words), 1)
+        li_ratio = lis / max(n_p, 1)
+
+        if words < 3500:
+            failures.append(
+                f"F/prose: body ~{words} words < 3500 — tip-sheet density, not research memo"
+            )
+        if avg_p < 35:
+            failures.append(
+                f"F/prose: avg paragraph ~{avg_p:.0f} words < 35 — expand analytical read-throughs"
+            )
+        if li_ratio > 2.5:
+            failures.append(
+                f"F/prose: li/p ratio {li_ratio:.1f} > 2.5 — too bullet-linear / tip-like"
+            )
+
+        tip_patterns = [
+            r"accumulate on dips",
+            r"avoid chasing",
+            r"satellite\s*/\s*wait",
+            r"trim above",
+            r"position framing",
+            r"buy the dip",
+        ]
+        low = plain.lower()
+        tip_hits = [p for p in tip_patterns if re.search(p, low)]
+        if tip_hits:
+            failures.append(
+                "F/prose: tip-speak banned in research voice — " + ", ".join(tip_hits)
+            )
+
+        # Heuristic: financial section should have a substantial paragraph near tables
+        if "Financial Performance" in html or "11. Financial" in html:
+            long_after = [w for w in para_words if w >= 60]
+            if len(long_after) < 2:
+                failures.append(
+                    "F/prose: need ≥2 analytical paragraphs (≥60 words) — "
+                    "post-table financial read-through missing"
+                )
 
     return failures, warnings
 

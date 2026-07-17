@@ -7,15 +7,18 @@ permanent body heading. Never render value chain as ASCII/code — use
 
 ## Density rule (applies to every section)
 
-A section fails if it is only a heading plus thin labels. Each section must help the
-investment decision: **what happened, why it matters, what to watch**. Prefer short
-analytical paragraphs + tight bullets over empty cards.
+A section fails if it is only a heading plus thin labels or tip-style bullets.
+Each section must help the investment **research** conclusion: **what happened,
+why it matters, what would falsify it**.
 
-**Depth floor:** see [depth-checklist.md](depth-checklist.md). A mid-cap report that
-cannot support invest / not is a failure — thicken before shipping.
+**Writing standard:** [writing-quality.md](writing-quality.md) — research memo with
+dense tables + analytical read-throughs (Sterlite-style intent). **Not** a tip sheet.
 
-Gaps: one honest sourced line (“not disclosed in concall/PR/screener reviewed”) —
-never invent filler.
+**Depth floor:** see [depth-checklist.md](depth-checklist.md).
+
+After every major numbers table (annuals, quarters, segments, peers, valuation),
+write **1–3 interpreting paragraphs** before moving on. Gaps: one honest sourced
+line — never invent filler.
 
 ---
 
@@ -30,22 +33,23 @@ Badge kinds: `growth` | `bull` | `watch` | `bear` | `neutral`.
 
 ## 0. Investment decision *(required — immediately after cover)*
 
-This is the most important page. Use `verdict_box()` plus structured lists.
+This is the research conclusion, not a trade ticket. Use `verdict_box()` plus structure.
 
 Must include:
 
-1. **Action:** BUY / HOLD / AVOID / selective accumulate (pick one primary action)
-2. **Conviction:** High / Medium / Low
-3. **Horizon:** e.g. 2–3 quarters / 12 months
-4. **Entry / invalidation:** price zone or condition (judgment labeled as such)
-5. **Key debate:** one sentence — the single bull vs bear disagreement
-6. **One dense paragraph:** why, at this price, with key evidence and key doubt
-7. **Confirm thesis** (3–5 observable, dated bullets)
-8. **Kill thesis** (3–5 observable, dated bullets)
-9. **Alternative thesis:** what the other side believes and why you reject / partially accept
-10. **Position framing:** core / satellite / wait / trim (not personalized advice)
+1. **Action:** BUY / HOLD / AVOID (primary research call)
+2. **Conviction + horizon**
+3. **Key debate** — one sentence
+4. **Argument paragraph (required, dense):** why the call follows from the evidence
+   at this price — franchise quality, what broke/improved, earnings quality, valuation.
+   **Ban tip-speak** here (“buy the dip”, “trim into strength”, “satellite position”).
+5. **Falsify / confirm** — 3–5 observable research criteria that would strengthen or
+   break the thesis (frame as evidence tests, not trade instructions)
+6. **Alternative thesis** — other side + why reject/partial
+7. **Judgmental price bands** — only if derived in §17 scenarios; otherwise omit
+   “entry zone” language from section 0
 
-Do not bury the call in section 25 only. Section 25 restates; section 0 decides.
+Section 25 restates the call; section 0 argues it.
 
 ---
 
@@ -131,11 +135,13 @@ Include lens must-have metrics or explicit gaps (e.g. attrition not disclosed).
 
 Required:
 
-- Multi-year annual `data_table()` (sales, YoY, margins, PAT) **with a regime-shift paragraph**
-- **Last 8 quarters** table or chart with YoY **and** QoQ read-through
-- **Earnings bridge:** what drove the latest beat/miss (volume / mix / price / geo / one-offs)
-- CAGR cards
-- Prefer `revenue_profit_chart` / `quarterly_trend_chart`
+- Multi-year annual `data_table()` (sales, YoY, margins, PAT)
+- **Immediately after the table: 1–3 analytical paragraphs** (regime shift, what drove
+  the latest year, how quarters confirm or contradict) — not a one-line caption
+- **Last 8 quarters** table + seasonality note + read-through paragraph
+- **Earnings bridge** as short paragraphs/bullets with drivers
+- CAGR cards optional; prefer numbers inside the read-through
+- Charts allowed in addition to tables, not instead of analysis
 
 ---
 

@@ -131,8 +131,10 @@ Claude will:
 2. Classify sector → load one lens
 3. Ingest sources to disk (incl. prior quarters + AR) until `sources_completeness` passes
 4. Build facts packs; run `validate_depth.py` (ship gate)
-5. Draft the fixed spine with `kpi_table` / `timeline` / `flow_diagram`; assemble PDF
-6. Deliver PDF + short spoken summary
+5. Draft the fixed spine as a **research memo** (`writing-quality.md`) — tables +
+   analytical paragraphs, not tip lists; `kpi_table` / `timeline` / `flow_diagram`
+6. Assemble PDF only after validate passes
+7. Deliver PDF + short spoken summary
 
 ### First run vs refresh
 
@@ -147,6 +149,7 @@ Claude will:
 
 - **Section spine** — `references/report-format.md` (keep sector-agnostic)
 - **Depth / ship gate** — `references/depth-checklist.md` + `scripts/validate_depth.py`
+- **Writing quality** — `references/writing-quality.md` (research memo, not tips)
 - **Sector routing / new lens** — `references/sector-router.md` + `sectors/<id>/`
 - **Visual style** — `assets/report_style.css`
 - **HTML components** — `scripts/html_helpers.py` (`flow_diagram`, `kpi_table`, timeline, cards, tables)

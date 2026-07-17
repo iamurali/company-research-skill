@@ -38,6 +38,10 @@ A finished report fails if **any** of these is missing:
 **Ship rule:** `python scripts/validate_depth.py --slug <slug>` must exit 0 before PDF.
 If it fails, deepen packs — do not ship.
 
+**Writing rule:** reports are research memos ([references/writing-quality.md](references/writing-quality.md)),
+not tip sheets. Dense tables + analytical read-throughs; ban tip-speak; prose gates
+enforce ≥~3500 words and paragraph substance.
+
 ## Non-negotiable rules
 
 1. **One spine** — [references/report-format.md](references/report-format.md).
