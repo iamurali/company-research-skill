@@ -8,16 +8,17 @@ A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/o
 
 A single PDF (plus markdown source) that opens with an **investment decision**, then:
 
-- Confirm thesis / kill thesis checklists
+- Confirm / kill criteria, key debate, alternative thesis, position framing
 - Company Summary + Sector Context + visual value chain
-- Situation Classification
-- Near / Medium / Long Term outlook (verbatim from concall/deck)
+- Situation Classification + multi-quarter outlook (verbatim from concall/deck)
 - Customers, milestones, Sector Deep-Dive (lens-defined)
-- Financials with charts/read-through, mix deep-dive, demand indicators
-- Valuation scenarios, real peer comps, moats, technicals
-- Governance, falsifiable thesis, mandatory risks, final verdict, sources
+- Financials with **8-quarter bridge**, **working-capital / CFO vs PAT**, KPI scorecard
+- Mix deep-dive, demand indicators, capital allocation
+- Valuation with **what is priced in** + bull/base/bear scenarios
+- Real peer comps (ops + multiples), moats, technicals
+- Management scorecard, falsifiable thesis, mandatory risks, final verdict, sources
 
-Discipline: **a claim without a source and a date is not evidence.** A headings-only PDF is a failed run.
+Discipline: **a claim without a source and a date is not evidence.** A headings-only or thin PDF is a failed run — see `references/depth-checklist.md`.
 
 ## Ingest design (efficient, not thin)
 
@@ -55,6 +56,7 @@ company-research-skill/
         ├── SKILL.md
         ├── references/
         │   ├── report-format.md
+        │   ├── depth-checklist.md
         │   ├── sector-router.md
         │   ├── source-routing.md
         │   └── facts-schemas.md

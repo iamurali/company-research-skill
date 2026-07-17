@@ -1,178 +1,208 @@
 ---
 name: company-thesis-report
-description: "Generates a decision-grade investment research PDF for a listed company — clear BUY/HOLD/AVOID (or equivalent), dense sourced analysis, sector lens, charts/tables, confirm/kill criteria. Use when the user asks to research a company, build a thesis, deep-dive a stock, or decide whether to invest — even for a bare ticker. Prefer report quality over token savings when they conflict."
+description: >
+  Build a decision-grade equity research PDF for Indian listed companies. Prefer when
+  the user asks for company research, equity thesis, BUY/HOLD/AVOID, concall analysis,
+  or a deeper company report. Uses a fixed report spine, one routed sector lens, and
+  a hard depth floor — reports must be thick enough to decide invest / not.
 ---
 
-# Company thesis report (decision-grade)
+# Company thesis report
 
-## Why this exists
+Build a **decision-grade** research PDF. The user must be able to **invest or not**
+from the report alone — not from headings and summaries.
 
-The deliverable is a document someone can use to **decide whether to invest** — not a table of contents with thin bullets. Every run must answer:
+**Quality beats token savings.** Thin reports are failures even if cheap to produce.
 
-1. **What should I do?** (BUY / HOLD / AVOID / selective accumulate — with confidence)
-2. **Why?** (falsifiable, numbered evidence)
-3. **What would change my mind?** (confirm thesis vs kill thesis)
+## Hard depth floor (non-negotiable)
 
-A claim without a source and a date is marketing, not evidence. A section that is only a heading plus two vague lines is a **failed report** — rewrite it.
+A finished report fails if **any** of these is missing:
 
-## Quality bar (non-negotiable — ship nothing thinner)
+1. **Investment decision** — BUY / HOLD / AVOID with conviction (High / Medium / Low),
+   entry zone, invalidation level, 12-month horizon, position-sizing note.
+2. **Confirm / Kill criteria** — dated, measurable (not vague).
+3. **Multi-quarter earnings bridge** — last **8 quarters** revenue + PAT + margins with
+   **YoY and QoQ** commentary; explain the **latest miss or beat** with causes.
+4. **Working-capital deep dive** — debtor days / DSO, inventory days, creditor days,
+   cash conversion cycle, CFO vs PAT for last 3 years; say if earnings quality is real.
+5. **KPI scorecard** — **≥6** operating KPIs with multi-period trend and peer context
+   where available (sector lens defines which KPIs).
+6. **Management scorecard** — delivery vs guidance history, capital allocation grade,
+   governance flags, key-person risk — with evidence.
+7. **Concall / transcript** — required unless documented unavailable; extract guidance,
+   tone shift, Q&A pressure points, and **what management is not saying**.
+8. **Segment / geography mix** — revenue and growth by product/segment/geo when disclosed.
+9. **Peer table** — ≥3 peers with valuation **and** operating metrics (not valuation alone).
+10. **Scenarios** — Base / Bull / Bear with probabilities, key assumptions, and
+    **implied valuation** under each.
+11. **Alternative thesis** — the best bear case if bullish (or best bull case if bearish),
+    and why you reject or partially accept it.
+12. **Unit economics / returns** — ROE, ROCE, incremental ROCE or capital efficiency story;
+    for product/SaaS also retention, ARPU, or equivalent disclosed metrics.
+13. **Charts** — ≥3 Plotly figures (price, financials, valuation or WC/KPI).
+14. **Value chain** — visual HTML only via `flow_diagram` (never ASCII/code).
+15. **Sources** — every material claim cited; URLs in Sources appendix.
 
-Before delivering the PDF, the report **must** include all of the following. If any item is missing, keep researching or state the gap inside that section — do not ship a headings-only PDF.
+If the draft fails the floor, **do not ship** — deepen first.
+See [references/depth-checklist.md](references/depth-checklist.md).
 
-| Requirement | Minimum bar |
-|-------------|-------------|
-| **Decision first** | Opening section after cover: recommendation + 1 short paragraph why + confirm-list + kill-list |
-| **Substance density** | Each major section has real analysis (interpretation), not only labels/numbers |
-| **Latest concall** | Latest earnings call transcript (or captions) ingested to disk and mined — **PR alone is not enough** |
-| **Financials** | Multi-year table + YoY read-through + BS/cash anomaly note; chart when time series helps |
-| **Mix deep-dive** | Geo and/or segment/vertical/product mix with decision read-through (what carried growth) |
-| **Peers** | ≥3 real comps with PE/ROE/growth (or lens metrics) — subject as own row; no empty peer placeholder |
-| **Valuation** | Method from lens + what is priced in at current price + bull/base/bear bands (judgmental OK if labeled) |
-| **Thesis** | 3–5 **falsifiable** claims (evidence + how to falsify) |
-| **Risks** | Mandatory, specific, sourced — not generic boilerplate |
-| **Verdict** | Restates action, confidence, and what to watch next |
+## Non-negotiable rules
 
-### Anti-patterns (automatic fail)
+1. **One spine** — [references/report-format.md](references/report-format.md). Same section order always.
+2. **One sector lens** — classify once via [references/sector-router.md](references/sector-router.md);
+   load **only** that lens. Never invent ad-hoc industry sections.
+3. **Value chain = visual HTML** — `flow_diagram` / CSS only. Never ASCII art or fenced diagrams.
+4. **No headings-only reports** — every H2 needs analysis paragraphs, not bullets alone.
+5. **Cache on disk** — `~/.company-research/<slug>/` for sources, facts, output.
+6. **Prefer tools** for math, PDF text, HTML/PDF assembly.
+7. **Decision-first** — open with the call; analysis must justify it.
 
-- Cover + section titles + metric cards with almost no prose
-- “Watchlist / moderate” with no confirm/kill criteria
-- Skipping the concall because a press release existed
-- Peer table with “n/a this run” for every peer
-- Outlook bullets without verbatim quotes from a primary transcript/deck
-- Shipping because “token discipline” said not to fetch more — **quality wins that conflict**
+## Inputs
 
-## Token rules (efficiency for ingest — not an excuse for thin output)
-
-Use facts packs and disk extracts so you do **not** dump entire 300-page ARs into context. That is still required.
-
-But:
-
-- **Quality > tokens** when the alternative is a headings-only report.
-- Pull the latest **concall + investor presentation + screener**; query widely enough to fill the quality bar.
-- Prefer grepping/BM25 over loading whole files; if packs are thin after one pass, run more targeted queries — do not stop early.
-- Load **one** sector lens only (`sectors/<lens-id>/`).
-- On `new_quarter`, refresh deltas; still re-check decision, outlook, financials, risks.
-
-```text
-Never Read() a full AR/concall into chat as one blob.
-Do use pdf_to_text + query_source / outlook_candidates until packs support a decision-grade draft.
-```
+- Company name or ticker (NSE/BSE)
+- Optional: as-of date, emphasis, peer list, force-refresh
 
 ## Workflow
 
-### 0. Resolve company + cache slug
-
-Slug = lowercase underscores (e.g. `newgen`).  
-State: `~/.company-research/<slug>/` → `sources/`, `facts/`, `output/`.
-
-### 1. Freshness
+### 0. Setup
 
 ```bash
-python3 <skill_dir>/scripts/freshness.py <slug> --latest-seen YYYY-MM-DD
-# --force for from-scratch
+pip install -r skills/company-thesis-report/requirements.txt -q
+python skills/company-thesis-report/scripts/freshness.py --slug <slug>
 ```
 
-| Status | Action |
-|--------|--------|
-| `no_state` / `force_full` | Full ingest |
-| `new_quarter` | New concall/results + screener deltas; rebuild decision/outlook/financials |
-| `up_to_date` | Reuse only if prior PDF already met the quality bar; else rebuild |
+Workspace: `~/.company-research/<slug>/{sources,facts,output}/`
 
-### 2. Classify sector → one lens
+### 1. Classify sector (once)
 
-Read `references/sector-router.md`. Load only:
+Use [references/sector-router.md](references/sector-router.md). Write:
 
-- `sectors/<lens-id>/LENS.md`
-- `sectors/<lens-id>/metrics.schema.json`
+```json
+{"sector_lens":"<lens-id>","confidence":"high|medium|low","rationale":"...","alternatives_considered":[]}
+```
+
+→ `facts/sector.json`. Load **only** `sectors/<lens-id>/`.
+
+### 2. Ingest (depth mode)
+
+Follow [references/source-routing.md](references/source-routing.md).
+
+**Always fetch (do not skip for “speed”):**
+
+| Source | Depth requirement |
+|--------|-------------------|
+| Screener | Full page + peers + quarterly + ratios + documents list |
+| Annual report PDF | Last **2** years if available; query strategy, risks, segments, related party |
+| Latest earnings presentation | Full extract |
+| **Last 2–4 quarter transcripts / PR** | Multi-quarter narrative, not one call only |
+| Exchange filings | Results + material events last 12–18 months |
+| News (3–5) | Recent catalysts and controversies |
+| Macro/sector primer | Only if it changes the thesis |
+
+Save under `sources/` with `meta.json`. Prefer `query_source.py` / `pdf_to_text.py` over dumping full PDFs into chat.
+
+### 3. Build deep facts packs
 
 ```bash
-python3 <skill_dir>/scripts/build_facts.py <slug> --lens <lens-id> --init-empty
+python skills/company-thesis-report/scripts/build_facts.py --slug <slug>
 ```
 
-Adapt the lens primer to the company’s real model (e.g. product/SaaS vs pure T&M) — do not paste a mismatched primer blindly.
+Then **enrich** packs until [references/facts-schemas.md](references/facts-schemas.md) depth fields are filled:
 
-### 3. Ingest sources (minimum set)
+| Pack | Must include |
+|------|----------------|
+| `company` / `sector` | Identity + lens |
+| `financials_annual` | ≥5 years |
+| `financials_quarterly` | **≥8 quarters** + YoY/QoQ notes |
+| `earnings_bridge` | Drivers of recent beat/miss |
+| `working_capital` | DSO/DIO/DPO/CCC + CFO vs PAT |
+| `balance_sheet` | Debt, cash, leverage, pledges |
+| `cash_flow` | OCF/FCF trend + quality notes |
+| `kpi_scorecard` | ≥6 KPIs with history |
+| `segments` | Mix + growth by segment/geo |
+| `capital_allocation` | Capex, buybacks, dividends, M&A, ROIC story |
+| `valuation` | Multiples + **implied growth / what is priced in** |
+| `peers` | ≥3 with ops + valuation |
+| `management_scorecard` | Guidance delivery, capital allocation grade, governance |
+| `concall` | Multi-call themes + unanswered questions |
+| `risks` | Ranked, with mitigants and tripwires |
+| `decision` | Call, zones, confirm/kill, alternative thesis |
+| `sources_index` | Provenance |
 
-Follow `references/source-routing.md`. **Minimum for a first-pass decision report:**
+Lens packs from `sectors/<lens-id>/metrics.schema.json` are **in addition** to the above.
 
-1. Screener consolidated (price, P&L, BS, ratios, shareholding, documents)
-2. **Latest concall transcript** (PDF or captions) → `pdf_to_text` / save txt
-3. Latest investor presentation if filed
-4. Latest results press release
-5. Peer screener pages for 3–5 comps (lens peer rules)
-6. Annual report only as needed for footprint/segments/litigation gaps
+### 4. Analysis depth expectations
+
+Before drafting, force yourself to answer:
+
+1. **What changed in the last 4–8 quarters** and why?
+2. **Is growth high-quality** (mix, pricing, volume, one-offs)?
+3. **Is cash real** (CFO vs PAT, WC drain)?
+4. **What is the market pricing in** at the current multiple?
+5. **What would make a smart bear right?**
+6. **What must be true in 12 months** for the call to work?
+
+If you cannot answer from facts packs, fetch more — do not hand-wave.
+
+### 5. Draft `report.md`
+
+Follow [references/report-format.md](references/report-format.md) **exactly**.
+
+Rules:
+
+- Decision section first and specific.
+- Every major claim has a citation.
+- Tables for financials, WC, KPIs, peers, scenarios — not prose walls alone.
+- Value chain via HTML helper only.
+- Target length signal: a serious mid-cap report should feel like **~2,500–5,000+ words of analysis** plus tables — not a 1–2 page brief unless the user asked for a memo.
+
+### 6. Charts (required)
+
+≥3 Plotly charts from facts (price, financials, valuation and/or WC/KPI). Export PNG + data CSV under `output/`.
+
+### 7. Assemble PDF
 
 ```bash
-python3 <skill_dir>/scripts/pdf_to_text.py in.pdf sources/foo.txt --expect-name "Company"
-python3 <skill_dir>/scripts/outlook_candidates.py sources/concall.txt facts/candidate_quotes/q_candidate_quotes.json
-python3 <skill_dir>/scripts/query_source.py sources/concall.txt guidance margin DSO implementation annuity --max-hits 30
-python3 <skill_dir>/scripts/query_source.py sources/concall.txt --bm25 "outlook margin working capital" --top-k 8
+python skills/company-thesis-report/scripts/assemble_pdf.py \
+  --markdown ~/.company-research/<slug>/output/report.md \
+  --out ~/.company-research/<slug>/output/<Name>_report.pdf \
+  --title "<Company> — Equity Research"
 ```
 
-Fill `facts/*.json` until the quality bar can be met. Schemas: `references/facts-schemas.md`.  
-Also write `facts/decision.json` (recommendation, confidence, confirm[], kill[], one_paragraph_why).
+Copy final PDF to `/opt/cursor/artifacts/` when delivering to the user.
 
-### 4. Draft — spine in `references/report-format.md`
+### 8. Self-audit before delivery
 
-**Order matters:** Cover → **Investment decision** → rest of spine.
+Run through [references/depth-checklist.md](references/depth-checklist.md).
+If any **Fail** item remains, revise. Do not present a thin PDF as done.
 
-Sector slots from lens + packs; everything else from packs + sourced interpretation.
+## Sector lenses
 
-Write **analysis**: what the numbers mean for the investment case. Numbers without read-through fail the quality bar.
+Router: [references/sector-router.md](references/sector-router.md)
 
-### 5. Assemble PDF
+Each lens: `sectors/<lens-id>/{LENS.md,metrics.schema.json}` — overlays only.
 
-`scripts/html_helpers.py` (`flow_diagram()`, `verdict_box()`, tables, cards, timeline).  
-`scripts/charts.py` for annual/quarterly history when it clarifies the story (preferred for financial history).
+## Tools
 
-```bash
-python3 -m weasyprint report.html ~/.company-research/<slug>/output/<Name>_report.pdf
-```
+| Script | Use |
+|--------|-----|
+| `freshness.py` | Cache status |
+| `pdf_to_text.py` | PDF → text |
+| `query_source.py` | Section extract |
+| `build_facts.py` | Pack scaffold + validate |
+| `outlook_candidates.py` | Outlook candidates |
+| `forward_pe.py` / `capacity_utilization.py` | Math helpers |
+| `render_report.py` / `assemble_pdf.py` | HTML/PDF |
+| `html_helpers.py` | `flow_diagram`, tables, callouts |
 
-### 6. Pre-delivery self-check (mandatory)
+## Anti-patterns
 
-Answer yes to all or fix:
-
-- [ ] Could a careful reader decide invest / hold / avoid from page 1–2 alone?
-- [ ] Is every major section denser than a heading + two thin bullets?
-- [ ] Was the latest concall mined (quotes + mix + risks)?
-- [ ] Are peers real numbers, not placeholders?
-- [ ] Are confirm/kill criteria specific and observable next quarter?
-- [ ] Would you be embarrassed to send this PDF to someone risking real money? If yes → rewrite.
-
-### 7. Mark freshness + deliver
-
-```bash
-python3 <skill_dir>/scripts/freshness.py <slug> --mark-processed YYYY-MM-DD --price <price>
-```
-
-Save `.md` + `.pdf` under `output/`. Spoken summary: recommendation + one reason + one watch item — not a full re-narration.
-
-## Situation / badge mapping
-
-Put the **action** in the cover badge text when possible (e.g. `HOLD — WAIT FOR RE-ACCELERATION`).
-
-- structural growth → `growth`
-- compounder with solid evidence → `bull`
-- digestion / early / needs confirmation → `watch`
-- structural decline / red-flag heavy → `bear`
-- mixed → `neutral`
-
-## Optional calculators
-
-- `scripts/forward_pe.py` — when lens uses PE-style valuation  
-- `scripts/capacity_utilization.py` — when capacity maths exist  
-
-## Adding a sector lens
-
-1. `sectors/<new-id>/LENS.md` + `metrics.schema.json`  
-2. Row in `references/sector-router.md`  
-3. Do not weaken the decision/quality bar in the spine  
-
-## References
-
-- `references/report-format.md` — spine + decision section + density rules  
-- `references/sector-router.md`  
-- `references/source-routing.md`  
-- `references/facts-schemas.md`  
-- `sectors/<lens-id>/` — matched lens only  
+- Headings with empty or near-empty sections
+- Single-quarter snapshot without trend
+- Valuation without “what is priced in”
+- Peer table with only P/E and no operating metrics
+- Ignoring WC / CFO when PAT looks fine
+- Skipping transcripts
+- ASCII value chains
+- Loading multiple sector lenses
+- Shipping before depth checklist passes

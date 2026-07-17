@@ -11,6 +11,9 @@ output/           # report.md + PDF
 
 Draft **only** from facts packs (+ tiny grepped snippets). Empty field → honest gap.
 
+**Depth rule:** packs below marked *(depth)* are required for a shippable report.
+Thin `financials` without quarterly bridge / WC / KPI scorecard = fail the depth floor.
+
 ## Universal packs
 
 ### `facts/meta.json`
@@ -40,17 +43,25 @@ Draft **only** from facts packs (+ tiny grepped snippets). Empty field → hones
 {
   "action": "BUY|HOLD|AVOID|SELECTIVE_ACCUMULATE",
   "confidence": "high|medium|low",
+  "horizon": "e.g. 12 months / next 2–3 quarters",
+  "entry_zone": "",
+  "invalidation": "",
+  "key_debate": "",
   "one_paragraph_why": "",
   "confirm_thesis": [{"watch": "", "why_it_matters": ""}],
   "kill_thesis": [{"watch": "", "why_it_matters": ""}],
+  "alternative_thesis": {
+    "side": "bear|bull",
+    "claim": "",
+    "why_it_could_be_right": "",
+    "why_we_reject_or_partial": ""
+  },
+  "position_framing": "core|satellite|wait|trim",
   "next_checkpoint": "e.g. Q2 FY27 results"
 }
 ```
 
-
 ### `facts/sector.json`
-
-Sector Context inputs (primer may be copied from the lens; market facts are sparse).
 
 ```json
 {
@@ -70,8 +81,6 @@ Sector Context inputs (primer may be copied from the lens; market facts are spar
 ```
 
 ### `facts/value_chain.json`
-
-Company-specific stages for `flow_diagram()`.
 
 ```json
 {
@@ -93,7 +102,9 @@ Company-specific stages for `flow_diagram()`.
   "near": [{"headline": "", "status": "Pending", "claim": "", "quote": "", "source": ""}],
   "medium": [],
   "long": [],
-  "guidance_history": []
+  "guidance_history": [
+    {"period": "", "what_management_said": "", "what_happened": "", "source": ""}
+  ]
 }
 ```
 
@@ -121,15 +132,95 @@ Status values: `Pending` | `On Track` | `Delivered` | `Delayed` | `Missed`.
 
 ### `facts/financials.json`
 
+Prefer splitting deep history into the dedicated packs below when large; this pack
+remains the annual + summary home.
+
 ```json
 {
-  "period_type": "annual|quarterly",
+  "period_type": "annual",
   "rows": [
     {"period": "", "revenue": null, "yoy_pct": null, "gross_margin_pct": null, "ebitda_margin_pct": null, "pbt": null, "pat": null, "pat_margin_pct": null}
   ],
   "cagr": {"revenue_3y": null, "revenue_5y": null, "pat_3y": null, "pat_5y": null},
+  "regime_notes": [],
   "balance_sheet_anomaly": {"found": false, "notes": []},
   "lens_metric_cards": [{"label": "", "value": "", "tone": ""}]
+}
+```
+
+### `facts/financials_quarterly.json` *(depth)*
+
+```json
+{
+  "rows": [
+    {
+      "period": "Q1 FY27",
+      "revenue": null,
+      "yoy_pct": null,
+      "qoq_pct": null,
+      "ebitda_margin_pct": null,
+      "pat": null,
+      "pat_margin_pct": null,
+      "note": ""
+    }
+  ],
+  "min_quarters_expected": 8,
+  "seasonality_note": ""
+}
+```
+
+### `facts/earnings_bridge.json` *(depth)*
+
+```json
+{
+  "latest_period": "",
+  "vs": "YoY|QoQ|both",
+  "headline": "beat|miss|inline",
+  "drivers": [
+    {"factor": "mix|volume|price|geo|one_off|other_income|opex|tax", "impact": "", "direction": "up|down", "source": ""}
+  ],
+  "narrative": "",
+  "sources": []
+}
+```
+
+### `facts/working_capital.json` *(depth)*
+
+```json
+{
+  "rows": [
+    {"period": "", "debtor_days": null, "inventory_days": null, "creditor_days": null, "ccc_days": null}
+  ],
+  "cfo_vs_pat": [
+    {"period": "", "pat": null, "cfo": null, "note": ""}
+  ],
+  "commentary": "",
+  "sources": []
+}
+```
+
+### `facts/cash_flow.json` *(depth)*
+
+```json
+{
+  "rows": [
+    {"period": "", "cfo": null, "cfi": null, "cff": null, "fcf": null, "capex": null}
+  ],
+  "quality_notes": [],
+  "sources": []
+}
+```
+
+### `facts/kpi_scorecard.json` *(depth)*
+
+```json
+{
+  "columns": ["metric", "t-3", "t-2", "t-1", "latest", "trend", "implication"],
+  "rows": [
+    {"metric": "", "values": {}, "trend": "up|down|flat|volatile", "implication": "", "source": ""}
+  ],
+  "min_kpis_expected": 6,
+  "gap": ""
 }
 ```
 
@@ -146,13 +237,12 @@ Status values: `Pending` | `On Track` | `Delivered` | `Delayed` | `Missed`.
 
 ### `facts/demand.json`
 
-Commercial backlog / demand indicators (order book, AUM, subscribers, etc.).
-
 ```json
 {
   "material": false,
   "metric_name": "",
   "rows": [{"as_of": "", "value": "", "basis": "", "composition": "", "source": ""}],
+  "count_vs_size_note": "",
   "gap": ""
 }
 ```
@@ -168,6 +258,20 @@ Commercial backlog / demand indicators (order book, AUM, subscribers, etc.).
 }
 ```
 
+### `facts/capital_allocation.json` *(depth)*
+
+```json
+{
+  "dividends": [],
+  "buybacks": [],
+  "ma": [],
+  "reinvestment_notes": "",
+  "roic_or_roce_story": "",
+  "grade": "A|B|C|D|unknown",
+  "sources": []
+}
+```
+
 ### `facts/valuation.json`
 
 ```json
@@ -178,6 +282,14 @@ Commercial backlog / demand indicators (order book, AUM, subscribers, etc.).
   "inputs": {},
   "result": "",
   "historical_median": "",
+  "implied_growth": {
+    "label": "what market appears to price in",
+    "assumption": "",
+    "note": "back-of-envelope; labeled judgment"
+  },
+  "scenarios": [
+    {"name": "bull|base|bear", "probability": null, "growth": "", "margin": "", "multiple": "", "value": "", "assumptions": ""}
+  ],
   "notes": [],
   "sources": []
 }
@@ -198,6 +310,21 @@ Commercial backlog / demand indicators (order book, AUM, subscribers, etc.).
 {"items": [{"text": "", "source": ""}]}
 ```
 
+### `facts/management_scorecard.json` *(depth)*
+
+```json
+{
+  "guidance_delivery": [
+    {"period": "", "said": "", "delivered": "", "grade": "met|missed|mixed", "source": ""}
+  ],
+  "capital_allocation_grade": "",
+  "key_person_risk": "",
+  "governance_flags": [],
+  "overall_note": "",
+  "sources": []
+}
+```
+
 ### `facts/governance.json`
 
 ```json
@@ -206,7 +333,8 @@ Commercial backlog / demand indicators (order book, AUM, subscribers, etc.).
   "guidance_reliability": "",
   "ratings": [{"agency": "", "rating": "", "outlook": "", "date": "", "source": ""}],
   "litigation": [{"matter": "", "status": "", "source": ""}],
-  "fund_raises": [{"date": "", "type": "", "amount": "", "investors": "", "source": ""}]
+  "fund_raises": [{"date": "", "type": "", "amount": "", "investors": "", "source": ""}],
+  "leadership_changes": [{"date": "", "change": "", "source": ""}]
 }
 ```
 
@@ -222,11 +350,19 @@ Commercial backlog / demand indicators (order book, AUM, subscribers, etc.).
 
 ### `facts/quotes.json`
 
-Curated quotes that made the report (traceability for Sources).
-
 ```json
 {
   "items": [{"id": "", "quote": "", "doc": "", "date": "", "section": ""}]
+}
+```
+
+### `facts/sources_index.json`
+
+```json
+{
+  "items": [
+    {"id": 1, "title": "", "url": "", "supports": "", "retrieved": ""}
+  ]
 }
 ```
 

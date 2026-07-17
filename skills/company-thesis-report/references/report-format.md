@@ -11,6 +11,9 @@ A section fails if it is only a heading plus thin labels. Each section must help
 investment decision: **what happened, why it matters, what to watch**. Prefer short
 analytical paragraphs + tight bullets over empty cards.
 
+**Depth floor:** see [depth-checklist.md](depth-checklist.md). A mid-cap report that
+cannot support invest / not is a failure — thicken before shipping.
+
 Gaps: one honest sourced line (“not disclosed in concall/PR/screener reviewed”) —
 never invent filler.
 
@@ -27,15 +30,20 @@ Badge kinds: `growth` | `bull` | `watch` | `bear` | `neutral`.
 
 ## 0. Investment decision *(required — immediately after cover)*
 
-This is the most important page. Use `verdict_box()` plus two short lists.
+This is the most important page. Use `verdict_box()` plus structured lists.
 
 Must include:
 
 1. **Action:** BUY / HOLD / AVOID / selective accumulate (pick one primary action)
-2. **One dense paragraph:** why, at this price, with the key evidence and the key doubt
-3. **Confirm thesis** (3–5 observable bullets that would upgrade conviction / move toward BUY)
-4. **Kill thesis** (3–5 observable bullets that would force AVOID / exit)
-5. **Confidence:** high / medium / low on the action itself
+2. **Conviction:** High / Medium / Low
+3. **Horizon:** e.g. 2–3 quarters / 12 months
+4. **Entry / invalidation:** price zone or condition (judgment labeled as such)
+5. **Key debate:** one sentence — the single bull vs bear disagreement
+6. **One dense paragraph:** why, at this price, with key evidence and key doubt
+7. **Confirm thesis** (3–5 observable, dated bullets)
+8. **Kill thesis** (3–5 observable, dated bullets)
+9. **Alternative thesis:** what the other side believes and why you reject / partially accept
+10. **Position framing:** core / satellite / wait / trim (not personalized advice)
 
 Do not bury the call in section 25 only. Section 25 restates; section 0 decides.
 
@@ -85,6 +93,7 @@ Order fixed. 2–4 bullets each. Format:
 Status: `[Pending]` | `[On Track]` | `[Delivered]` | `[Delayed]` | `[Missed]`.
 
 Quotes from **concall/transcript/deck** preferred over PR alone. Drop unsupported claims.
+Prefer evidence spanning **multiple quarters**, not a single print.
 
 ---
 
@@ -113,11 +122,25 @@ Include lens must-have metrics or explicit gaps (e.g. attrition not disclosed).
 
 Required:
 
-- Multi-year `data_table()` (sales, YoY, margins, PAT)
-- **Read-through paragraph** (is this growth, margin, or air-pocket?)
+- Multi-year annual `data_table()` (sales, YoY, margins, PAT) **with a regime-shift paragraph**
+- **Last 8 quarters** table or chart with YoY **and** QoQ read-through
+- **Earnings bridge:** what drove the latest beat/miss (volume / mix / price / geo / one-offs)
 - CAGR cards
-- BS/cash anomaly bullets (debtor days, leverage, FCF)
-- Prefer `revenue_profit_chart` / `quarterly_trend_chart` when history clarifies the story
+- Prefer `revenue_profit_chart` / `quarterly_trend_chart`
+
+---
+
+## 11b. Working capital & earnings quality *(required)*
+
+Dedicated subsection or H2 — not a one-liner buried in BS anomalies:
+
+- Debtor days / DSO trend (multi-year + latest)
+- Inventory / creditor days when relevant
+- Cash conversion cycle direction
+- **CFO vs PAT** for last 3 years — is profit turning into cash?
+- Any concall commentary on collections / advances / billing delays
+
+If WC looks fine, say so with numbers — do not skip the section.
 
 ---
 
@@ -129,9 +152,19 @@ where BUY vs HOLD is decided.
 
 ---
 
+## 12b. KPI scorecard *(required)*
+
+Table of **≥6** operating KPIs (lens-defined) across ≥4 periods where disclosed.
+Each row: metric, trend, peer/context note if available, implication for the thesis.
+Examples (IT/product): annuity %, SaaS growth, logos, DSO, utilisation, attrition.
+Do not invent undisclosed KPIs — gap them explicitly.
+
+---
+
 ## 13. Commercial backlog / demand indicators
 
 Order book / logos / named TCV / AUM / subscribers as disclosed. Distinguish stock vs flow.
+Comment on whether **count vs size** of wins is changing.
 
 ---
 
@@ -146,8 +179,8 @@ Include when material; otherwise one-line gap. Do not pad.
 Required:
 
 - Lens method + current multiple(s)
-- What is priced in at today’s price
-- Bull / base / bear bands (label as judgmental if not street targets)
+- **What is priced in** at today’s price (implied growth / back-of-envelope OK if labeled)
+- Bull / base / bear bands with **explicit growth & margin assumptions** and probabilities
 - Optional street note — paraphrase, tag as broker opinion, never as your primary finding
 
 ---
@@ -160,8 +193,8 @@ Sourced, specific to this company’s demand drivers.
 
 ## 19. Peer Comparison
 
-**≥3 real peers** with screener (or equivalent) numbers. Subject as own row. Empty
-“n/a this run” peer rows are a quality failure — fetch peer pages.
+**≥3 real peers** with screener (or equivalent) numbers — valuation **and** operating
+metrics. Subject as own row. Empty “n/a this run” peer rows are a quality failure.
 
 Add 2–4 sentences: does the subject deserve its premium/discount?
 
@@ -179,10 +212,16 @@ As-of price, 52w, simple published stats. No invented indicators.
 
 ---
 
-## 22. Promoter / Governance
+## 22. Promoter / Governance / Management scorecard
 
-Shareholding trend; guidance reliability; ratings/litigation/raises; **leadership
-transitions** when material.
+Shareholding trend; ratings/litigation/raises; **leadership transitions**.
+
+**Management scorecard** (required block):
+
+- Guidance delivery over last 2–4 quarters (said vs delivered)
+- Capital allocation grade (dividends, buybacks, M&A, cash vs reinvestment)
+- Key-person / succession risk
+- Governance flags with evidence
 
 ---
 
@@ -196,20 +235,28 @@ transitions** when material.
 
 Mandatory `flag_list(..., kind='bear')`. Specific to this print (WC, growth air-pocket,
 geo delays, transition, competition) — not generic macro filler only.
+Include the **thesis-breaking** risks, not only mild ones.
 
 ---
 
 ## 25. Final verdict
 
-`verdict_box()` restating action, confidence, and the single next thing to watch.
-Must agree with section 0.
+`verdict_box()` restating action, confidence, horizon, and the single next thing to watch.
+Must agree with section 0. Restate confirm/kill in one line each if space allows.
 
 ---
 
 ## 26. Sources
 
-Numbered, linked, what each supports. Must include screener + latest concall (or explicit
-failure to obtain transcript).
+Numbered, linked, what each supports. Must include screener + **latest concall** (or
+explicit failure to obtain transcript) + peer sources used.
+
+---
+
+## Charts (required)
+
+≥3 Plotly figures before assembly: price/context, financial trend, valuation and/or
+WC/KPI. Export under `output/`.
 
 ---
 
@@ -217,6 +264,8 @@ failure to obtain transcript).
 
 - Prefer analysis paragraphs ≤ ~10 lines; then bullets.
 - Never mention internal script paths in the report text.
+- Target feel: institutional memo depth (~2,500–5,000+ words of analysis + tables),
+  not a 1–2 page brief, unless the user asked for a short memo.
 
 ## Assembly sketch
 
@@ -225,7 +274,7 @@ body = ''
 body += cover(...)
 body += section('0. Investment decision')
 body += verdict_box('Recommendation: ...')
-# confirm / kill lists
+# confirm / kill / alternative thesis
 body += section('1. Company Summary')
 # ... through section 26 ...
 html = render(body, '<skill_dir>/assets/report_style.css')
