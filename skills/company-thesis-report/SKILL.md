@@ -1,66 +1,179 @@
 ---
 name: company-thesis-report
-description: "Generates a rigorous, decision-useful investment research report on any publicly listed company as a visual, infographic-style PDF - metric cards, charts for financial/ownership trends, a timeline for dated milestones, and data tables for detail, built for fast scanning without losing any underlying data. Covers business overview, financial history, ownership/capital structure, the situation driving interest in the stock, the bull thesis with evidence, dated management promises, a mandatory red-flags/bear-case section, a verdict, and sourced citations. Use whenever the user asks to research a company for an investment decision, build a thesis, do a deep dive on a stock, evaluate a buy/hold/sell, or wants a writeup on a company - even if they just name a ticker and say 'what's the story with X', without asking for a 'report' or using investment jargon. Works for any situation - turnaround, compounder, cyclical, growth story, or decline."
+description: >
+  Build a decision-grade equity research PDF for Indian listed companies. Prefer when
+  the user asks for company research, equity thesis, BUY/HOLD/AVOID, concall analysis,
+  or a deeper company report. Uses a fixed report spine, one routed sector lens, and
+  a hard depth floor — reports must be thick enough to decide invest / not.
 ---
 
 # Company thesis report
 
-## Why this exists
+Build a **decision-grade** research PDF. The user must be able to **invest or not**
+from the report alone — not from headings and summaries.
 
-A good investment decision needs a document you can actually rely on later - one where every number traces back to a primary source, where the bear case gets the same rigor as the bull case, and where "I couldn't find solid evidence for X" is written down honestly instead of papered over with vague optimism. This skill produces that document for any company, in any situation - as a visual, fast-to-scan PDF rather than a wall of prose.
+**Quality beats token savings.** Thin reports are failures even if cheap to produce.
 
-The single most important discipline here: **a claim without a source and a date is not evidence, it's marketing**. Treat every fact this way whether it makes the thesis look better or worse. The second discipline: **visual and complete are not in tension** - a chart or metric card should make a number easier to absorb, never a replacement for showing the real figures. If something doesn't chart well, put it in a text paragraph or a dense table instead of forcing a bad visual or dropping the data.
+## Hard depth floor (non-negotiable)
 
-## Step 1: Research (before touching the output format)
+Aligned with [references/depth-checklist.md](references/depth-checklist.md) (blocks A–F).
 
-Do the research first. Do not open the format/build references below or start building the document until you have gathered real facts - reading the format before you have content anchors you on document mechanics instead of substance.
+A finished report fails if **any** of these is missing:
 
-Gather, in roughly this order of trust:
+1. **Investment decision** — BUY / HOLD / AVOID with conviction, entry zone, invalidation,
+   horizon, position framing, key debate, alternative thesis, confirm/kill.
+2. **Source completeness** — latest concall + **≥3 prior** quarter extracts + AR (or
+   documented gap) + ≥3 peers. See `facts/sources_completeness.json`.
+3. **Multi-quarter earnings bridge** — ≥8 quarters with YoY/QoQ + latest beat/miss drivers.
+4. **Working-capital deep dive** — debtor days trend + CFO vs PAT (≥3y) + commentary.
+5. **KPI scorecard** — ≥6 KPIs via `kpi_table()`; prefer ≥4 periods or `gap_reason`.
+6. **Management scorecard** — ≥2 sourced guidance-delivery rows; capital allocation; key-person.
+7. **Outlook guidance history** — ≥3 entries in `outlook.guidance_history` from prior prints.
+8. **Segment / geography mix** — when disclosed.
+9. **Peer table** — ≥3 real peers with valuation **and** ≥1 operating/growth column.
+10. **Scenarios** — bull/base/bear with assumptions + **EPS×multiple math** (`scenario_value.py`).
+11. **Charts** — ≥3 figures; value chain via `flow_diagram` only.
+12. **Sources** — cited; URLs in appendix.
 
-1. **Primary sources** - exchange filings (BSE/NSE Regulation 30 disclosures, annual reports, investor presentations filed with the exchange), NCLT/court orders if relevant, credit rating agency actions (CRISIL/ICRA/CARE/India Ratings press releases), and the company's own investor call transcripts or press releases as filed.
-2. **Structured financial data** - screener.in (P&L, balance sheet, cash flow, ratios, shareholding pattern history), or an equivalent financial data source. Pull the full history, not just the latest quarter - the charts in Step 3 need real time series.
-3. **Discovery-only sources** - news aggregators, PR-syndicated releases, sites like Trendlyne or Moneycontrol. Fine for finding leads (a contract win, a rating action, a management interview) but never cite a number from them without tracing it back to the primary filing or press release it originated from. Aggregators garble numbers surprisingly often - verify before including.
+**Ship rule:** `python scripts/validate_depth.py --slug <slug>` must exit 0 before PDF.
+If it fails, deepen packs — do not ship.
 
-If the user has given you Kite (Zerodha) access in this session, use it for live price/volume history rather than guessing at technicals from search snippets.
+**Writing rule:** reports are research memos ([references/writing-quality.md](references/writing-quality.md)),
+not tip sheets. Dense tables + analytical read-throughs; ban tip-speak; prose gates
+enforce ≥~3500 words and paragraph substance.
 
-### Sourcing rules - non-negotiable
+## Non-negotiable rules
 
-- Every material fact (financial figures, investor names, amounts, dates, contract values, guidance) must trace to a source you can cite with a URL.
-- No vague qualifiers as evidence - "strong pipeline," "well-positioned," "attractive valuation" are not facts unless attached to a number, a date, and a source.
-- Flag unverified management claims explicitly: "management states X - not yet corroborated by an independent filing."
-- **If, after real research, you cannot find enough verifiable material to support a genuine thesis, say so plainly rather than padding it out.** A report that honestly concludes "there isn't a well-evidenced thesis here yet" is more useful than one that manufactures a story. This applies per-section too - if the red-flags section only has one weak flag, write one weak flag, don't invent three to look thorough.
+1. **One spine** — [references/report-format.md](references/report-format.md).
+2. **One sector lens** — [references/sector-router.md](references/sector-router.md); load only that lens.
+3. **Value chain = visual HTML** — never ASCII/code.
+4. **No headings-only / no empty shells** — never empty `timeline()`; use `kpi_table()` not `str(dict)`.
+5. **Cache on disk** — `~/.company-research/<slug>/`.
+6. **Prefer tools** for math, PDF text, HTML/PDF assembly.
+7. **Decision-first** — open with the call.
 
-## Step 2: Identify the company's situation
+## Inputs
 
-Before writing the thesis, figure out - from the evidence, not from assumption - which broad situation the company is actually in right now. This determines the framing and the badge color used on the cover (see Step 3). Common situations:
+- Company name or ticker (NSE/BSE)
+- Optional: as-of date, emphasis, peer list, force-refresh
 
-- **Distress recovery / turnaround** - was in real financial trouble (debt default, NCLT resolution, negative net worth, trade-to-trade classification) and has since had a documented reset.
-- **Steady compounder** - consistent revenue/profit growth, stable or improving margins and returns on capital, no major structural change - the thesis here is about durability and reasonable valuation, not a catalyst.
-- **Cyclical** - earnings and stock price move with a commodity price, interest rate, or capacity-utilization cycle; the thesis is about where in the cycle the company sits now.
-- **Structural growth** - riding a multi-year secular trend (market share gains, new product category, geographic expansion) with evidence of execution, not just narrative.
-- **Structural decline / red-flag heavy** - genuine deterioration with no credible turnaround evidence yet. It is completely fine, and expected sometimes, for the report to conclude this and recommend against building a thesis at all.
+## Workflow
 
-State which situation applies (or a mix) early in the report, with the evidence for that classification. Don't force a "turnaround" or "growth story" framing onto a company that's actually just declining, and don't force red flags onto a genuinely boring, healthy compounder just to fill a section.
-
-## Step 3: Build the report as a PDF
-
-Once research is solid, read `references/report-format.md` for the exact section structure and how each section maps to a chart, a card grid, a table, or plain text. Then use the two bundled Python modules:
-
-- `scripts/charts.py` - matplotlib chart generators (revenue/profit history, quarterly trend, shareholding pattern, before/after comparison, capital-raise donut, line comparisons) that each save a PNG in the report's visual style.
-- `scripts/html_helpers.py` - functions that build the HTML for covers, badges, metric-card grids, chart embeds, data tables, bullet flag-lists, timelines, a verdict box, and a sourced citation list, all styled by `assets/report_style.css`.
-
-Assemble the page as HTML (concatenate the section builders per `references/report-format.md`), then render to PDF with WeasyPrint:
+### 0. Setup
 
 ```bash
-python3 -m weasyprint report.html report.pdf
+pip install matplotlib weasyprint pypdf rank_bm25 beautifulsoup4 lxml -q
+python skills/company-thesis-report/scripts/freshness.py --slug <slug>
 ```
 
-(WeasyPrint may need installing first: `pip install weasyprint --break-system-packages`.)
+Workspace: `~/.company-research/<slug>/{sources,facts,output}/`
 
-**Decide per section whether a chart, a table, or plain text is the right call** - don't force every section into a chart. Long time series with a clear trend (revenue history, shareholding mix, margin trend) chart well. A one-off list of named investors with exact amounts, or a detailed annexure of every allottee, is genuinely better as a dense table - charting it would lose precision the reader needs. Narrative sections (the thesis argument, red flags, the situation writeup) stay as text - don't invent a chart just to have one on the page.
+### 1. Classify sector (once)
 
-Verify the rendered output before delivering it: convert (already done above) and render a few pages to JPEG (`pdftoppm -jpeg -r 120 report.pdf page`) to visually check charts aren't clipped, tables aren't overflowing the page width, and page breaks land sensibly - the same verification step used for any PDF deliverable.
+Use [references/sector-router.md](references/sector-router.md). Write `facts/sector.json`.
+Load **only** `sectors/<lens-id>/`.
 
-## Step 4: Deliver
+```bash
+python skills/company-thesis-report/scripts/build_facts.py <slug> --lens <lens-id> --init-empty
+```
 
-Save the final `.pdf` to the outputs folder, present it to the user, and give a short spoken summary - one or two sentences on what situation the company is in and the headline verdict. Don't re-narrate the whole report in the chat response; the document is the deliverable.
+### 2. Ingest (depth mode) — Source Completeness Gate
+
+Follow [references/source-routing.md](references/source-routing.md).
+
+**Before drafting**, fill `facts/sources_completeness.json` and set `status: pass` only when:
+
+| Required | Rule |
+|----------|------|
+| Latest concall | Full transcript/captions on disk |
+| Prior concalls/PRs | **≥3** prior quarter extracts (guidance evolution) |
+| Latest PR | On disk |
+| Deck | Path **or** `deck_gap` reason |
+| Annual report | Path **or** `annual_report_gap` (prefer always attempt) |
+| Peers | `peers_n` ≥ 3 with filled peer pages |
+
+If incomplete → keep fetching. Do not draft a ship PDF.
+
+### 3. Build deep facts packs
+
+Enrich packs per [references/facts-schemas.md](references/facts-schemas.md).
+
+Depth packs that must be rich: `financials_quarterly`, `earnings_bridge`,
+`working_capital`, `kpi_scorecard`, `management_scorecard`, `capital_allocation`,
+`outlook` (incl. `guidance_history`), `valuation` (incl. scenario math), `decision`,
+`sources_completeness`.
+
+### 4. Analysis depth
+
+Answer before drafting: what changed over 4–8 quarters; is cash real; what is priced in;
+what would make the other side right; what must be true in 12 months.
+
+### 5. Draft using HTML helpers (not ad-hoc)
+
+Use `html_helpers.py` only for structure:
+
+- `timeline(items)` — dicts or tuples; **never empty**
+- `kpi_table(scorecard)` — period grid; **never** put `str(dict)` in `data_table`
+- `flow_diagram`, `verdict_box`, `data_table`, `card_grid`
+
+Valuation scenarios:
+
+```bash
+python skills/company-thesis-report/scripts/scenario_value.py \
+  --price 548 --pe 22.8 --bull-growth 0.17 --base-growth 0.12 --bear-growth 0.06
+```
+
+Merge `math_note` into `facts/valuation.json` scenarios.
+
+### 6. Charts
+
+≥3 charts from facts (price/financials/WC or valuation).
+
+### 7. Validate — then assemble
+
+```bash
+python skills/company-thesis-report/scripts/validate_depth.py --slug <slug>
+# must exit 0
+
+python skills/company-thesis-report/scripts/assemble_pdf.py \
+  --html ~/.company-research/<slug>/output/report.html \
+  --out  ~/.company-research/<slug>/output/<Name>_report.pdf
+```
+
+`assemble_pdf.py` runs `smoke_check_html` (rejects empty timeline shells / dict garbage).
+
+### 8. Self-audit
+
+Re-read [references/depth-checklist.md](references/depth-checklist.md). Copy final PDF to
+artifacts when delivering. Do not commit sample PDFs to the repo.
+
+## Sector lenses
+
+Router: [references/sector-router.md](references/sector-router.md)  
+Each lens: `sectors/<lens-id>/{LENS.md,metrics.schema.json}`
+
+## Tools
+
+| Script | Use |
+|--------|-----|
+| `freshness.py` | Cache status |
+| `pdf_to_text.py` / `query_source.py` | Extract / grep |
+| `outlook_candidates.py` | Forward-looking quotes |
+| `build_facts.py` | Pack scaffold + lens |
+| `validate_depth.py` | **Ship gate** |
+| `scenario_value.py` | EPS × multiple bands |
+| `forward_pe.py` / `capacity_utilization.py` | Math helpers |
+| `html_helpers.py` | Render primitives + smoke check |
+| `assemble_pdf.py` | HTML → PDF |
+| `charts.py` | Figures |
+
+## Anti-patterns
+
+- Shipping when `validate_depth.py` fails
+- One-quarter transcript only (no guidance history)
+- Empty `timeline()` / headings-only sections
+- `data_table` cells containing Python dicts
+- Valuation bands without math_note
+- Peer table with only P/E
+- ASCII value chains / multiple sector lenses
+- Committing `output/` sample reports

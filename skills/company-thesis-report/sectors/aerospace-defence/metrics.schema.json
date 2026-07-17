@@ -1,0 +1,67 @@
+{
+  "lens_id": "aerospace-defence",
+  "deep_dive_title": "Programmes & indigenisation",
+  "valuation_method": "P/E or EV/EBITDA with programme visibility",
+  "peer_columns": [
+    "P/E",
+    "Order book",
+    "Margins",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "order_book",
+      "label": "Order book"
+    },
+    {
+      "key": "top_programme",
+      "label": "Top programme %"
+    },
+    {
+      "key": "defence_mix",
+      "label": "Defence mix %"
+    },
+    {
+      "key": "exports",
+      "label": "Export %"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    }
+  ],
+  "query_keys": [
+    "order book",
+    "programme",
+    "indigenisation",
+    "offset",
+    "MoD",
+    "HAL",
+    "export order",
+    "LD"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Budget / OEMs",
+      "detail": "MoD, DPSUs, global OEMs"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Platforms, electronics, components"
+    },
+    {
+      "label": "Programmes",
+      "detail": "Named platforms / contracts"
+    },
+    {
+      "label": "End use",
+      "detail": "Air, land, naval, space"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Order book by programme / customer",
+    "Indigenisation / offset exposure",
+    "Execution milestones and LD risk",
+    "Export vs domestic mix"
+  ]
+}

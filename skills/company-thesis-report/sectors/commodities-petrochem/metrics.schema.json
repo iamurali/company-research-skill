@@ -1,0 +1,62 @@
+{
+  "lens_id": "commodities-petrochem",
+  "deep_dive_title": "Spreads & utilization",
+  "valuation_method": "EV/EBITDA through cycle",
+  "peer_columns": [
+    "EV/EBITDA",
+    "Spreads",
+    "Utilization"
+  ],
+  "metrics": [
+    {
+      "key": "utilization",
+      "label": "Utilization"
+    },
+    {
+      "key": "spread",
+      "label": "Key spread"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "net_debt",
+      "label": "Net debt"
+    }
+  ],
+  "query_keys": [
+    "spread",
+    "crack",
+    "utilization",
+    "naphtha",
+    "polymer",
+    "PVC",
+    "PE",
+    "PP"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Feedstock",
+      "detail": "Naphtha, gas, other"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Crackers / plants"
+    },
+    {
+      "label": "Polymers / chem",
+      "detail": "Product slate"
+    },
+    {
+      "label": "Converters",
+      "detail": "Downstream users"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Key spreads / cracks vs history",
+    "Utilization and turnaround schedule",
+    "Product slate mix",
+    "Integration benefits"
+  ]
+}

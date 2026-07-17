@@ -1,0 +1,65 @@
+{
+  "lens_id": "cement-building-materials",
+  "deep_dive_title": "Utilization & realizations",
+  "valuation_method": "EV/EBITDA",
+  "peer_columns": [
+    "EV/EBITDA",
+    "EBITDA/ton",
+    "Utilization",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "volumes",
+      "label": "Volumes"
+    },
+    {
+      "key": "utilization",
+      "label": "Utilization"
+    },
+    {
+      "key": "realization",
+      "label": "Realization"
+    },
+    {
+      "key": "ebitda_per_ton",
+      "label": "EBITDA/ton"
+    },
+    {
+      "key": "fuel_cost",
+      "label": "Fuel cost"
+    }
+  ],
+  "query_keys": [
+    "realization",
+    "utilization",
+    "clinker",
+    "trade vs non-trade",
+    "pet coke",
+    "power"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Limestone / fuel",
+      "detail": "Inputs"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Clinker / cement plants"
+    },
+    {
+      "label": "Trade",
+      "detail": "Dealers / projects"
+    },
+    {
+      "label": "Construction",
+      "detail": "End demand"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Volume and capacity utilization",
+    "Realization / premium mix",
+    "Fuel cost and power mix",
+    "Regional demand commentary"
+  ]
+}

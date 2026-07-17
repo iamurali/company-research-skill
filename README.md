@@ -1,54 +1,162 @@
 # company-research-skill
 
-A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a publicly listed company and it produces a rigorous, sourced, visual investment thesis as a PDF — metric cards, financial/ownership charts, a timeline of dated management promises, dense data tables, and a mandatory bear case, all built for fast scanning without losing precision.
+A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a listed company and it produces a **decision-grade** sourced PDF — dense analysis (not headings-only), a fixed 26-section spine, facts-pack ingest, and **one matched sector lens** chosen from ~26 coverage buckets.
+
+**Quality beats token savings** when they conflict. Facts packs avoid dumping whole ARs into context; they are not an excuse to ship a thin report.
+
+---
+
+## Sample output
+
+Four reports generated as validation runs — LatentView Analytics (IT services), Sai Life Sciences (CDMO), Rossell Techsys (aerospace-defence PCB), Supreme Infrastructure (turnaround):
+
+| | |
+|---|---|
+| ![Company Summary + Value Chain](docs/assets/report_preview-2.png) | ![Segment tables + Office Locations](docs/assets/report_preview-4.png) |
+| *Cover → Company Summary → Value Chain → Situation Classification → Outlook* | *Segment performance tables · Office Locations · TAM · Valuation (Forward PE)* |
+
+![Industry Tailwinds + Competitive Positioning + Technical Snapshot](docs/assets/report_preview-5.png)
+*Industry Tailwinds/Headwinds · Competitive Positioning (peer table) · Technical Snapshot*
+
+---
 
 ## What it produces
 
-A single infographic-style PDF report with:
+A single PDF (plus markdown source) with a **cover badge** (Structural Growth / Turnaround / Steady Compounder / Cyclical / Structural Decline), then:
 
-- **Cover** — company, tickers, a situation badge (bull / growth / watch / bear), report date
-- **Business overview** — what the company does, with a headline stat card grid
-- **Financial history** — revenue/profit charts, quarterly trend, balance sheet snapshot, key ratios, CAGR cards
-- **Ownership & capital structure** — shareholding pattern trend, capital raise detail, promoter pledge status
-- **The situation/catalyst** — turnaround, compounder, cyclical, structural growth, or structural decline
-- **The bull thesis** — evidenced, falsifiable claims, each sourced
-- **What's promised** — a timeline of dated management commitments, marked done/pending
-- **Red flags / bear case** — mandatory, even in a bullish report
-- **Verdict** — one or two honest sentences on confidence level
-- **Sources** — every citation, numbered and linked
+- **Company Summary** — headline stat card grid (revenue, margin, market cap, EPS)
+- **Value Chain Positioning** — visual flow diagram of where the company sits
+- **Situation Classification** — evidenced classification with multi-quarter reasoning
+- **Near / Medium / Long Term Outlook** — verbatim sourced quotes + `[Pending]` / `[On Track]` / `[Delivered]` / `[Delayed]` / `[Missed]` status pointers tracked across concalls
+- **Marquee & Niche Customers** — named accounts + any disclosed guidance
+- **Capex / Milestones / Certifications Timeline**
+- **CDMO Pipeline** (when applicable)
+- **Financial Performance Summary** — YoY revenue/margin/PBT/PAT table + balance-sheet anomaly check
+- **Segment-wise Performance** — always a table, one per disclosed basis/period
+- **Order Book** — always a table, as-of date, composition breakdown
+- **Manufacturing Locations & Physical Assets** — footprint + raw material sourcing + export/customs data check
+- **Capacity Utilization & Headroom** — physical unit table (MW, MT, fiber-km, units/annum), before and after planned capex
+- **Total Addressable Market**
+- **Valuation** — Forward PE summary table + historical median + evidenced read vs peers/history
+- **Industry Tailwinds / Headwinds**
+- **Competitive Positioning** — peer comparison table on IP/tech moat, customers, certifications
+- **MOATs** — entry barriers, IP, product criticality, switching costs
+- **Technical Snapshot** — table (never prose)
+- **Promoter / Governance Track Record** — guidance reliability + shareholding trend table + fundraise table + credit-rating actions + litigation
+- **Investment Thesis Summary** — evidenced bull case (or honest statement it doesn't hold)
+- **Key Risks / Red Flags** — mandatory even in a bullish report
+- **Verdict** — one paragraph on confidence level
+- **Sources** — numbered, hyperlinked
 
-The core discipline: **a claim without a source and a date is not evidence, it's marketing.** If the research doesn't support a real thesis, the skill is expected to say so plainly rather than manufacture one.
+**Discipline:** a claim without a source and a date is not evidence. A headings-only or thin PDF is a failed run.
+
+---
+
+## Ingest design
+
+Raw concalls, decks, and annual reports are extracted to disk under `~/.company-research/<slug>/sources/`. The agent drafts from JSON **facts packs** in `facts/` — packs must be rich enough for a decision-grade PDF (concall mined, peers filled, confirm/kill written).
+
+| Script | Role |
+|--------|------|
+| `scripts/freshness.py` | `no_state` / `up_to_date` / `new_quarter` / `force_full` |
+| `scripts/pdf_to_text.py` | Full-doc PDF → txt |
+| `scripts/query_source.py` | Grep / BM25 snippets only — never loads whole docs |
+| `scripts/outlook_candidates.py` | Forward-looking quote candidates from transcript |
+| `scripts/build_facts.py` | Init/merge packs + apply sector lens schema |
+| `scripts/validate_depth.py` | **Ship gate** — depth + source completeness + prose quality |
+| `scripts/scenario_value.py` | Bull/base/bear EPS × multiple math |
+| `scripts/assemble_pdf.py` | HTML → WeasyPrint PDF with error recovery |
+| `scripts/forward_pe.py` / `capacity_utilization.py` | Deterministic maths helpers |
+
+**Ship only if** `validate_depth.py --slug <slug>` exits 0.
+
+### Prose quality gates (enforced by `validate_depth.py`)
+
+| Check | Threshold |
+|-------|-----------|
+| Body word count | ≥ 3,500 |
+| `<li>` / `<p>` ratio | ≤ 2.5 |
+| Average `<p>` word count | ≥ 35 words |
+| Analytical paragraphs ≥ 60 words (non-turnaround/cyclical reports) | ≥ 2 |
+| Tip-speak banned | "accumulate on dips", "trim above", "avoid chasing" → instant fail |
+
+---
+
+## Sector lenses (~26)
+
+After classifying the company (`references/sector-router.md`), the skill loads **one** folder:
+
+```
+skills/company-thesis-report/sectors/<lens-id>/
+  LENS.md                 # primer, must-have metrics, valuation method, deep-dive template
+  metrics.schema.json     # overlay shape + query keys + peer columns
+```
+
+Current lenses: `banks`, `nbfc-hfc`, `aerospace-defence`, `capital-goods-epc`, `it-services`, `specialty-chemicals`, `fmcg-staples`, `renewables`, `pharma-cdmo`, `generic`, …
+
+To add a sector: create a new folder + add a router row — **no spine changes**.
+
+---
 
 ## Repository layout
 
 ```
 company-research-skill/
+├── docs/
+│   └── assets/               # README preview images
 └── skills/
     └── company-thesis-report/
-        ├── SKILL.md                  # the skill definition Claude reads
+        ├── SKILL.md
         ├── references/
-        │   └── report-format.md      # section-by-section report spec
+        │   ├── report-format.md
+        │   ├── depth-checklist.md
+        │   ├── writing-quality.md    # prose gates — research memo, not tips
+        │   ├── sector-router.md
+        │   ├── source-routing.md
+        │   └── facts-schemas.md
+        ├── sectors/                  # one lens folder per coverage bucket
+        │   ├── it-services/
+        │   │   ├── LENS.md
+        │   │   └── metrics.schema.json
+        │   ├── renewables/
+        │   ├── aerospace-defence/
+        │   └── …
         ├── scripts/
-        │   ├── charts.py             # matplotlib chart generators
-        │   └── html_helpers.py       # HTML snippet builders for the report
+        │   ├── html_helpers.py       # cover, card_grid, flow_diagram, kpi_table, timeline, flag_list, verdict_box
+        │   ├── assemble_pdf.py       # HTML → WeasyPrint PDF (with try/except around write_pdf)
+        │   ├── validate_depth.py     # ship gate — source completeness + prose quality
+        │   ├── build_facts.py        # init/merge JSON facts packs (all packs include guidance_reliability)
+        │   ├── scenario_value.py     # bull/base/bear valuation bands
+        │   ├── charts.py
+        │   ├── pdf_to_text.py
+        │   ├── query_source.py
+        │   ├── outlook_candidates.py
+        │   ├── freshness.py
+        │   ├── forward_pe.py
+        │   └── capacity_utilization.py
+        ├── requirements.txt
         └── assets/
-            └── report_style.css      # visual styling for the rendered PDF
+            └── report_style.css
 ```
+
+---
 
 ## Requirements
 
-- Claude with Agent Skills support (Claude.ai, Claude Code, or the Claude Agent SDK) and code execution / file access enabled
-- Python 3 with `matplotlib` and [WeasyPrint](https://weasyprint.org/) available in the execution environment:
+- Claude with Agent Skills + code execution / file access
+- Python 3:
 
   ```bash
-  pip install matplotlib weasyprint --break-system-packages
+  pip install -r skills/company-thesis-report/requirements.txt
   ```
+
+- WeasyPrint v60+ (for PDF rendering)
+
+---
 
 ## Installation
 
-### Claude Code / Claude Agent SDK (project or personal skills)
-
-Clone this repo and copy (or symlink) the skill directory into your skills folder:
+### Claude Code / Agent SDK
 
 ```bash
 git clone git@github.com:iamurali/company-research-skill.git
@@ -56,54 +164,67 @@ mkdir -p ~/.claude/skills
 cp -r company-research-skill/skills/company-thesis-report ~/.claude/skills/
 ```
 
-Project-scoped install (skill only available inside a specific repo):
+Project-scoped:
 
 ```bash
 mkdir -p .claude/skills
 cp -r company-research-skill/skills/company-thesis-report .claude/skills/
 ```
 
-### Claude / Cowork desktop apps
-
-Zip the skill folder and upload it as a custom skill:
+### Claude / Cowork desktop
 
 ```bash
 cd company-research-skill/skills
 zip -r company-thesis-report.skill company-thesis-report
 ```
 
-Then, in Settings → Capabilities → Skills, upload `company-thesis-report.skill`.
+Upload under Settings → Capabilities → Skills.
+
+---
 
 ## Usage
 
-Once installed, just ask naturally — no need to say "report" or use investment jargon:
+Natural language — no slash command needed:
 
-- "What's the story with `<TICKER>`?"
-- "Build me an investment thesis on `<Company Name>`."
-- "Do a deep dive on `<Company>` — is it a buy?"
-- "Research `<Company>` for a turnaround thesis."
+- `"What's the story with <TICKER>?"`
+- `"Build me an investment thesis on <Company>."`
+- `"Research <Company> — is it a buy?"`
+- `"Regenerate <Company>'s report"` — incremental refresh (new quarter only)
+- `"Rebuild <Company> from scratch"` — bypass cache, refetch everything
 
 Claude will:
 
-1. Research the company from primary sources first (exchange filings, annual reports, rating actions, screener.in-style structured financials), using aggregators only for discovery, never as a cited source.
-2. Classify the company's situation (turnaround, compounder, cyclical, structural growth, or structural decline).
-3. Build the report using the bundled chart and HTML helpers, render it to PDF with WeasyPrint, and visually verify the output before delivering it.
-4. Deliver the final PDF with a short spoken summary — the document itself is the deliverable, not a chat re-narration.
+1. Check freshness for `~/.company-research/<slug>/`
+2. Classify sector → load one lens from `sectors/<lens-id>/`
+3. Ingest sources to disk (concalls + investor decks + annual reports) until `sources_completeness` passes
+4. Build JSON facts packs; run `validate_depth.py` (ship gate)
+5. Draft the 26-section spine as a **research memo** — tables + analytical paragraphs, not tip lists
+6. Assemble PDF only after validate passes (WeasyPrint; falls back to clean error if render fails)
+7. Deliver PDF + short spoken summary
 
-If you've connected a brokerage/market-data MCP (e.g. Zerodha Kite) in your session, the skill will use it for live price/volume history instead of estimating technicals from search snippets.
+### First run vs refresh
+
+| Request phrasing | Behavior |
+|-----------------|----------|
+| New company | Full ingest + all packs |
+| `regenerate` / `refresh` / `update` | `new_quarter` — delta packs only |
+| `from scratch` / `rebuild` / `ignore the cache` | `force_full` — refetch everything |
+| Same quarter again | `up_to_date` — reuse cached; optional price refresh |
+
+---
 
 ## Customizing
 
-- **Section structure** — edit `skills/company-thesis-report/references/report-format.md` to change what each section covers or how it maps to a chart/table/text.
-- **Visual style** — edit `skills/company-thesis-report/assets/report_style.css` (colors, fonts, page size/margins).
-- **Chart types** — add or modify chart generators in `skills/company-thesis-report/scripts/charts.py`.
-- **HTML building blocks** — add new report components (e.g. a new card or badge type) in `skills/company-thesis-report/scripts/html_helpers.py`.
+| What | Where |
+|------|-------|
+| Section spine | `references/report-format.md` (keep sector-agnostic) |
+| Depth / ship gate | `references/depth-checklist.md` + `scripts/validate_depth.py` |
+| Prose quality gates | `references/writing-quality.md` |
+| Sector routing / new lens | `references/sector-router.md` + `sectors/<id>/` |
+| Visual style | `assets/report_style.css` |
+| HTML components | `scripts/html_helpers.py` — `cover`, `card_grid`, `flow_diagram`, `kpi_table`, `timeline`, `flag_list`, `verdict_box` |
 
-After editing `SKILL.md`, keep the frontmatter `description` field accurate and specific — Claude uses it to decide when to trigger the skill.
-
-## Contributing
-
-Issues and PRs welcome. Please keep changes to the sourcing/verification discipline in `SKILL.md` deliberate — the skill's value depends on it staying strict about citations and honest bear cases.
+---
 
 ## License
 

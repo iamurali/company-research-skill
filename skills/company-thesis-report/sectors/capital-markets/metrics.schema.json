@@ -1,0 +1,66 @@
+{
+  "lens_id": "capital-markets",
+  "deep_dive_title": "Volumes, flows & mix",
+  "valuation_method": "P/E or EV/EBITDA vs growth",
+  "peer_columns": [
+    "P/E",
+    "AUM/ADTO growth",
+    "Yield",
+    "Margins"
+  ],
+  "metrics": [
+    {
+      "key": "adto",
+      "label": "ADTO / volumes"
+    },
+    {
+      "key": "aum",
+      "label": "AUM"
+    },
+    {
+      "key": "net_flows",
+      "label": "Net flows"
+    },
+    {
+      "key": "yield",
+      "label": "Yield / take-rate"
+    },
+    {
+      "key": "opex_ratio",
+      "label": "Cost ratio"
+    }
+  ],
+  "query_keys": [
+    "ADTO",
+    "turnover",
+    "AUM",
+    "net flows",
+    "yield",
+    "market share",
+    "active clients"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Issuers / AMCs",
+      "detail": "Products and listings"
+    },
+    {
+      "label": "Market infrastructure",
+      "detail": "Exchange, clearing, depository"
+    },
+    {
+      "label": "Intermediaries",
+      "detail": "Brokers, distributors"
+    },
+    {
+      "label": "Investors",
+      "detail": "Retail and institutional"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Cash/F&O ADTO or equivalent volumes",
+    "Net flows / AUM for AMCs",
+    "Yield / take-rate trends",
+    "Operating leverage and cost ratios"
+  ]
+}

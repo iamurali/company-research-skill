@@ -1,0 +1,66 @@
+{
+  "lens_id": "renewables",
+  "deep_dive_title": "Pipeline & tariffs",
+  "valuation_method": "P/B or EV/EBITDA per MW",
+  "peer_columns": [
+    "P/B",
+    "MW growth",
+    "CUF",
+    "Debt/Equity (leverage)"
+  ],
+  "metrics": [
+    {
+      "key": "operating_mw",
+      "label": "Operating MW"
+    },
+    {
+      "key": "pipeline_mw",
+      "label": "Pipeline MW"
+    },
+    {
+      "key": "cuf",
+      "label": "CUF"
+    },
+    {
+      "key": "tariff",
+      "label": "Avg tariff"
+    },
+    {
+      "key": "net_debt",
+      "label": "Net debt"
+    }
+  ],
+  "query_keys": [
+    "MW",
+    "CUF",
+    "PPA",
+    "bid tariff",
+    "module",
+    "hybrid",
+    "BESS"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Equipment",
+      "detail": "Modules, turbines, BOS"
+    },
+    {
+      "label": "THE DEVELOPER",
+      "detail": "Open capacity + operating assets"
+    },
+    {
+      "label": "Offtake",
+      "detail": "SECI/discom/C&I PPAs"
+    },
+    {
+      "label": "Grid",
+      "detail": "Transmission / curtailment"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Operating vs under-construction MW",
+    "Bid / PPA tariffs",
+    "CUF / generation",
+    "Balance sheet and bid pipeline risk"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "lens_id": "specialty-chemicals",
+  "deep_dive_title": "Mix, RM & capacity",
+  "valuation_method": "EV/EBITDA or P/E",
+  "peer_columns": [
+    "EV/EBITDA",
+    "EBITDA margin",
+    "Export mix",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "gross_margin",
+      "label": "Gross margin"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "export_mix",
+      "label": "Export %"
+    },
+    {
+      "key": "capacity",
+      "label": "Capacity"
+    },
+    {
+      "key": "top_products",
+      "label": "Top products %"
+    }
+  ],
+  "query_keys": [
+    "specialty",
+    "gross margin",
+    "raw material",
+    "capacity",
+    "China",
+    "qualification",
+    "molecule"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Feedstock",
+      "detail": "RM / intermediates"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Process chemistry + plants"
+    },
+    {
+      "label": "Customers",
+      "detail": "Pharma, agro, industrial OEMs"
+    },
+    {
+      "label": "Applications",
+      "detail": "End uses"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Product / application mix",
+    "RM linkage and gross margin bridge",
+    "Capacity and new molecule pipeline",
+    "Customer quals / stickiness"
+  ]
+}

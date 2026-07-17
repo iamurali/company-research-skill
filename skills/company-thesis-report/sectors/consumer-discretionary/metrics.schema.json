@@ -1,0 +1,65 @@
+{
+  "lens_id": "consumer-discretionary",
+  "deep_dive_title": "SSSG, stores & mix",
+  "valuation_method": "P/E or EV/EBITDA",
+  "peer_columns": [
+    "P/E",
+    "SSSG",
+    "Margins",
+    "Store growth"
+  ],
+  "metrics": [
+    {
+      "key": "sssg",
+      "label": "SSSG / LFL"
+    },
+    {
+      "key": "store_count",
+      "label": "Stores"
+    },
+    {
+      "key": "asp",
+      "label": "ASP"
+    },
+    {
+      "key": "gross_margin",
+      "label": "Gross margin"
+    },
+    {
+      "key": "inventory_days",
+      "label": "Inventory days"
+    }
+  ],
+  "query_keys": [
+    "SSSG",
+    "same store",
+    "store addition",
+    "ASP",
+    "inventory",
+    "online mix"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Sourcing",
+      "detail": "Manufacturing / imports"
+    },
+    {
+      "label": "THE BRAND",
+      "detail": "Design + brand"
+    },
+    {
+      "label": "Channels",
+      "detail": "Stores / online"
+    },
+    {
+      "label": "Consumers",
+      "detail": "Discretionary demand"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Same-store / volume growth",
+    "Store or outlet footprint adds",
+    "ASP / mix commentary",
+    "Inventory health"
+  ]
+}

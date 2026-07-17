@@ -1,0 +1,61 @@
+{
+  "lens_id": "transport-logistics",
+  "deep_dive_title": "Volumes & realizations",
+  "valuation_method": "EV/EBITDA (or P/B for concessions)",
+  "peer_columns": [
+    "EV/EBITDA",
+    "Volume growth",
+    "Margins"
+  ],
+  "metrics": [
+    {
+      "key": "volumes",
+      "label": "Volumes"
+    },
+    {
+      "key": "realization",
+      "label": "Realization / yield"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "utilization",
+      "label": "Utilization"
+    }
+  ],
+  "query_keys": [
+    "TEU",
+    "tonnage",
+    "Pax",
+    "yield",
+    "realization",
+    "fleet",
+    "concession"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Shippers / travellers",
+      "detail": "Demand"
+    },
+    {
+      "label": "THE OPERATOR",
+      "detail": "Network / fleet / terminal"
+    },
+    {
+      "label": "Infrastructure",
+      "detail": "Ports, airports, warehouses"
+    },
+    {
+      "label": "Delivery",
+      "detail": "End destination"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Volume trends (TEU, tonnage, Pax, GMT)",
+    "Realization / yield",
+    "Network or capacity adds",
+    "Fuel / cost pass-through"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "lens_id": "oil-gas",
+  "deep_dive_title": "Production, GRM & marketing",
+  "valuation_method": "P/B or EV/EBITDA",
+  "peer_columns": [
+    "P/B",
+    "GRM",
+    "Production growth",
+    "Net debt"
+  ],
+  "metrics": [
+    {
+      "key": "production",
+      "label": "Production"
+    },
+    {
+      "key": "grm",
+      "label": "GRM"
+    },
+    {
+      "key": "throughput",
+      "label": "Throughput"
+    },
+    {
+      "key": "marketing_margin",
+      "label": "Marketing margin"
+    },
+    {
+      "key": "net_debt",
+      "label": "Net debt"
+    }
+  ],
+  "query_keys": [
+    "GRM",
+    "production",
+    "throughput",
+    "marketing margin",
+    "ATF",
+    "diesel",
+    "under-recovery"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Upstream",
+      "detail": "Crude / gas production"
+    },
+    {
+      "label": "Refining",
+      "detail": "GRM / complexity"
+    },
+    {
+      "label": "Marketing",
+      "detail": "Fuels retail / bulk"
+    },
+    {
+      "label": "Consumers",
+      "detail": "Transport, industry"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Production volumes (upstream)",
+    "GRM and throughput (refining)",
+    "Marketing volumes and margins",
+    "Debt and working capital"
+  ]
+}

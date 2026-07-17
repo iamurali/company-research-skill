@@ -1,0 +1,65 @@
+{
+  "lens_id": "auto-ancillary",
+  "deep_dive_title": "Content growth & customers",
+  "valuation_method": "P/E or EV/EBITDA",
+  "peer_columns": [
+    "P/E",
+    "EBITDA margin",
+    "Growth",
+    "Export mix"
+  ],
+  "metrics": [
+    {
+      "key": "oem_mix",
+      "label": "OEM mix %"
+    },
+    {
+      "key": "top_customer",
+      "label": "Top customer %"
+    },
+    {
+      "key": "export_mix",
+      "label": "Export %"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "ev_mix",
+      "label": "EV-related %"
+    }
+  ],
+  "query_keys": [
+    "OEM",
+    "aftermarket",
+    "content per vehicle",
+    "programme win",
+    "EV",
+    "customer concentration"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Raw materials",
+      "detail": "Steel, plastics, electronics"
+    },
+    {
+      "label": "THE SUPPLIER",
+      "detail": "Components / systems"
+    },
+    {
+      "label": "OEM / aftermarket",
+      "detail": "Programme supply"
+    },
+    {
+      "label": "Vehicles",
+      "detail": "End vehicles"
+    }
+  ],
+  "deep_dive_prompts": [
+    "OEM vs aftermarket mix",
+    "Customer concentration",
+    "Content/vehicle or new programme wins",
+    "EV-exposed revenue if disclosed"
+  ]
+}

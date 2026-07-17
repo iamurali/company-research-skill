@@ -1,88 +1,312 @@
-# Report format, section-by-section
+# Report format — decision-grade, sector-agnostic spine
 
-Adapt section titles and content to the company's actual situation (identified in Step 2 of SKILL.md) - the section *purposes* below are fixed, but don't force template language or a template chart onto content that doesn't fit. A steady compounder doesn't need a "debt resolution" chart; a distressed company might not have much of a growth roadmap to timeline. Omit or merge sections that genuinely don't apply rather than writing filler.
+Every company report uses this section order. Sector relevance comes only from the
+loaded sector lens (`sectors/<lens-id>/`). **Never** put an industry name in a
+permanent body heading. Never render value chain as ASCII/code — use
+`html_helpers.flow_diagram()`.
 
-For each section below: **which visual, and why**. If the described chart type doesn't fit the actual data you found, use your judgment - the goal is always "easiest to scan without losing precision," not "must contain a chart."
+## Density rule (applies to every section)
 
-## Cover (`cover()`)
+A section fails if it is only a heading plus thin labels or tip-style bullets.
+Each section must help the investment **research** conclusion: **what happened,
+why it matters, what would falsify it**.
 
-Company name, ticker(s) and exchange(s), a `badge()` for the situation classification (bull/growth for compounder or growth story, watch for cyclical or early-stage turnaround, bear for distress/decline), report date. One line only per field - this page exists to be read in five seconds.
+**Writing standard:** [writing-quality.md](writing-quality.md) — research memo with
+dense tables + analytical read-throughs (Sterlite-style intent). **Not** a tip sheet.
 
-## 1. How this came onto the radar (if applicable)
+**Depth floor:** see [depth-checklist.md](depth-checklist.md).
 
-Plain text. If the company surfaced from a specific screen or trigger (a shareholding shift, a news event, a user request), state the mechanism and the raw numbers that triggered it, as a small `data_table()` if there are several metrics. Skip this section entirely if the user just asked for research on a company with no prior screening step.
+After every major numbers table (annuals, quarters, segments, peers, valuation),
+write **1–3 interpreting paragraphs** before moving on. Gaps: one honest sourced
+line — never invent filler.
 
-## 2. Business overview
+---
 
-Plain text, 2-3 short paragraphs: what the company actually does, segment mix if relevant, brief history. A `card_grid()` of 3-4 headline stats (market cap, price, 52-week range, sector) works well right under this section as an at-a-glance anchor before the reader gets into the weeds.
+## Cover (`cover()` + `badge()`)
 
-## 3. Financial history
+Company name, ticker(s)/exchange(s), **action-oriented** badge text when possible
+(e.g. `HOLD — WAIT FOR RE-ACCELERATION`), report date, price/mcap meta line.
 
-The backbone of the report, and the section where charts do the most work:
+Badge kinds: `growth` | `bull` | `watch` | `bear` | `neutral`.
 
-- **Annual revenue and profit** - `revenue_profit_chart()`, the two-panel bar chart. Use the full history available (10 years if screener.in has it), plus TTM. This one chart usually tells the whole growth/decline story faster than any paragraph.
-- **Quarterly trend** - `quarterly_trend_chart()` if there's a recent inflection worth showing quarter by quarter (a turnaround's margin recovery, a cyclical's swing). Skip if the quarterly data is unremarkable and the annual chart already tells the story.
-- **Balance sheet snapshot** - a `data_table()` for the raw numbers (equity, reserves, borrowings, total assets) across recent periods. If there's a structural break to show (a recapitalization, a deleveraging), also use `before_after_chart()` for the headline metrics (net worth, total debt) - the visual contrast lands harder than a table row.
-- **Key ratios** - `card_grid()` for the 3-4 ratios that matter most to *this* situation (debtor days and interest coverage for distress; ROCE/ROE trend for a compounder; utilization or realizations for a cyclical), plus a `data_table()` if there are more than 4 or a multi-year trend worth preserving.
-- **Compounded growth rates** (10yr/5yr/3yr/TTM revenue and profit CAGR) - a small `card_grid()`. These single numbers are often the fastest way to see the shape of the story and deserve to be visually prominent, not buried in a paragraph.
+---
 
-## 4. Ownership and capital structure
+## 0. Investment decision *(required — immediately after cover)*
 
-- **Shareholding pattern trend** - `shareholding_chart()`, the stacked bar of Promoter/FII/DII/Public % over several quarters. This is almost always worth charting - the shape of the stack over time (a promoter block growing, FII entering) is much faster to read visually than a table of percentages.
-- **Capital raise / ownership change detail** - if there's a specific recent event (preferential allotment, QIP, block deal, promoter stake change), give the full named-investor detail as a `data_table()` (don't summarize away individual names/amounts - that's exactly the kind of precision a chart would lose), and optionally a `donut_chart()` if there are enough distinct investors that a proportional breakdown adds insight beyond the table. If specific named investors participated, list them individually - named, verifiable backers are a real signal; anonymous ones are not.
-- Promoter pledge status, if any, as a `card_grid()` metric.
+This is the research conclusion, not a trade ticket. Use `verdict_box()` plus structure.
 
-## 5. The situation / catalyst
+Must include:
 
-Plain text. State plainly which situation (Step 2 of SKILL.md) applies and why, with the evidence. This is where a debt-resolution mechanism, a new product cycle, a management change, a cyclical inflection, or a structural decline gets explained on its own terms. No forced chart here - this section is the argument, not the data.
+1. **Action:** BUY / HOLD / AVOID (primary research call)
+2. **Conviction + horizon**
+3. **Key debate** — one sentence
+4. **Argument paragraph (required, dense):** why the call follows from the evidence
+   at this price — franchise quality, what broke/improved, earnings quality, valuation.
+   **Ban tip-speak** here (“buy the dip”, “trim into strength”, “satellite position”).
+5. **Falsify / confirm** — 3–5 observable research criteria that would strengthen or
+   break the thesis (frame as evidence tests, not trade instructions)
+6. **Alternative thesis** — other side + why reject/partial
+7. **Judgmental price bands** — only if derived in §17 scenarios; otherwise omit
+   “entry zone” language from section 0
 
-## 6. The thesis
+Section 25 restates the call; section 0 argues it.
 
-Plain text, structured as a sequence of evidenced claims (works well as short paragraphs or a `flag_list(..., kind='bull')` if the claims are cleanly separable bullets), each with a source. This should read as "here is the specific, falsifiable argument for why this could work," not general enthusiasm.
+---
 
-## 7. What's promised / roadmap
+## 1. Company Summary
 
-`timeline()` for any dated, verifiable commitments or milestones from management (a delivery date, a capacity expansion timeline, a debt-repayment deadline). Mark each item's status honestly (`done`, `pending`, or blank for aspirational-but-undated). If management has given no concrete guidance at all, say so in a plain-text paragraph instead of forcing an empty timeline - that absence is itself useful information.
+What the reader owns in plain language: products/platform, how it monetizes, main
+verticals/geos, scale (mcap, sales, headcount if known). Then `card_grid()` of
+headline stats (mcap, price, 52w, P/E or lens multiple, ROE/ROCE as relevant).
 
-## 8. Red flags / bear case
+---
 
-`flag_list(..., kind='bear')` - mandatory, even for a report that's otherwise bullish. What's unproven, what could go wrong, what a skeptic would point to. If the company is genuinely troubled, this section (not Section 6) should dominate the report, and the verdict should say so plainly.
+## 2. Sector Context *(from loaded lens — adapted to this company)*
 
-## 9. Verdict
+Not a generic paste. Cover:
 
-`verdict_box()` - one or two sentences: what situation this is, the single strongest piece of evidence for the thesis, and the single biggest open question or risk. State confidence honestly - "well-evidenced but early," "speculative," "not enough here for a real thesis" are all legitimate verdicts.
+- How the sector makes money
+- How it should be valued (and what multiple you pay for)
+- Competitive intensity
+- Sector value chain via `flow_diagram()`
 
-## 10. Sources
+Call out when the company is a hybrid (e.g. product/SaaS inside an IT-Software tag).
 
-`sources_list()` - every URL cited, numbered, hyperlinked, each with a short note on what it supports.
+---
 
-## Assembly
+## 3. Company Value Chain Positioning
+
+Firm-specific stages + `flow_diagram()`. Backward integration / own-IP note when
+disclosed.
+
+---
+
+## 4. Situation Classification
+
+Opening bullet = classification; following bullets = dated evidence. Be honest if the
+company is a compounder **in digestion** rather than forcing “bull growth.”
+
+---
+
+## 5–7. Near / Medium / Long Term outlook
+
+Order fixed. 2–4 bullets each. Format:
+
+`**<Headline>** \`[STATUS]\`: <claim with numbers>. "<verbatim quote>" (Source)`
+
+Status: `[Pending]` | `[On Track]` | `[Delivered]` | `[Delayed]` | `[Missed]`.
+
+Quotes from **concall/transcript/deck** preferred over PR alone. Drop unsupported claims.
+Prefer evidence spanning **multiple quarters**, not a single print.
+
+---
+
+## 8. Marquee & Niche Customers
+
+Named disclosed customers only + size/context. Concentration if disclosed. Note
+customer-guidance checks.
+
+---
+
+## 9. Capex / Milestones / Certifications
+
+Use `timeline(items)` with **non-empty** dicts or tuples:
 
 ```python
-import sys
-sys.path.insert(0, '<skill_dir>/scripts')
-from charts import revenue_profit_chart, quarterly_trend_chart, shareholding_chart, before_after_chart, donut_chart, line_compare_chart
-from html_helpers import *
-
-body = ''
-body += cover('Company Name', 'NSE: TICKER | BSE: 000000', badge('STEADY COMPOUNDER', 'bull'), 'Report date: 11 July 2026')
-body += section('2. Business overview')
-body += para('...')
-body += card_grid([('Market cap', 'Rs X Cr', ''), ('P/E', 'Nx', ''), ...])
-body += section('3. Financial history')
-revenue_profit_chart('rp.png', years, revenue, profit)
-body += chart_block('rp.png', 'Annual revenue and net profit. Source: screener.in')
-# ... etc through section 10 ...
-
-html = render(body, '<skill_dir>/assets/report_style.css')
-open('report.html', 'w').write(html)
+timeline([
+  {"date": "Q1 FY27", "title": "10 new logos", "status": "Delivered", "detail": "..."},
+  ("1 Aug 2026", "CEO handoff", "Pending", "pending"),
+])
 ```
 
-Then: `python3 -m weasyprint report.html report.pdf`
+**Never** call `timeline([])` — that ships an empty shell (production fail).
+If nothing material: one `para(..., note=True)` gap line instead.
 
-Save chart PNGs to a working directory alongside the HTML (relative paths), and delete them (along with the intermediate HTML) after the PDF is built and verified - only the final PDF should remain in the outputs folder.
+---
 
-## Two easy mistakes to avoid
+## 10. Sector Deep-Dive *(from lens)*
 
-- WeasyPrint needs `pip install weasyprint --break-system-packages` if it's not already present in the environment - check before assuming it's missing.
-- `data_table()`'s `total_row_index` bolds one row (typically a "Total" summary row) - pass the row's index within `rows`, not counting the header.
+Title from lens; body must interpret mix/metrics for the decision (not a metric dump).
+Include lens must-have metrics or explicit gaps (e.g. attrition not disclosed).
+
+---
+
+## 11. Financial Performance Summary
+
+Required:
+
+- Multi-year annual `data_table()` (sales, YoY, margins, PAT)
+- **Immediately after the table: 1–3 analytical paragraphs** (regime shift, what drove
+  the latest year, how quarters confirm or contradict) — not a one-line caption
+- **Last 8 quarters** table + seasonality note + read-through paragraph
+- **Earnings bridge** as short paragraphs/bullets with drivers
+- CAGR cards optional; prefer numbers inside the read-through
+- Charts allowed in addition to tables, not instead of analysis
+
+---
+
+## 11b. Working capital & earnings quality *(required)*
+
+Dedicated subsection or H2 — not a one-liner buried in BS anomalies:
+
+- Debtor days / DSO trend (multi-year + latest)
+- Inventory / creditor days when relevant
+- Cash conversion cycle direction
+- **CFO vs PAT** for last 3 years — is profit turning into cash?
+- Any concall commentary on collections / advances / billing delays
+
+If WC looks fine, say so with numbers — do not skip the section.
+
+---
+
+## 12. Segment / geography / mix deep-dive
+
+Whenever the concall or filings give mix: table **plus** interpretation of what carried
+growth and what is the swing factor for the next two quarters. This section is often
+where BUY vs HOLD is decided.
+
+---
+
+## 12b. KPI scorecard *(required)*
+
+Render **only** with `kpi_table(facts["kpi_scorecard"])`.
+
+- ≥6 operating KPIs (lens-defined)
+- Prefer ≥4 periods in `periods{}`; if fewer, set `gap_reason`
+- **Never** pass `str(dict)` / Python repr into `data_table` cells (HTML/PDF garbage)
+
+Examples (IT/product): annuity, SaaS, logos, DSO, headcount, OPM; gap attrition if undisclosed.
+
+---
+
+## 13. Commercial backlog / demand indicators
+
+Order book / logos / named TCV / AUM / subscribers as disclosed. Distinguish stock vs flow.
+Comment on whether **count vs size** of wins is changing.
+
+---
+
+## 14–16. Footprint / capacity analogue / TAM
+
+Include when material; otherwise one-line gap. Do not pad.
+
+---
+
+## 17. Valuation
+
+Required:
+
+- Lens method + current multiple(s)
+- **What is priced in** at today’s price (implied growth / back-of-envelope OK if labeled)
+- Bull / base / bear bands with **explicit growth & margin assumptions** and probabilities
+- Each scenario shows **math once**: EPS (or PAT) × multiple → band (`scenario_value.py` → `math_note`)
+- Optional street note — paraphrase, tag as broker opinion, never as your primary finding
+
+---
+
+## 18. Industry Tailwinds / Headwinds
+
+Sourced, specific to this company’s demand drivers.
+
+---
+
+## 19. Peer Comparison
+
+**≥3 real peers** with screener (or equivalent) numbers — valuation **and** operating
+metrics. Subject as own row. Empty “n/a this run” peer rows are a quality failure.
+
+Add 2–4 sentences: does the subject deserve its premium/discount?
+
+---
+
+## 20. MOATs
+
+Only evidenced moats. Separate real vs marketing (AI narrative, awards, etc.).
+
+---
+
+## 21. Technical Snapshot
+
+As-of price, 52w, simple published stats. No invented indicators.
+
+---
+
+## 22. Promoter / Governance / Management scorecard
+
+Shareholding trend; ratings/litigation/raises; **leadership transitions**.
+
+**Management scorecard** (required block):
+
+- Guidance delivery over last 2–4 quarters (said vs delivered)
+- Capital allocation grade (dividends, buybacks, M&A, cash vs reinvestment)
+- Key-person / succession risk
+- Governance flags with evidence
+
+---
+
+## 23. Investment Thesis Summary
+
+3–5 **falsifiable** claims: evidence now + how the claim would be falsified next quarters.
+
+---
+
+## 24. Key Risks
+
+Mandatory `flag_list(..., kind='bear')`. Specific to this print (WC, growth air-pocket,
+geo delays, transition, competition) — not generic macro filler only.
+Include the **thesis-breaking** risks, not only mild ones.
+
+---
+
+## 25. Final verdict
+
+`verdict_box()` restating action, confidence, horizon, and the single next thing to watch.
+Must agree with section 0. Restate confirm/kill in one line each if space allows.
+
+---
+
+## 26. Sources
+
+Numbered, linked, what each supports. Must include screener + **latest concall** (or
+explicit failure to obtain transcript) + peer sources used.
+
+---
+
+## Charts (required)
+
+≥3 figures before assembly: price/context, financial trend, valuation and/or WC/KPI.
+Export under `output/`.
+
+---
+
+## Ship gate (required)
+
+```bash
+python scripts/validate_depth.py --slug <slug>
+python scripts/assemble_pdf.py --html output/report.html --out output/Company_report.pdf
+```
+
+Do not ship if validate fails or assemble smoke_check fails.
+
+---
+
+## Paragraph discipline
+
+- Prefer analysis paragraphs ≤ ~10 lines; then bullets.
+- Never mention internal script paths in the report text.
+- Target feel: institutional memo depth (~2,500–5,000+ words of analysis + tables),
+  not a 1–2 page brief, unless the user asked for a short memo.
+
+## Assembly sketch
+
+```python
+from html_helpers import *
+body = ''
+body += cover(...)
+body += section('0. Investment decision')
+body += verdict_box('Recommendation: ...')
+body += timeline([...])          # never empty
+body += kpi_table(kpi_scorecard) # never str(dict)
+html = render(body, '<skill_dir>/assets/report_style.css')
+# then: assemble_pdf.py --html report.html --out report.pdf
+```

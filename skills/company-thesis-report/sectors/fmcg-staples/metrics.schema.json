@@ -1,0 +1,66 @@
+{
+  "lens_id": "fmcg-staples",
+  "deep_dive_title": "Volume, value & distribution",
+  "valuation_method": "P/E",
+  "peer_columns": [
+    "P/E",
+    "Volume growth",
+    "EBITDA margin",
+    "A&P"
+  ],
+  "metrics": [
+    {
+      "key": "volume_growth",
+      "label": "Volume growth"
+    },
+    {
+      "key": "value_growth",
+      "label": "Value growth"
+    },
+    {
+      "key": "gross_margin",
+      "label": "Gross margin"
+    },
+    {
+      "key": "ap_spend",
+      "label": "A&P %"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    }
+  ],
+  "query_keys": [
+    "volume growth",
+    "value growth",
+    "A&P",
+    "distribution",
+    "rural",
+    "gross margin",
+    "market share"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "RM / packing",
+      "detail": "Inputs"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Brand + manufacturing"
+    },
+    {
+      "label": "Distribution",
+      "detail": "GT, MT, e-comm"
+    },
+    {
+      "label": "Consumers",
+      "detail": "Households"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Volume vs value growth",
+    "Gross margin and A&P spends",
+    "Distribution reach / outlet adds",
+    "Category growth and market share if disclosed"
+  ]
+}

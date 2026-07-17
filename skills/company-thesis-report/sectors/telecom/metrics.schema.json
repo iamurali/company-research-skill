@@ -1,0 +1,66 @@
+{
+  "lens_id": "telecom",
+  "deep_dive_title": "ARPU, subs & capex",
+  "valuation_method": "EV/EBITDA with FCF lens",
+  "peer_columns": [
+    "EV/EBITDA",
+    "ARPU",
+    "Subs growth",
+    "Leverage"
+  ],
+  "metrics": [
+    {
+      "key": "subs",
+      "label": "Subscribers"
+    },
+    {
+      "key": "arpu",
+      "label": "ARPU"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "capex",
+      "label": "Capex"
+    },
+    {
+      "key": "net_debt_ebitda",
+      "label": "Net debt/EBITDA"
+    }
+  ],
+  "query_keys": [
+    "ARPU",
+    "subscribers",
+    "net adds",
+    "MOU",
+    "capex",
+    "spectrum",
+    "churn"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Spectrum / network",
+      "detail": "Licences, towers, fibre"
+    },
+    {
+      "label": "THE OPERATOR",
+      "detail": "Retail + enterprise connectivity"
+    },
+    {
+      "label": "Distribution",
+      "detail": "Recharge / enterprise sales"
+    },
+    {
+      "label": "Subscribers",
+      "detail": "Consumer and enterprise"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Subscriber base and net adds",
+    "ARPU trends",
+    "Capex intensity and spectrum payments",
+    "Leverage / net debt to EBITDA"
+  ]
+}
