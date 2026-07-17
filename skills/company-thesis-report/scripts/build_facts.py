@@ -23,7 +23,8 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 CACHE_ROOT = Path.home() / ".company-research"
 
 UNIVERSAL = [
-    "meta", "decision", "sector", "value_chain", "outlook", "customers", "milestones",
+    "meta", "decision", "sources_completeness", "sector", "value_chain", "outlook",
+    "customers", "milestones",
     "financials", "financials_quarterly", "earnings_bridge", "working_capital",
     "cash_flow", "kpi_scorecard", "segments", "demand", "operations",
     "capital_allocation", "valuation", "peers", "moats", "risks", "thesis",
@@ -53,6 +54,24 @@ def empty_pack(name: str) -> dict:
             },
             "position_framing": "",
             "next_checkpoint": "",
+        },
+        "sources_completeness": {
+            "status": "fail",
+            "latest_concall": "",
+            "prior_concalls": [],
+            "latest_deck": "",
+            "deck_gap": "",
+            "annual_report": "",
+            "annual_report_gap": "",
+            "latest_pr": "",
+            "peers_n": 0,
+            "missing": [
+                "latest_concall",
+                "prior_concalls (≥3)",
+                "annual_report or annual_report_gap",
+                "peers_n ≥3",
+            ],
+            "notes": [],
         },
         "sector": {"lens_id": "", "sector_value_chain_stages": [], "notes": []},
         "value_chain": {"stages": [], "backward_integration_note": "", "sources": []},
@@ -88,9 +107,10 @@ def empty_pack(name: str) -> dict:
         },
         "cash_flow": {"rows": [], "quality_notes": [], "sources": []},
         "kpi_scorecard": {
-            "columns": ["metric", "t-3", "t-2", "t-1", "latest", "trend", "implication"],
+            "period_columns": [],
             "rows": [],
             "min_kpis_expected": 6,
+            "min_periods": 4,
             "gap": "",
         },
         "segments": {"tables": [], "gap": ""},
@@ -108,7 +128,7 @@ def empty_pack(name: str) -> dict:
         "valuation": {
             "method": "",
             "inputs": {},
-            "implied_growth": {},
+            "implied_growth": {"label": "", "assumption": "", "note": ""},
             "scenarios": [],
             "notes": [],
             "sources": [],

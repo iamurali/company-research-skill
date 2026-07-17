@@ -14,13 +14,25 @@ quarters to see guidance evolution. If token savings and report depth conflict,
 | Source | Minimum |
 |--------|---------|
 | Screener consolidated | Full financials, ratios, peers, documents list |
-| Latest results PR + deck | Full extract to `sources/` |
+| Latest results PR + deck | Full extract to `sources/` (or `deck_gap`) |
 | Latest concall transcript | Required; mine guidance, mix, Q&A, tone |
-| Prior 3–5 quarter PRs/transcripts | Guidance history + repeated risks (query, don’t re-dump) |
-| Annual report (latest; prior if gaps) | Segments, related party, contingent liabilities, auditor notes |
+| Prior 3–5 quarter PRs/transcripts | **≥3 prior** on disk; fill `outlook.guidance_history` |
+| Annual report (latest; prior if gaps) | Segments, related party, contingent liabilities, auditor notes — or `annual_report_gap` |
 | Exchange filings (12–18m) | Material events, results |
 | News (3–5) | Catalysts / controversies — verify numbers |
 | Peer screener pages | ≥3 peers, ops + valuation columns |
+
+## Source Completeness Gate (before draft)
+
+Write `facts/sources_completeness.json` (see facts-schemas). Drafting a ship PDF is
+**blocked** until `status: pass`.
+
+```bash
+python skills/company-thesis-report/scripts/validate_depth.py --slug <slug>
+```
+
+Typical fail mode from thin runs: only latest PR+concall → `prior_concalls` &lt; 3 and
+no AR. Fix by fetching prior quarter docs and AR, then re-validate.
 
 ## Trust hierarchy
 

@@ -61,6 +61,37 @@ Thin `financials` without quarterly bridge / WC / KPI scorecard = fail the depth
 }
 ```
 
+### `facts/sources_completeness.json` *(ship gate — block A)*
+
+Set `status` to `pass` only when required fields are filled. `validate_depth.py` fails otherwise.
+
+```json
+{
+  "status": "fail|pass",
+  "latest_concall": "sources/q1fy27_transcript.txt",
+  "prior_concalls": [
+    "sources/q4fy26_transcript.txt",
+    "sources/q3fy26_pr.txt",
+    "sources/q2fy26_pr.txt"
+  ],
+  "latest_pr": "sources/q1fy27_pr.txt",
+  "latest_deck": "sources/q1fy27_deck.pdf",
+  "deck_gap": "",
+  "annual_report": "sources/ar_fy26.pdf",
+  "annual_report_gap": "",
+  "peers_n": 3,
+  "missing": [],
+  "notes": []
+}
+```
+
+Rules:
+
+- `prior_concalls` length **≥3** (transcripts or PRs that support guidance history)
+- Either `latest_deck` **or** non-empty `deck_gap`
+- Either `annual_report` **or** non-empty `annual_report_gap`
+- `peers_n` ≥ 3
+
 ### `facts/sector.json`
 
 ```json
@@ -213,16 +244,28 @@ remains the annual + summary home.
 
 ### `facts/kpi_scorecard.json` *(depth)*
 
+Render with **`kpi_table(scorecard)`** only — never stringify dicts into `data_table` cells.
+
 ```json
 {
-  "columns": ["metric", "t-3", "t-2", "t-1", "latest", "trend", "implication"],
+  "period_columns": ["Jun25", "Sep25", "Dec25", "Mar26", "Jun26"],
   "rows": [
-    {"metric": "", "values": {}, "trend": "up|down|flat|volatile", "implication": "", "source": ""}
+    {
+      "metric": "Annuity (Cr)",
+      "periods": {"Jun25": 220, "Sep25": 240, "Dec25": 245, "Mar26": 260, "Jun26": 254},
+      "trend": "up|down|flat|volatile|seasonal",
+      "implication": "",
+      "gap_reason": "",
+      "source": ""
+    }
   ],
   "min_kpis_expected": 6,
+  "min_periods": 4,
   "gap": ""
 }
 ```
+
+If a KPI has &lt;4 periods, set `gap_reason` (e.g. "only disclosed from Q1 FY27").
 
 ### `facts/segments.json`
 
@@ -274,6 +317,8 @@ remains the annual + summary home.
 
 ### `facts/valuation.json`
 
+Build scenario arithmetic with `scripts/scenario_value.py` and copy `math_note` / `eps_or_pat`.
+
 ```json
 {
   "method": "",
@@ -288,7 +333,17 @@ remains the annual + summary home.
     "note": "back-of-envelope; labeled judgment"
   },
   "scenarios": [
-    {"name": "bull|base|bear", "probability": null, "growth": "", "margin": "", "multiple": "", "value": "", "assumptions": ""}
+    {
+      "name": "bull|base|bear",
+      "probability": null,
+      "growth": "",
+      "margin": "",
+      "multiple": "",
+      "eps_or_pat": "",
+      "value": "",
+      "math_note": "TTM EPS × (1+g) × multiple band = …",
+      "assumptions": ""
+    }
   ],
   "notes": [],
   "sources": []

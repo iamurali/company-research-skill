@@ -31,7 +31,12 @@ Raw concalls / decks / annual reports are extracted to disk under `~/.company-re
 | `scripts/query_source.py` | Grep / BM25 snippets only |
 | `scripts/outlook_candidates.py` | Forward-looking quote candidates |
 | `scripts/build_facts.py` | Init/merge packs + apply sector lens schema |
+| `scripts/validate_depth.py` | **Ship gate** — depth + source completeness |
+| `scripts/scenario_value.py` | Bull/base/bear EPS × multiple math |
+| `scripts/assemble_pdf.py` | HTML → PDF with smoke checks |
 | `scripts/forward_pe.py` / `capacity_utilization.py` | Deterministic maths when needed |
+
+**Ship only if** `validate_depth.py --slug <slug>` exits 0.
 
 ## Sector lenses (~26)
 
@@ -62,7 +67,10 @@ company-research-skill/
         │   └── facts-schemas.md
         ├── sectors/                 # one lens per coverage bucket
         ├── scripts/
-        │   ├── html_helpers.py      # includes flow_diagram()
+        │   ├── html_helpers.py      # flow_diagram, kpi_table, timeline, smoke_check
+        │   ├── assemble_pdf.py      # blessed HTML → PDF path
+        │   ├── validate_depth.py    # ship gate
+        │   ├── scenario_value.py    # valuation bands
         │   ├── charts.py
         │   ├── pdf_to_text.py
         │   ├── query_source.py
@@ -71,6 +79,7 @@ company-research-skill/
         │   ├── freshness.py
         │   ├── forward_pe.py
         │   └── capacity_utilization.py
+        ├── requirements.txt
         └── assets/
             └── report_style.css
 ```
@@ -81,7 +90,7 @@ company-research-skill/
 - Python 3 with:
 
   ```bash
-  pip install matplotlib weasyprint pypdf rank_bm25 --break-system-packages
+  pip install -r skills/company-thesis-report/requirements.txt
   ```
 
 ## Installation
@@ -120,9 +129,10 @@ Claude will:
 
 1. Check freshness for `~/.company-research/<slug>/`
 2. Classify sector → load one lens
-3. Ingest sources to disk; build facts packs (no full-doc context dumps)
-4. Draft the fixed spine; render visual PDF with `flow_diagram()` value chains
-5. Deliver PDF + short spoken summary
+3. Ingest sources to disk (incl. prior quarters + AR) until `sources_completeness` passes
+4. Build facts packs; run `validate_depth.py` (ship gate)
+5. Draft the fixed spine with `kpi_table` / `timeline` / `flow_diagram`; assemble PDF
+6. Deliver PDF + short spoken summary
 
 ### First run vs refresh
 
@@ -136,9 +146,10 @@ Claude will:
 ## Customizing
 
 - **Section spine** — `references/report-format.md` (keep sector-agnostic)
+- **Depth / ship gate** — `references/depth-checklist.md` + `scripts/validate_depth.py`
 - **Sector routing / new lens** — `references/sector-router.md` + `sectors/<id>/`
 - **Visual style** — `assets/report_style.css`
-- **HTML components** — `scripts/html_helpers.py` (`flow_diagram`, timeline, cards, tables)
+- **HTML components** — `scripts/html_helpers.py` (`flow_diagram`, `kpi_table`, timeline, cards, tables)
 
 ## License
 

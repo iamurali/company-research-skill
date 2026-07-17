@@ -106,8 +106,17 @@ customer-guidance checks.
 
 ## 9. Capex / Milestones / Certifications
 
-`timeline()` or table with status. Include leadership changes and dated commercial wins
-when material to the thesis.
+Use `timeline(items)` with **non-empty** dicts or tuples:
+
+```python
+timeline([
+  {"date": "Q1 FY27", "title": "10 new logos", "status": "Delivered", "detail": "..."},
+  ("1 Aug 2026", "CEO handoff", "Pending", "pending"),
+])
+```
+
+**Never** call `timeline([])` — that ships an empty shell (production fail).
+If nothing material: one `para(..., note=True)` gap line instead.
 
 ---
 
@@ -154,10 +163,13 @@ where BUY vs HOLD is decided.
 
 ## 12b. KPI scorecard *(required)*
 
-Table of **≥6** operating KPIs (lens-defined) across ≥4 periods where disclosed.
-Each row: metric, trend, peer/context note if available, implication for the thesis.
-Examples (IT/product): annuity %, SaaS growth, logos, DSO, utilisation, attrition.
-Do not invent undisclosed KPIs — gap them explicitly.
+Render **only** with `kpi_table(facts["kpi_scorecard"])`.
+
+- ≥6 operating KPIs (lens-defined)
+- Prefer ≥4 periods in `periods{}`; if fewer, set `gap_reason`
+- **Never** pass `str(dict)` / Python repr into `data_table` cells (HTML/PDF garbage)
+
+Examples (IT/product): annuity, SaaS, logos, DSO, headcount, OPM; gap attrition if undisclosed.
 
 ---
 
@@ -181,6 +193,7 @@ Required:
 - Lens method + current multiple(s)
 - **What is priced in** at today’s price (implied growth / back-of-envelope OK if labeled)
 - Bull / base / bear bands with **explicit growth & margin assumptions** and probabilities
+- Each scenario shows **math once**: EPS (or PAT) × multiple → band (`scenario_value.py` → `math_note`)
 - Optional street note — paraphrase, tag as broker opinion, never as your primary finding
 
 ---
@@ -255,8 +268,19 @@ explicit failure to obtain transcript) + peer sources used.
 
 ## Charts (required)
 
-≥3 Plotly figures before assembly: price/context, financial trend, valuation and/or
-WC/KPI. Export under `output/`.
+≥3 figures before assembly: price/context, financial trend, valuation and/or WC/KPI.
+Export under `output/`.
+
+---
+
+## Ship gate (required)
+
+```bash
+python scripts/validate_depth.py --slug <slug>
+python scripts/assemble_pdf.py --html output/report.html --out output/Company_report.pdf
+```
+
+Do not ship if validate fails or assemble smoke_check fails.
 
 ---
 
@@ -270,12 +294,13 @@ WC/KPI. Export under `output/`.
 ## Assembly sketch
 
 ```python
+from html_helpers import *
 body = ''
 body += cover(...)
 body += section('0. Investment decision')
 body += verdict_box('Recommendation: ...')
-# confirm / kill / alternative thesis
-body += section('1. Company Summary')
-# ... through section 26 ...
+body += timeline([...])          # never empty
+body += kpi_table(kpi_scorecard) # never str(dict)
 html = render(body, '<skill_dir>/assets/report_style.css')
+# then: assemble_pdf.py --html report.html --out report.pdf
 ```
