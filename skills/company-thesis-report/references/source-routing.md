@@ -1,8 +1,13 @@
-# Source routing — cheapest adequate source wins
+# Source routing — cheapest adequate source that still supports a decision
 
-Never load a full concall, investor deck, or annual report into model context.
-Extract to disk once, then query. Prefer structured pages over PDFs when they
-already answer the question.
+Never load a full concall, investor deck, or annual report into model context as
+one blob. Extract to disk once, then query. Prefer structured pages over PDFs
+when they already answer the question.
+
+**Quality override:** screener + press release alone is **not** enough for a
+decision-grade report. Always ingest the latest **earnings call transcript** (or
+captions) and mine mix, guidance tone, risks, and verbatim quotes. If token
+savings and report quality conflict, **fetch and query more**.
 
 ## Trust hierarchy
 

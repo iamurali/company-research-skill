@@ -34,6 +34,20 @@ Draft **only** from facts packs (+ tiny grepped snippets). Empty field → hones
 }
 ```
 
+### `facts/decision.json` *(required before draft)*
+
+```json
+{
+  "action": "BUY|HOLD|AVOID|SELECTIVE_ACCUMULATE",
+  "confidence": "high|medium|low",
+  "one_paragraph_why": "",
+  "confirm_thesis": [{"watch": "", "why_it_matters": ""}],
+  "kill_thesis": [{"watch": "", "why_it_matters": ""}],
+  "next_checkpoint": "e.g. Q2 FY27 results"
+}
+```
+
+
 ### `facts/sector.json`
 
 Sector Context inputs (primer may be copied from the lens; market facts are sparse).

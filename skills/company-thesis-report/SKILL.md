@@ -1,56 +1,86 @@
 ---
 name: company-thesis-report
-description: "Generates a research-grade investment advisory PDF for a listed company using a fixed sector-agnostic section spine, a token-efficient facts-pack pipeline (never load full concalls/ARs into context), and one matched sector lens from sectors/ for Sector Context, Sector Deep-Dive, metrics, and valuation. Use when the user asks to research a company, build a thesis, deep-dive a stock, or evaluate buy/hold/sell — even for a bare ticker."
+description: "Generates a decision-grade investment research PDF for a listed company — clear BUY/HOLD/AVOID (or equivalent), dense sourced analysis, sector lens, charts/tables, confirm/kill criteria. Use when the user asks to research a company, build a thesis, deep-dive a stock, or decide whether to invest — even for a bare ticker. Prefer report quality over token savings when they conflict."
 ---
 
-# Company thesis report (research-grade, token-efficient)
+# Company thesis report (decision-grade)
 
 ## Why this exists
 
-A decision-useful report needs sourced facts, an honest bear case, and the **right sector lens** — without burning a context window on full transcripts and annual reports. This skill:
+The deliverable is a document someone can use to **decide whether to invest** — not a table of contents with thin bullets. Every run must answer:
 
-1. Extracts sources to disk and drafts only from small **facts packs**
-2. Uses a **fixed section spine** (predictable format)
-3. Loads **one** sector lens under `sectors/<lens-id>/` for sector-specific analysis
-4. Renders a visual PDF (WeasyPrint) with a **styled value-chain diagram** — never ASCII/code
+1. **What should I do?** (BUY / HOLD / AVOID / selective accumulate — with confidence)
+2. **Why?** (falsifiable, numbered evidence)
+3. **What would change my mind?** (confirm thesis vs kill thesis)
 
-Discipline: a claim without a source and a date is marketing, not evidence.
+A claim without a source and a date is marketing, not evidence. A section that is only a heading plus two vague lines is a **failed report** — rewrite it.
 
-## Token rules (non-negotiable)
+## Quality bar (non-negotiable — ship nothing thinner)
 
-- **Never** `Read()` a full concall, deck, or annual report into context.
-- Extract with `scripts/pdf_to_text.py`, then `scripts/query_source.py` / `scripts/outlook_candidates.py`.
-- Draft each section from `~/.company-research/<slug>/facts/*.json` only.
-- Load **one** sector lens per run — never the whole `sectors/` tree.
-- Prefer screener.in structured pages over re-parsing AR tables.
-- On `new_quarter`, refresh deltas only; carry forward stable packs (sector primer, value chain, footprint, peers) unless evidence changed.
+Before delivering the PDF, the report **must** include all of the following. If any item is missing, keep researching or state the gap inside that section — do not ship a headings-only PDF.
+
+| Requirement | Minimum bar |
+|-------------|-------------|
+| **Decision first** | Opening section after cover: recommendation + 1 short paragraph why + confirm-list + kill-list |
+| **Substance density** | Each major section has real analysis (interpretation), not only labels/numbers |
+| **Latest concall** | Latest earnings call transcript (or captions) ingested to disk and mined — **PR alone is not enough** |
+| **Financials** | Multi-year table + YoY read-through + BS/cash anomaly note; chart when time series helps |
+| **Mix deep-dive** | Geo and/or segment/vertical/product mix with decision read-through (what carried growth) |
+| **Peers** | ≥3 real comps with PE/ROE/growth (or lens metrics) — subject as own row; no empty peer placeholder |
+| **Valuation** | Method from lens + what is priced in at current price + bull/base/bear bands (judgmental OK if labeled) |
+| **Thesis** | 3–5 **falsifiable** claims (evidence + how to falsify) |
+| **Risks** | Mandatory, specific, sourced — not generic boilerplate |
+| **Verdict** | Restates action, confidence, and what to watch next |
+
+### Anti-patterns (automatic fail)
+
+- Cover + section titles + metric cards with almost no prose
+- “Watchlist / moderate” with no confirm/kill criteria
+- Skipping the concall because a press release existed
+- Peer table with “n/a this run” for every peer
+- Outlook bullets without verbatim quotes from a primary transcript/deck
+- Shipping because “token discipline” said not to fetch more — **quality wins that conflict**
+
+## Token rules (efficiency for ingest — not an excuse for thin output)
+
+Use facts packs and disk extracts so you do **not** dump entire 300-page ARs into context. That is still required.
+
+But:
+
+- **Quality > tokens** when the alternative is a headings-only report.
+- Pull the latest **concall + investor presentation + screener**; query widely enough to fill the quality bar.
+- Prefer grepping/BM25 over loading whole files; if packs are thin after one pass, run more targeted queries — do not stop early.
+- Load **one** sector lens only (`sectors/<lens-id>/`).
+- On `new_quarter`, refresh deltas; still re-check decision, outlook, financials, risks.
+
+```text
+Never Read() a full AR/concall into chat as one blob.
+Do use pdf_to_text + query_source / outlook_candidates until packs support a decision-grade draft.
+```
 
 ## Workflow
 
 ### 0. Resolve company + cache slug
 
-Slug = lowercase company name with underscores (e.g. `td_power_systems`).
-Working state: `~/.company-research/<slug>/` (`sources/`, `facts/`, `output/`).
+Slug = lowercase underscores (e.g. `newgen`).  
+State: `~/.company-research/<slug>/` → `sources/`, `facts/`, `output/`.
 
 ### 1. Freshness
 
-From screener Documents/Concalls, resolve the **full date** of the latest results/concall (`YYYY-MM-DD`).
-
 ```bash
 python3 <skill_dir>/scripts/freshness.py <slug> --latest-seen YYYY-MM-DD
-# or --force for from-scratch
+# --force for from-scratch
 ```
 
 | Status | Action |
 |--------|--------|
-| `no_state` / `force_full` | Full ingest + all packs |
-| `new_quarter` | New concall/results + last 1–2 screener columns; delta packs |
-| `up_to_date` | Reuse report; optional price-only valuation refresh |
+| `no_state` / `force_full` | Full ingest |
+| `new_quarter` | New concall/results + screener deltas; rebuild decision/outlook/financials |
+| `up_to_date` | Reuse only if prior PDF already met the quality bar; else rebuild |
 
-### 2. Classify sector → load one lens
+### 2. Classify sector → one lens
 
-Read `references/sector-router.md`. Set `sector_lens_id` in `facts/meta.json`.
-Then open **only**:
+Read `references/sector-router.md`. Load only:
 
 - `sectors/<lens-id>/LENS.md`
 - `sectors/<lens-id>/metrics.schema.json`
@@ -59,79 +89,90 @@ Then open **only**:
 python3 <skill_dir>/scripts/build_facts.py <slug> --lens <lens-id> --init-empty
 ```
 
-### 3. Ingest sources to disk
+Adapt the lens primer to the company’s real model (e.g. product/SaaS vs pure T&M) — do not paste a mismatched primer blindly.
 
-Follow `references/source-routing.md`. Typical set:
+### 3. Ingest sources (minimum set)
 
-- screener consolidated page (numbers, shareholding, documents links)
-- latest concall transcript PDF (or YouTube captions if REC-only)
-- latest investor presentation
-- latest annual report when needed for footprint/segments/litigation
+Follow `references/source-routing.md`. **Minimum for a first-pass decision report:**
+
+1. Screener consolidated (price, P&L, BS, ratios, shareholding, documents)
+2. **Latest concall transcript** (PDF or captions) → `pdf_to_text` / save txt
+3. Latest investor presentation if filed
+4. Latest results press release
+5. Peer screener pages for 3–5 comps (lens peer rules)
+6. Annual report only as needed for footprint/segments/litigation gaps
 
 ```bash
 python3 <skill_dir>/scripts/pdf_to_text.py in.pdf sources/foo.txt --expect-name "Company"
 python3 <skill_dir>/scripts/outlook_candidates.py sources/concall.txt facts/candidate_quotes/q_candidate_quotes.json
-python3 <skill_dir>/scripts/query_source.py sources/foo.txt KEYWORD [KEYWORD...]
-# or: python3 <skill_dir>/scripts/query_source.py sources/foo.txt --bm25 "order book guidance"
+python3 <skill_dir>/scripts/query_source.py sources/concall.txt guidance margin DSO implementation annuity --max-hits 30
+python3 <skill_dir>/scripts/query_source.py sources/concall.txt --bm25 "outlook margin working capital" --top-k 8
 ```
 
-Merge hits into packs via `build_facts.py --hits hits.json` and by editing the small JSON packs. Schemas: `references/facts-schemas.md`.
+Fill `facts/*.json` until the quality bar can be met. Schemas: `references/facts-schemas.md`.  
+Also write `facts/decision.json` (recommendation, confidence, confirm[], kill[], one_paragraph_why).
 
-### 4. Draft `report.md` from packs
+### 4. Draft — spine in `references/report-format.md`
 
-Section contract: `references/report-format.md` (fixed spine).
+**Order matters:** Cover → **Investment decision** → rest of spine.
 
-**Sector-filled slots (from lens + packs):**
+Sector slots from lens + packs; everything else from packs + sourced interpretation.
 
-- Sector Context ← `LENS.md` primer + `facts/sector.json`
-- Sector Deep-Dive ← lens deep-dive template + `facts/sector_overlay.json`
-- Financial metric cards / valuation method / peer columns ← lens overlay
-
-**Universal slots** ← corresponding facts packs.
-
-Gaps: one honest line, no invented filler. No industry-named permanent headings.
+Write **analysis**: what the numbers mean for the investment case. Numbers without read-through fail the quality bar.
 
 ### 5. Assemble PDF
 
-Use `scripts/html_helpers.py` (including **`flow_diagram()`** for value chains — never ASCII) and `assets/report_style.css`. Charts in `scripts/charts.py` are opt-in.
+`scripts/html_helpers.py` (`flow_diagram()`, `verdict_box()`, tables, cards, timeline).  
+`scripts/charts.py` for annual/quarterly history when it clarifies the story (preferred for financial history).
 
 ```bash
 python3 -m weasyprint report.html ~/.company-research/<slug>/output/<Name>_report.pdf
 ```
 
-Verify WeasyPrint import first; `pip install weasyprint matplotlib --break-system-packages` if needed.
+### 6. Pre-delivery self-check (mandatory)
 
-### 6. Mark freshness + deliver
+Answer yes to all or fix:
+
+- [ ] Could a careful reader decide invest / hold / avoid from page 1–2 alone?
+- [ ] Is every major section denser than a heading + two thin bullets?
+- [ ] Was the latest concall mined (quotes + mix + risks)?
+- [ ] Are peers real numbers, not placeholders?
+- [ ] Are confirm/kill criteria specific and observable next quarter?
+- [ ] Would you be embarrassed to send this PDF to someone risking real money? If yes → rewrite.
+
+### 7. Mark freshness + deliver
 
 ```bash
 python3 <skill_dir>/scripts/freshness.py <slug> --mark-processed YYYY-MM-DD --price <price>
 ```
 
-Save both `.md` and `.pdf` under `output/`. Spoken summary: 1–2 sentences on situation + verdict — do not re-narrate the whole report.
+Save `.md` + `.pdf` under `output/`. Spoken summary: recommendation + one reason + one watch item — not a full re-narration.
 
-## Situation badge mapping
+## Situation / badge mapping
+
+Put the **action** in the cover badge text when possible (e.g. `HOLD — WAIT FOR RE-ACCELERATION`).
 
 - structural growth → `growth`
-- compounder / evidenced turnaround → `bull`
-- cyclical / early / thin evidence → `watch`
+- compounder with solid evidence → `bull`
+- digestion / early / needs confirmation → `watch`
 - structural decline / red-flag heavy → `bear`
 - mixed → `neutral`
 
 ## Optional calculators
 
-- `scripts/forward_pe.py` — only if the **loaded lens** uses PE-style valuation
-- `scripts/capacity_utilization.py` — when capacity maths are disclosed
+- `scripts/forward_pe.py` — when lens uses PE-style valuation  
+- `scripts/capacity_utilization.py` — when capacity maths exist  
 
 ## Adding a sector lens
 
-1. Add `sectors/<new-id>/LENS.md` + `metrics.schema.json`
-2. Add a row to `references/sector-router.md`
-3. Do **not** change the report spine
+1. `sectors/<new-id>/LENS.md` + `metrics.schema.json`  
+2. Row in `references/sector-router.md`  
+3. Do not weaken the decision/quality bar in the spine  
 
-## References (read when needed, not all at once)
+## References
 
-- `references/report-format.md` — spine + visual rules
-- `references/sector-router.md` — classification
-- `references/source-routing.md` — cheapest source per need
-- `references/facts-schemas.md` — pack shapes
-- `sectors/<lens-id>/` — only the matched lens
+- `references/report-format.md` — spine + decision section + density rules  
+- `references/sector-router.md`  
+- `references/source-routing.md`  
+- `references/facts-schemas.md`  
+- `sectors/<lens-id>/` — matched lens only  

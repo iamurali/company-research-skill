@@ -23,7 +23,7 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 CACHE_ROOT = Path.home() / ".company-research"
 
 UNIVERSAL = [
-    "meta", "sector", "value_chain", "outlook", "customers", "milestones",
+    "meta", "decision", "sector", "value_chain", "outlook", "customers", "milestones",
     "financials", "segments", "demand", "operations", "valuation", "peers",
     "moats", "risks", "thesis", "governance", "technicals", "quotes",
     "sector_overlay",
@@ -33,6 +33,14 @@ UNIVERSAL = [
 def empty_pack(name: str) -> dict:
     defaults = {
         "meta": {},
+        "decision": {
+            "action": "",
+            "confidence": "",
+            "one_paragraph_why": "",
+            "confirm_thesis": [],
+            "kill_thesis": [],
+            "next_checkpoint": "",
+        },
         "sector": {"lens_id": "", "sector_value_chain_stages": [], "notes": []},
         "value_chain": {"stages": [], "backward_integration_note": "", "sources": []},
         "outlook": {"near": [], "medium": [], "long": [], "guidance_history": []},

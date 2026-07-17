@@ -1,27 +1,27 @@
 # company-research-skill
 
-A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a listed company and it produces a research-grade, sourced, visual investment PDF — with a **fixed section spine**, a **token-efficient facts-pack pipeline**, and **one matched sector lens** so banks, industrials, healthcare manufacturers, etc. get the right metrics and deep-dive (without hardcoding industry sections into the format).
+A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a listed company and it produces a **decision-grade** sourced PDF — clear **BUY / HOLD / AVOID**, confirm/kill criteria, dense analysis (not headings-only), a fixed spine, facts-pack ingest, and **one matched sector lens**.
+
+**Quality beats token savings** when they conflict. Facts packs avoid dumping whole ARs into context; they are not an excuse to ship a thin report.
 
 ## What it produces
 
-A single PDF (plus markdown source) with a predictable section order:
+A single PDF (plus markdown source) that opens with an **investment decision**, then:
 
-- Cover + situation badge
-- Company Summary
-- **Sector Context** (from the loaded sector lens)
-- **Company Value Chain** — visual flow diagram (never ASCII/code)
+- Confirm thesis / kill thesis checklists
+- Company Summary + Sector Context + visual value chain
 - Situation Classification
-- Near / Medium / Long Term outlook (verbatim-backed)
-- Customers, milestones, **Sector Deep-Dive** (lens-defined)
-- Financials, segments, demand indicators, footprint, capacity/TAM
-- Valuation (method from the lens), peers, moats, technicals
-- Governance, thesis, mandatory risks, verdict, sources
+- Near / Medium / Long Term outlook (verbatim from concall/deck)
+- Customers, milestones, Sector Deep-Dive (lens-defined)
+- Financials with charts/read-through, mix deep-dive, demand indicators
+- Valuation scenarios, real peer comps, moats, technicals
+- Governance, falsifiable thesis, mandatory risks, final verdict, sources
 
-Discipline: **a claim without a source and a date is not evidence.**
+Discipline: **a claim without a source and a date is not evidence.** A headings-only PDF is a failed run.
 
-## Token-efficient design
+## Ingest design (efficient, not thin)
 
-Raw concalls / decks / annual reports are extracted to disk under `~/.company-research/<slug>/sources/`. The agent drafts only from small JSON **facts packs** in `facts/`, built with:
+Raw concalls / decks / annual reports are extracted to disk under `~/.company-research/<slug>/sources/`. The agent drafts from JSON **facts packs** in `facts/` — but packs must be rich enough for a **decision-grade** PDF (concall mined, peers filled, confirm/kill written). Built with:
 
 | Script | Role |
 |--------|------|
