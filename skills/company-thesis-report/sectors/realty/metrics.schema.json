@@ -1,0 +1,66 @@
+{
+  "lens_id": "realty",
+  "deep_dive_title": "Pre-sales & balance sheet",
+  "valuation_method": "P/B or NAV",
+  "peer_columns": [
+    "P/B",
+    "Pre-sales growth",
+    "Net debt",
+    "Collections"
+  ],
+  "metrics": [
+    {
+      "key": "presales",
+      "label": "Pre-sales"
+    },
+    {
+      "key": "collections",
+      "label": "Collections"
+    },
+    {
+      "key": "net_debt",
+      "label": "Net debt"
+    },
+    {
+      "key": "land_bank",
+      "label": "Land bank"
+    },
+    {
+      "key": "unsold",
+      "label": "Unsold inventory"
+    }
+  ],
+  "query_keys": [
+    "pre-sales",
+    "collections",
+    "launch",
+    "land bank",
+    "unsold",
+    "JDA",
+    "RERA"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Land bank",
+      "detail": "Land / JDA"
+    },
+    {
+      "label": "THE DEVELOPER",
+      "detail": "Projects under execution"
+    },
+    {
+      "label": "Sales",
+      "detail": "Pre-sales / bookings"
+    },
+    {
+      "label": "Customers",
+      "detail": "Homebuyers / tenants"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Pre-sales and collections",
+    "Launch pipeline and unsold inventory",
+    "Net debt / cash flow",
+    "City and segment mix"
+  ]
+}

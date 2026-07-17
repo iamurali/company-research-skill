@@ -90,19 +90,67 @@ def flag_list(items, kind='bear'):
     return f'<ul class="flags {kind}">{lis}</ul>'
 
 
+def bullet_list(items):
+    """Plain bullet list for Sector Context / situation evidence."""
+    lis = ''.join(f'<li>{item}</li>' for item in items)
+    return f'<ul class="bullets">{lis}</ul>'
+
+
+# Map outlook / milestone labels → CSS status kind
+STATUS_KIND = {
+    'delivered': 'done',
+    'achieved': 'done',
+    'done': 'done',
+    'on track': 'on-track',
+    'on-track': 'on-track',
+    'pending': 'pending',
+    'delayed': 'delayed',
+    'missed': 'missed',
+}
+
+
 def timeline(items):
-    """items: list of (date_str, title, status_text, status_kind) where status_kind is 'done'|'pending'|''"""
+    """items: list of (date_str, title, status_text, status_kind)
+
+    status_kind: done | on-track | pending | delayed | missed | ''
+    (also accepts delivered/achieved/on track via STATUS_KIND)
+    """
     parts = []
     for date_str, title, status_text, status_kind in items:
+        kind = STATUS_KIND.get(str(status_kind).lower().strip(), status_kind or '')
         parts.append(f'''
 <div class="timeline-item">
   <div class="timeline-date">{esc(date_str)}</div>
   <div class="timeline-body">
     <div class="title">{esc(title)}</div>
-    <div class="status {status_kind}">{esc(status_text)}</div>
+    <div class="status {esc(kind)}">{esc(status_text)}</div>
   </div>
 </div>''')
     return f'<div class="timeline">{"".join(parts)}</div>'
+
+
+def flow_diagram(stages, caption=''):
+    """Visual value-chain / sector-flow diagram — NEVER use ASCII/code blocks.
+
+    stages: list of (label, detail) or dicts with keys label/detail
+    Renders a vertical stack of styled boxes with arrow connectors.
+    """
+    boxes = []
+    for i, stage in enumerate(stages):
+        if isinstance(stage, dict):
+            label, detail = stage.get('label', ''), stage.get('detail', '')
+        else:
+            label, detail = stage[0], stage[1] if len(stage) > 1 else ''
+        boxes.append(
+            f'<div class="flow-stage">'
+            f'<div class="flow-label">{esc(label)}</div>'
+            f'<div class="flow-detail">{esc(detail)}</div>'
+            f'</div>'
+        )
+        if i < len(stages) - 1:
+            boxes.append('<div class="flow-arrow" aria-hidden="true">↓</div>')
+    cap = f'<div class="flow-caption">{esc(caption)}</div>' if caption else ''
+    return f'<div class="flow-diagram">{"".join(boxes)}{cap}</div>'
 
 
 def verdict_box(text):

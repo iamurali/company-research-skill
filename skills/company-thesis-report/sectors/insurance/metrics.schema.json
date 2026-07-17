@@ -1,0 +1,71 @@
+{
+  "lens_id": "insurance",
+  "deep_dive_title": "New business & quality",
+  "valuation_method": "VNB / EV multiple (life) or P/B with combined ratio (general)",
+  "peer_columns": [
+    "VNB margin",
+    "APE growth",
+    "Persistency",
+    "Solvency"
+  ],
+  "metrics": [
+    {
+      "key": "ape",
+      "label": "APE"
+    },
+    {
+      "key": "vnb_margin",
+      "label": "VNB margin"
+    },
+    {
+      "key": "persistency_13m",
+      "label": "Persistency 13M"
+    },
+    {
+      "key": "solvency",
+      "label": "Solvency"
+    },
+    {
+      "key": "combined_ratio",
+      "label": "Combined ratio"
+    },
+    {
+      "key": "ev",
+      "label": "Embedded value"
+    }
+  ],
+  "query_keys": [
+    "APE",
+    "VNB",
+    "embedded value",
+    "persistency",
+    "solvency",
+    "combined ratio",
+    "NBP",
+    "protection mix"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Distribution",
+      "detail": "Agency, banca, digital"
+    },
+    {
+      "label": "THE INSURER",
+      "detail": "Underwriting, product design"
+    },
+    {
+      "label": "Investments",
+      "detail": "Float / shareholder funds"
+    },
+    {
+      "label": "Policyholders",
+      "detail": "Protection, savings, health, motor"
+    }
+  ],
+  "deep_dive_prompts": [
+    "APE / NBP growth and mix (protection vs savings)",
+    "VNB margin and embedded value if disclosed",
+    "Persistency (13M/61M)",
+    "Solvency ratio"
+  ]
+}

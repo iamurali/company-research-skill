@@ -1,0 +1,71 @@
+{
+  "lens_id": "it-services",
+  "deep_dive_title": "Growth quality & talent",
+  "valuation_method": "P/E vs growth/margins",
+  "peer_columns": [
+    "P/E",
+    "CC growth",
+    "EBIT margin",
+    "Attrition"
+  ],
+  "metrics": [
+    {
+      "key": "growth_cc",
+      "label": "CC growth"
+    },
+    {
+      "key": "ebit_margin",
+      "label": "EBIT margin"
+    },
+    {
+      "key": "attrition",
+      "label": "Attrition"
+    },
+    {
+      "key": "utilization",
+      "label": "Utilization"
+    },
+    {
+      "key": "tcv",
+      "label": "Deal TCV"
+    },
+    {
+      "key": "top_client",
+      "label": "Top client %"
+    }
+  ],
+  "query_keys": [
+    "constant currency",
+    "attrition",
+    "utilization",
+    "TCV",
+    "deal win",
+    "vertical",
+    "geography",
+    "headcount"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Clients",
+      "detail": "Global enterprises by vertical"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Delivery centres + onsite"
+    },
+    {
+      "label": "Services",
+      "detail": "ADM, cloud, engineering, BPO"
+    },
+    {
+      "label": "Talent",
+      "detail": "Hiring, utilization, attrition"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Revenue by vertical and geography",
+    "Large deal TCV / wins",
+    "Attrition and utilization",
+    "Margin bridge commentary"
+  ]
+}

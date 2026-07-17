@@ -1,0 +1,66 @@
+{
+  "lens_id": "agrochem-fertilizers",
+  "deep_dive_title": "Volumes, channel & policy",
+  "valuation_method": "P/E or EV/EBITDA",
+  "peer_columns": [
+    "P/E",
+    "Margins",
+    "Growth",
+    "Mix"
+  ],
+  "metrics": [
+    {
+      "key": "volumes",
+      "label": "Volumes"
+    },
+    {
+      "key": "realization",
+      "label": "Realization"
+    },
+    {
+      "key": "gross_margin",
+      "label": "Gross margin"
+    },
+    {
+      "key": "channel_inventory",
+      "label": "Channel inventory"
+    },
+    {
+      "key": "subsidy_receivable",
+      "label": "Subsidy receivable"
+    }
+  ],
+  "query_keys": [
+    "monsoon",
+    "channel inventory",
+    "subsidy",
+    "urea",
+    "DAP",
+    "formulation",
+    "technical"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "RM / gas",
+      "detail": "Inputs"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Formulation / manufacturing"
+    },
+    {
+      "label": "Channel",
+      "detail": "Distributors / retailers"
+    },
+    {
+      "label": "Farmers",
+      "detail": "End demand"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Volume vs realization bridge",
+    "Channel inventory commentary",
+    "Subsidy / receivables for fertilizers",
+    "Molecule / nutrient mix"
+  ]
+}

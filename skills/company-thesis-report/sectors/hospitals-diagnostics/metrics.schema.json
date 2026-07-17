@@ -1,0 +1,66 @@
+{
+  "lens_id": "hospitals-diagnostics",
+  "deep_dive_title": "Network operating metrics",
+  "valuation_method": "EV/EBITDA",
+  "peer_columns": [
+    "EV/EBITDA",
+    "ARPOB",
+    "Occupancy",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "arpob",
+      "label": "ARPOB"
+    },
+    {
+      "key": "occupancy",
+      "label": "Occupancy %"
+    },
+    {
+      "key": "beds",
+      "label": "Beds / centres"
+    },
+    {
+      "key": "payer_mix_insurance",
+      "label": "Insurance mix %"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    }
+  ],
+  "query_keys": [
+    "ARPOB",
+    "occupancy",
+    "ALOS",
+    "beds",
+    "payer mix",
+    "footfall",
+    "tests"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Patients / payers",
+      "detail": "Cash, insurance, government"
+    },
+    {
+      "label": "THE PROVIDER",
+      "detail": "Hospitals / labs network"
+    },
+    {
+      "label": "Clinical delivery",
+      "detail": "Specialties, diagnostics"
+    },
+    {
+      "label": "Outcomes",
+      "detail": "Care delivered"
+    }
+  ],
+  "deep_dive_prompts": [
+    "ARPOB / ALOS and occupancy",
+    "Bed count / centre count and additions",
+    "Payer mix",
+    "Specialty or test mix if disclosed"
+  ]
+}

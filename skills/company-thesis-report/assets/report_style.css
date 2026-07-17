@@ -73,7 +73,30 @@ ul.flags.bull li::marker { color: #1D9E75; }
 .timeline-body .title { font-size: 9.5px; font-weight: bold; }
 .timeline-body .status { font-size: 8.5px; color: #666; }
 .timeline-body .status.done { color: #0F6E56; }
+.timeline-body .status.on-track { color: #1D9E75; }
 .timeline-body .status.pending { color: #BA7517; }
+.timeline-body .status.delayed { color: #BA7517; }
+.timeline-body .status.missed { color: #A32D2D; }
+
+/* ---------- Visual flow diagram (value chain) — never ASCII ---------- */
+.flow-diagram { margin: 12px 0 18px; page-break-inside: avoid; }
+.flow-stage {
+  background: #F1EFE8; border: 1px solid #D3D1C7; border-radius: 6px;
+  padding: 10px 12px; margin: 0 auto; max-width: 92%;
+}
+.flow-label {
+  font-size: 8.5px; font-weight: bold; letter-spacing: 0.4px;
+  text-transform: uppercase; color: #1F4E78; margin-bottom: 3px;
+}
+.flow-detail { font-size: 9.5px; color: #333; line-height: 1.4; }
+.flow-arrow {
+  text-align: center; color: #1F4E78; font-size: 14px;
+  line-height: 1.2; margin: 2px 0;
+}
+.flow-caption { font-size: 8.5px; color: #888; margin-top: 6px; }
+
+ul.bullets { margin: 0 0 14px; padding-left: 18px; }
+ul.bullets li { margin-bottom: 5px; }
 
 /* ---------- Verdict box ---------- */
 .verdict-box { background: #EEEDFE; border-left: 4px solid #534AB7; border-radius: 4px; padding: 12px 14px; margin: 10px 0 18px; font-size: 11px; font-weight: 500; }

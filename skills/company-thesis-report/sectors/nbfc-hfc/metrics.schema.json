@@ -1,0 +1,80 @@
+{
+  "lens_id": "nbfc-hfc",
+  "deep_dive_title": "AUM quality & funding",
+  "valuation_method": "P/B with RoA and growth",
+  "peer_columns": [
+    "P/B",
+    "RoA",
+    "AUM growth",
+    "Stage-3",
+    "NIM"
+  ],
+  "metrics": [
+    {
+      "key": "aum",
+      "label": "AUM"
+    },
+    {
+      "key": "aum_growth",
+      "label": "AUM growth"
+    },
+    {
+      "key": "stage3",
+      "label": "Stage-3 %"
+    },
+    {
+      "key": "credit_cost",
+      "label": "Credit cost"
+    },
+    {
+      "key": "nim_spread",
+      "label": "NIM / spread"
+    },
+    {
+      "key": "leverage",
+      "label": "Leverage"
+    },
+    {
+      "key": "cof",
+      "label": "Cost of funds"
+    },
+    {
+      "key": "roa",
+      "label": "RoA"
+    }
+  ],
+  "query_keys": [
+    "AUM",
+    "disbursement",
+    "Stage 3",
+    "GNPA",
+    "credit cost",
+    "cost of funds",
+    "borrowing mix",
+    "securitisation"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Funding",
+      "detail": "Banks, bonds, CPs, securitisation"
+    },
+    {
+      "label": "THE LENDER",
+      "detail": "Origination, underwriting, collections"
+    },
+    {
+      "label": "Portfolio",
+      "detail": "AUM by product / geography"
+    },
+    {
+      "label": "Borrowers",
+      "detail": "Retail / MSME / homebuyers"
+    }
+  ],
+  "deep_dive_prompts": [
+    "AUM growth and product mix",
+    "Stage-3 / GNPA analogue and credit cost",
+    "Leverage and liability mix / CoF",
+    "Disbursement trends and collection efficiency"
+  ]
+}

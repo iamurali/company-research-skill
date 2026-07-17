@@ -1,0 +1,66 @@
+{
+  "lens_id": "auto-oem",
+  "deep_dive_title": "Volumes, mix & ASP",
+  "valuation_method": "P/E or EV/EBITDA through cycle",
+  "peer_columns": [
+    "P/E",
+    "Volume growth",
+    "EBITDA margin",
+    "Mix"
+  ],
+  "metrics": [
+    {
+      "key": "volumes",
+      "label": "Volumes"
+    },
+    {
+      "key": "market_share",
+      "label": "Market share"
+    },
+    {
+      "key": "asp",
+      "label": "ASP"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "export_mix",
+      "label": "Export mix"
+    }
+  ],
+  "query_keys": [
+    "wholesale",
+    "retail",
+    "market share",
+    "ASP",
+    "UV mix",
+    "EV",
+    "inventory"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Suppliers",
+      "detail": "Auto ancillaries"
+    },
+    {
+      "label": "THE OEM",
+      "detail": "Manufacturing + R&D"
+    },
+    {
+      "label": "Dealers",
+      "detail": "Domestic network / exports"
+    },
+    {
+      "label": "Buyers",
+      "detail": "Retail and fleet"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Wholesale/retail volumes and market share",
+    "Segment mix (UV, PV, CV, 2W)",
+    "ASP and realization trends",
+    "EV / alternate fuel roadmap if material"
+  ]
+}

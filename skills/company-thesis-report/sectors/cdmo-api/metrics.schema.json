@@ -1,0 +1,74 @@
+{
+  "lens_id": "cdmo-api",
+  "deep_dive_title": "Service mix & pipeline",
+  "valuation_method": "EV/EBITDA with growth/capacity",
+  "peer_columns": [
+    "EV/EBITDA",
+    "EBITDA margin",
+    "Growth",
+    "Capacity"
+  ],
+  "metrics": [
+    {
+      "key": "cdmo_mix",
+      "label": "CDMO mix %"
+    },
+    {
+      "key": "capacity",
+      "label": "Capacity"
+    },
+    {
+      "key": "utilization",
+      "label": "Utilization"
+    },
+    {
+      "key": "top_customer",
+      "label": "Top customer %"
+    },
+    {
+      "key": "pipeline_commercial",
+      "label": "Commercial projects"
+    },
+    {
+      "key": "pipeline_clinical",
+      "label": "Clinical projects"
+    }
+  ],
+  "query_keys": [
+    "CDMO",
+    "CRAMS",
+    "CRDMO",
+    "API",
+    "pipeline",
+    "Phase",
+    "capacity",
+    "utilization",
+    "peptide",
+    "fermentation",
+    "customer concentration"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Sponsors",
+      "detail": "Innovators / generic cos"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Development + manufacturing"
+    },
+    {
+      "label": "Tech / capacity",
+      "detail": "Reactives, fermentation, peptides, etc."
+    },
+    {
+      "label": "Patients / end drugs",
+      "detail": "Via sponsor labels"
+    }
+  ],
+  "deep_dive_prompts": [
+    "CDMO vs API vs CRAMS mix if disclosed",
+    "Pipeline / project counts by phase when disclosed",
+    "Capacity by technology and utilization",
+    "Customer concentration and qualifications"
+  ]
+}

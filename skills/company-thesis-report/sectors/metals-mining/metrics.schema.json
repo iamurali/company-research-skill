@@ -1,0 +1,65 @@
+{
+  "lens_id": "metals-mining",
+  "deep_dive_title": "Realizations, spreads & costs",
+  "valuation_method": "EV/EBITDA through cycle",
+  "peer_columns": [
+    "EV/EBITDA",
+    "EBITDA/ton",
+    "Net debt",
+    "Cost"
+  ],
+  "metrics": [
+    {
+      "key": "volumes",
+      "label": "Volumes"
+    },
+    {
+      "key": "realization",
+      "label": "Realization"
+    },
+    {
+      "key": "ebitda_per_ton",
+      "label": "EBITDA/ton"
+    },
+    {
+      "key": "net_debt",
+      "label": "Net debt"
+    },
+    {
+      "key": "c1_cost",
+      "label": "C1 / cost"
+    }
+  ],
+  "query_keys": [
+    "realization",
+    "LME",
+    "spread",
+    "cost per ton",
+    "coking coal",
+    "volume"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Ore / energy",
+      "detail": "Mining inputs"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Mining + smelting/refining"
+    },
+    {
+      "label": "Sales",
+      "detail": "Domestic / export"
+    },
+    {
+      "label": "End use",
+      "detail": "Infra, auto, packaging"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Volume and realization / spread trends",
+    "Cost per ton and power/coal linkage",
+    "Net debt and FCF",
+    "Integration (mine to metal)"
+  ]
+}

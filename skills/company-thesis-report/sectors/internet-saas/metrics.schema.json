@@ -1,0 +1,65 @@
+{
+  "lens_id": "internet-saas",
+  "deep_dive_title": "Growth & retention",
+  "valuation_method": "EV/Sales or EV/EBITDA with growth",
+  "peer_columns": [
+    "EV/Sales",
+    "Growth",
+    "Margins"
+  ],
+  "metrics": [
+    {
+      "key": "rev_growth",
+      "label": "Revenue growth"
+    },
+    {
+      "key": "contribution_margin",
+      "label": "Contribution margin"
+    },
+    {
+      "key": "active_users",
+      "label": "Active users"
+    },
+    {
+      "key": "take_rate",
+      "label": "Take-rate / ARPU"
+    },
+    {
+      "key": "adjusted_ebitda",
+      "label": "Adj. EBITDA"
+    }
+  ],
+  "query_keys": [
+    "GMV",
+    "take rate",
+    "ARPU",
+    "retention",
+    "contribution margin",
+    "adjusted EBITDA",
+    "active users"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Users / customers",
+      "detail": "Acquisition funnel"
+    },
+    {
+      "label": "THE PLATFORM",
+      "detail": "Product + marketplace"
+    },
+    {
+      "label": "Monetization",
+      "detail": "Subs, take-rate, ads"
+    },
+    {
+      "label": "Partners",
+      "detail": "Supply-side / developers"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Revenue growth and contribution margins",
+    "Active users / customers and retention if disclosed",
+    "Take-rate or ARPU trends",
+    "Path to profitability / cash burn"
+  ]
+}

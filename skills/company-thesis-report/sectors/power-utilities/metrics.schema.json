@@ -1,0 +1,66 @@
+{
+  "lens_id": "power-utilities",
+  "deep_dive_title": "PLF, offtake & receivables",
+  "valuation_method": "P/B (regulated) or EV/EBITDA (merchant)",
+  "peer_columns": [
+    "P/B",
+    "PLF",
+    "Receivables",
+    "Leverage"
+  ],
+  "metrics": [
+    {
+      "key": "plf",
+      "label": "PLF %"
+    },
+    {
+      "key": "availability",
+      "label": "Availability"
+    },
+    {
+      "key": "receivables",
+      "label": "Receivables"
+    },
+    {
+      "key": "ppa_mix",
+      "label": "PPA mix %"
+    },
+    {
+      "key": "net_debt",
+      "label": "Net debt"
+    }
+  ],
+  "query_keys": [
+    "PLF",
+    "PPA",
+    "merchant",
+    "receivables",
+    "discom",
+    "availability",
+    "RoE"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Fuel",
+      "detail": "Coal, gas, hydro inflows"
+    },
+    {
+      "label": "THE UTILITY",
+      "detail": "Generation / T&D"
+    },
+    {
+      "label": "Offtakers",
+      "detail": "Discoms, C&I, exchanges"
+    },
+    {
+      "label": "End use",
+      "detail": "Power consumers"
+    }
+  ],
+  "deep_dive_prompts": [
+    "PLF / availability",
+    "PPA vs merchant mix",
+    "Receivables / discom exposure",
+    "Regulated RoE framework if applicable"
+  ]
+}

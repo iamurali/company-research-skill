@@ -1,0 +1,66 @@
+{
+  "lens_id": "capital-goods-epc",
+  "deep_dive_title": "Order book & execution",
+  "valuation_method": "P/E or EV/EBITDA with order-book context",
+  "peer_columns": [
+    "P/E",
+    "Order book / sales",
+    "EBITDA margin",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "order_book",
+      "label": "Order book"
+    },
+    {
+      "key": "book_to_bill",
+      "label": "Book-to-bill"
+    },
+    {
+      "key": "inflow",
+      "label": "Order inflow"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "wc_days",
+      "label": "WC days"
+    }
+  ],
+  "query_keys": [
+    "order book",
+    "order inflow",
+    "book to bill",
+    "execution",
+    "retention",
+    "L1",
+    "bid"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Customers",
+      "detail": "Utilities, industry, infra"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Engineering + manufacturing / EPC"
+    },
+    {
+      "label": "Execution",
+      "detail": "Projects, working capital"
+    },
+    {
+      "label": "Installed base",
+      "detail": "Aftermarket / spares"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Order book size, composition, book-to-bill",
+    "Inflow vs execution commentary",
+    "Segment margins",
+    "Working-capital / retention money"
+  ]
+}

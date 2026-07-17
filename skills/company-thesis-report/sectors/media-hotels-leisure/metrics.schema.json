@@ -1,0 +1,65 @@
+{
+  "lens_id": "media-hotels-leisure",
+  "deep_dive_title": "Occupancy, ADR or ads",
+  "valuation_method": "EV/EBITDA",
+  "peer_columns": [
+    "EV/EBITDA",
+    "Occupancy/ADR or ad growth",
+    "Margins"
+  ],
+  "metrics": [
+    {
+      "key": "occupancy",
+      "label": "Occupancy"
+    },
+    {
+      "key": "adr",
+      "label": "ADR"
+    },
+    {
+      "key": "revpar",
+      "label": "RevPAR"
+    },
+    {
+      "key": "ad_revenue",
+      "label": "Ad revenue"
+    },
+    {
+      "key": "subscription",
+      "label": "Subscription revenue"
+    }
+  ],
+  "query_keys": [
+    "occupancy",
+    "ADR",
+    "RevPAR",
+    "ad revenue",
+    "subscription",
+    "TRP",
+    "footfall"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Content / property",
+      "detail": "Assets"
+    },
+    {
+      "label": "THE OPERATOR",
+      "detail": "Network / hotels / parks"
+    },
+    {
+      "label": "Distribution",
+      "detail": "Screens, OTT, OTAs"
+    },
+    {
+      "label": "Audiences / guests",
+      "detail": "End demand"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Occupancy and ADR (hotels) or ad/subscription mix (media)",
+    "RevPAR or ARPU analogues",
+    "Capacity / room / screen adds",
+    "Cost inflation commentary"
+  ]
+}

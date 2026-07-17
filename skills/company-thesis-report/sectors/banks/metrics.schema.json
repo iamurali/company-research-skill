@@ -1,0 +1,86 @@
+{
+  "lens_id": "banks",
+  "deep_dive_title": "Asset quality & franchise",
+  "valuation_method": "P/B with RoA/RoE context",
+  "peer_columns": [
+    "P/B",
+    "RoA",
+    "GNPA",
+    "NIM",
+    "Credit growth"
+  ],
+  "metrics": [
+    {
+      "key": "gnpa",
+      "label": "GNPA %"
+    },
+    {
+      "key": "nnpa",
+      "label": "NNPA %"
+    },
+    {
+      "key": "pcr",
+      "label": "PCR %"
+    },
+    {
+      "key": "nim",
+      "label": "NIM %"
+    },
+    {
+      "key": "casa",
+      "label": "CASA %"
+    },
+    {
+      "key": "credit_growth",
+      "label": "Credit growth YoY"
+    },
+    {
+      "key": "roa",
+      "label": "RoA %"
+    },
+    {
+      "key": "roe",
+      "label": "RoE %"
+    },
+    {
+      "key": "crar",
+      "label": "CRAR %"
+    }
+  ],
+  "query_keys": [
+    "GNPA",
+    "NNPA",
+    "PCR",
+    "NIM",
+    "CASA",
+    "credit growth",
+    "CET1",
+    "CRAR",
+    "slippages",
+    "restructured"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Funding / liabilities",
+      "detail": "Deposits, CASA, borrowings"
+    },
+    {
+      "label": "THE BANK",
+      "detail": "Underwriting, ALM, distribution"
+    },
+    {
+      "label": "Credit / assets",
+      "detail": "Retail, wholesale, agri, investments"
+    },
+    {
+      "label": "End users",
+      "detail": "Households, SMEs, corporates"
+    }
+  ],
+  "deep_dive_prompts": [
+    "GNPA / NNPA / PCR trend with as-of dates",
+    "NIM, CASA ratio, credit growth YoY",
+    "Capital ratios (CET1/CRAR) if disclosed",
+    "Liability franchise quality and granularity"
+  ]
+}

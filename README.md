@@ -1,23 +1,50 @@
 # company-research-skill
 
-A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a publicly listed company and it produces a rigorous, sourced, visual investment thesis as a PDF — metric cards, financial/ownership charts, a timeline of dated management promises, dense data tables, and a mandatory bear case, all built for fast scanning without losing precision.
+A [Claude Skill](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) that turns Claude into an equity-research analyst: point it at a listed company and it produces a research-grade, sourced, visual investment PDF — with a **fixed section spine**, a **token-efficient facts-pack pipeline**, and **one matched sector lens** so banks, industrials, healthcare manufacturers, etc. get the right metrics and deep-dive (without hardcoding industry sections into the format).
 
 ## What it produces
 
-A single infographic-style PDF report with:
+A single PDF (plus markdown source) with a predictable section order:
 
-- **Cover** — company, tickers, a situation badge (bull / growth / watch / bear), report date
-- **Business overview** — what the company does, with a headline stat card grid
-- **Financial history** — revenue/profit charts, quarterly trend, balance sheet snapshot, key ratios, CAGR cards
-- **Ownership & capital structure** — shareholding pattern trend, capital raise detail, promoter pledge status
-- **The situation/catalyst** — turnaround, compounder, cyclical, structural growth, or structural decline
-- **The bull thesis** — evidenced, falsifiable claims, each sourced
-- **What's promised** — a timeline of dated management commitments, marked done/pending
-- **Red flags / bear case** — mandatory, even in a bullish report
-- **Verdict** — one or two honest sentences on confidence level
-- **Sources** — every citation, numbered and linked
+- Cover + situation badge
+- Company Summary
+- **Sector Context** (from the loaded sector lens)
+- **Company Value Chain** — visual flow diagram (never ASCII/code)
+- Situation Classification
+- Near / Medium / Long Term outlook (verbatim-backed)
+- Customers, milestones, **Sector Deep-Dive** (lens-defined)
+- Financials, segments, demand indicators, footprint, capacity/TAM
+- Valuation (method from the lens), peers, moats, technicals
+- Governance, thesis, mandatory risks, verdict, sources
 
-The core discipline: **a claim without a source and a date is not evidence, it's marketing.** If the research doesn't support a real thesis, the skill is expected to say so plainly rather than manufacture one.
+Discipline: **a claim without a source and a date is not evidence.**
+
+## Token-efficient design
+
+Raw concalls / decks / annual reports are extracted to disk under `~/.company-research/<slug>/sources/`. The agent drafts only from small JSON **facts packs** in `facts/`, built with:
+
+| Script | Role |
+|--------|------|
+| `scripts/freshness.py` | `no_state` / `up_to_date` / `new_quarter` / `force_full` |
+| `scripts/pdf_to_text.py` | Full-doc PDF → txt |
+| `scripts/query_source.py` | Grep / BM25 snippets only |
+| `scripts/outlook_candidates.py` | Forward-looking quote candidates |
+| `scripts/build_facts.py` | Init/merge packs + apply sector lens schema |
+| `scripts/forward_pe.py` / `capacity_utilization.py` | Deterministic maths when needed |
+
+## Sector lenses (~26)
+
+The report spine never names an industry. After classifying the company (`references/sector-router.md`), the skill loads **one** folder:
+
+```
+skills/company-thesis-report/sectors/<lens-id>/
+  LENS.md                 # primer, metrics, valuation, deep-dive template
+  metrics.schema.json     # overlay shape + query keys
+```
+
+Examples of lens ids: `banks`, `nbfc-hfc`, `aerospace-defence`, `capital-goods-epc`, `it-services`, `specialty-chemicals`, `fmcg-staples`, `generic`, …
+
+To add a sector: create a new folder + router row — **no spine changes**.
 
 ## Repository layout
 
@@ -25,30 +52,39 @@ The core discipline: **a claim without a source and a date is not evidence, it's
 company-research-skill/
 └── skills/
     └── company-thesis-report/
-        ├── SKILL.md                  # the skill definition Claude reads
+        ├── SKILL.md
         ├── references/
-        │   └── report-format.md      # section-by-section report spec
+        │   ├── report-format.md
+        │   ├── sector-router.md
+        │   ├── source-routing.md
+        │   └── facts-schemas.md
+        ├── sectors/                 # one lens per coverage bucket
         ├── scripts/
-        │   ├── charts.py             # matplotlib chart generators
-        │   └── html_helpers.py       # HTML snippet builders for the report
+        │   ├── html_helpers.py      # includes flow_diagram()
+        │   ├── charts.py
+        │   ├── pdf_to_text.py
+        │   ├── query_source.py
+        │   ├── outlook_candidates.py
+        │   ├── build_facts.py
+        │   ├── freshness.py
+        │   ├── forward_pe.py
+        │   └── capacity_utilization.py
         └── assets/
-            └── report_style.css      # visual styling for the rendered PDF
+            └── report_style.css
 ```
 
 ## Requirements
 
-- Claude with Agent Skills support (Claude.ai, Claude Code, or the Claude Agent SDK) and code execution / file access enabled
-- Python 3 with `matplotlib` and [WeasyPrint](https://weasyprint.org/) available in the execution environment:
+- Claude with Agent Skills + code execution / file access
+- Python 3 with:
 
   ```bash
-  pip install matplotlib weasyprint --break-system-packages
+  pip install matplotlib weasyprint pypdf rank_bm25 --break-system-packages
   ```
 
 ## Installation
 
-### Claude Code / Claude Agent SDK (project or personal skills)
-
-Clone this repo and copy (or symlink) the skill directory into your skills folder:
+### Claude Code / Agent SDK
 
 ```bash
 git clone git@github.com:iamurali/company-research-skill.git
@@ -56,54 +92,51 @@ mkdir -p ~/.claude/skills
 cp -r company-research-skill/skills/company-thesis-report ~/.claude/skills/
 ```
 
-Project-scoped install (skill only available inside a specific repo):
+Project-scoped:
 
 ```bash
 mkdir -p .claude/skills
 cp -r company-research-skill/skills/company-thesis-report .claude/skills/
 ```
 
-### Claude / Cowork desktop apps
-
-Zip the skill folder and upload it as a custom skill:
+### Claude / Cowork desktop
 
 ```bash
 cd company-research-skill/skills
 zip -r company-thesis-report.skill company-thesis-report
 ```
 
-Then, in Settings → Capabilities → Skills, upload `company-thesis-report.skill`.
+Upload under Settings → Capabilities → Skills.
 
 ## Usage
 
-Once installed, just ask naturally — no need to say "report" or use investment jargon:
-
 - "What's the story with `<TICKER>`?"
-- "Build me an investment thesis on `<Company Name>`."
-- "Do a deep dive on `<Company>` — is it a buy?"
-- "Research `<Company>` for a turnaround thesis."
+- "Build me an investment thesis on `<Company>`."
+- "Research `<Company>` — is it a buy?"
 
 Claude will:
 
-1. Research the company from primary sources first (exchange filings, annual reports, rating actions, screener.in-style structured financials), using aggregators only for discovery, never as a cited source.
-2. Classify the company's situation (turnaround, compounder, cyclical, structural growth, or structural decline).
-3. Build the report using the bundled chart and HTML helpers, render it to PDF with WeasyPrint, and visually verify the output before delivering it.
-4. Deliver the final PDF with a short spoken summary — the document itself is the deliverable, not a chat re-narration.
+1. Check freshness for `~/.company-research/<slug>/`
+2. Classify sector → load one lens
+3. Ingest sources to disk; build facts packs (no full-doc context dumps)
+4. Draft the fixed spine; render visual PDF with `flow_diagram()` value chains
+5. Deliver PDF + short spoken summary
 
-If you've connected a brokerage/market-data MCP (e.g. Zerodha Kite) in your session, the skill will use it for live price/volume history instead of estimating technicals from search snippets.
+### First run vs refresh
+
+| Request | Behavior |
+|---------|----------|
+| New company | Full ingest + all packs |
+| Same quarter again | `up_to_date` — reuse; optional price refresh |
+| New results/concall | `new_quarter` — delta packs only |
+| "from scratch" / "rebuild" | `force_full` |
 
 ## Customizing
 
-- **Section structure** — edit `skills/company-thesis-report/references/report-format.md` to change what each section covers or how it maps to a chart/table/text.
-- **Visual style** — edit `skills/company-thesis-report/assets/report_style.css` (colors, fonts, page size/margins).
-- **Chart types** — add or modify chart generators in `skills/company-thesis-report/scripts/charts.py`.
-- **HTML building blocks** — add new report components (e.g. a new card or badge type) in `skills/company-thesis-report/scripts/html_helpers.py`.
-
-After editing `SKILL.md`, keep the frontmatter `description` field accurate and specific — Claude uses it to decide when to trigger the skill.
-
-## Contributing
-
-Issues and PRs welcome. Please keep changes to the sourcing/verification discipline in `SKILL.md` deliberate — the skill's value depends on it staying strict about citations and honest bear cases.
+- **Section spine** — `references/report-format.md` (keep sector-agnostic)
+- **Sector routing / new lens** — `references/sector-router.md` + `sectors/<id>/`
+- **Visual style** — `assets/report_style.css`
+- **HTML components** — `scripts/html_helpers.py` (`flow_diagram`, timeline, cards, tables)
 
 ## License
 

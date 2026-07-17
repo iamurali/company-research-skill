@@ -1,0 +1,55 @@
+{
+  "lens_id": "generic",
+  "deep_dive_title": "Company-specific operating points",
+  "valuation_method": "Disclosure-led (often P/E or EV/EBITDA)",
+  "peer_columns": [
+    "P/E",
+    "EBITDA margin",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "revenue_growth",
+      "label": "Revenue growth"
+    },
+    {
+      "key": "ebitda_margin",
+      "label": "EBITDA margin"
+    },
+    {
+      "key": "roe",
+      "label": "RoE"
+    }
+  ],
+  "query_keys": [
+    "guidance",
+    "outlook",
+    "margin",
+    "capacity",
+    "order",
+    "customer"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "Upstream",
+      "detail": "As disclosed"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Core activities as disclosed"
+    },
+    {
+      "label": "Downstream",
+      "detail": "Customers as disclosed"
+    },
+    {
+      "label": "End market",
+      "detail": "As disclosed"
+    }
+  ],
+  "deep_dive_prompts": [
+    "Summarize the 3\u20135 operating KPIs management actually discloses",
+    "Note explicitly that no specialist sector lens was applied",
+    "Avoid importing metrics from an unmatched industry"
+  ]
+}

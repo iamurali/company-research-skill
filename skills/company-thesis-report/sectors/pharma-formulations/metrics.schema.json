@@ -1,0 +1,66 @@
+{
+  "lens_id": "pharma-formulations",
+  "deep_dive_title": "Market mix & regulatory",
+  "valuation_method": "P/E or EV/EBITDA with mix adjustment",
+  "peer_columns": [
+    "P/E",
+    "US mix",
+    "EBITDA margin",
+    "Growth"
+  ],
+  "metrics": [
+    {
+      "key": "us_mix",
+      "label": "US revenue %"
+    },
+    {
+      "key": "india_mix",
+      "label": "India revenue %"
+    },
+    {
+      "key": "gross_margin",
+      "label": "Gross margin"
+    },
+    {
+      "key": "r_and_d",
+      "label": "R&D % sales"
+    },
+    {
+      "key": "anda_pipeline",
+      "label": "Filings / launches"
+    }
+  ],
+  "query_keys": [
+    "US generics",
+    "India branded",
+    "FDA",
+    "warning letter",
+    "ANDA",
+    "price erosion",
+    "complex generics"
+  ],
+  "sector_value_chain_stages": [
+    {
+      "label": "API / inputs",
+      "detail": "Own or bought API"
+    },
+    {
+      "label": "THE COMPANY",
+      "detail": "Formulation manufacturing & filings"
+    },
+    {
+      "label": "Channels",
+      "detail": "US wholesalers, India trade, other markets"
+    },
+    {
+      "label": "Patients",
+      "detail": "Therapy areas"
+    }
+  ],
+  "deep_dive_prompts": [
+    "US vs India vs RoW revenue mix",
+    "Key launches / limited competition products",
+    "FDA / regulatory status of plants",
+    "Pricing / erosion commentary"
+  ]
+}
