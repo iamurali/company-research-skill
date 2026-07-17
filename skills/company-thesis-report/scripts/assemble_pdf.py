@@ -80,7 +80,13 @@ def main() -> None:
             "weasyprint not installed. pip install weasyprint"
         ) from e
 
-    HTML(filename=str(html_out), base_url=str(html_out.parent)).write_pdf(args.out)
+    try:
+        HTML(filename=str(html_out), base_url=str(html_out.parent)).write_pdf(args.out)
+    except Exception as exc:  # noqa: BLE001
+        raise SystemExit(
+            f"WeasyPrint render failed: {exc}\n"
+            f"HTML preserved at: {html_out}"
+        ) from exc
     print(json_dumps({
         "html": str(html_out),
         "pdf": str(args.out),

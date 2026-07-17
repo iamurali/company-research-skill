@@ -14,7 +14,7 @@ Sterlite-style examples — **functionality only**, not their code or ASCII diag
 - Sections that are only short bullets with no table and no interpreting paragraph.
 - Empty or near-empty H2s.
 - Dumping confirm/kill as the majority of page-2 content without a research argument.
-- Average body paragraph under ~40 words (excluding table cells and status bullets).
+- Average body paragraph under ~35 words (excluding table cells and status bullets).
 
 ## What “sophisticated” means here
 

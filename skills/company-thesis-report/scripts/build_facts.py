@@ -151,6 +151,7 @@ def empty_pack(name: str) -> dict:
             "litigation": [],
             "fund_raises": [],
             "leadership_changes": [],
+            "guidance_reliability": [],
         },
         "technicals": {"items": [], "gap": ""},
         "quotes": {"items": []},

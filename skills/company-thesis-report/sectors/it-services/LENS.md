@@ -16,10 +16,10 @@ Load this file only when the router selects `it-services`. Do not load other len
 
 | Stage | Detail |
 |-------|--------|
-| Clients | Global enterprises by vertical |
+| Talent | Hiring, utilization, attrition |
 | THE COMPANY | Delivery centres + onsite |
 | Services | ADM, cloud, engineering, BPO |
-| Talent | Hiring, utilization, attrition |
+| Clients | Global enterprises by vertical |
 
 ## Must-have metrics
 

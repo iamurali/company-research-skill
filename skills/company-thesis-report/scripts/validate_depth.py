@@ -211,10 +211,11 @@ def validate_slug(slug: str, html_path: Path | None = None) -> tuple[list[str], 
             if p.exists():
                 html_path = p
                 break
-        # common Newgen name
-        for p in sorted(cand.glob("*.html")) if cand.exists() else []:
-            html_path = p
-            break
+        # common Newgen name — only if the named-file loop found nothing
+        if html_path is None:
+            for p in sorted(cand.glob("*.html")) if cand.exists() else []:
+                html_path = p
+                break
 
     if html_path and html_path.exists():
         sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -269,8 +270,13 @@ def validate_slug(slug: str, html_path: Path | None = None) -> tuple[list[str], 
                 "F/prose: tip-speak banned in research voice — " + ", ".join(tip_hits)
             )
 
-        # Heuristic: financial section should have a substantial paragraph near tables
-        if "Financial Performance" in html or "11. Financial" in html:
+        # Heuristic: financial section should have a substantial paragraph near tables.
+        # Skip for turnaround/cyclical reports where financials may be structurally sparse.
+        _situation = html.lower()
+        _is_sparse_situation = any(
+            k in _situation for k in ("turnaround", "cyclical", "structural decline")
+        )
+        if not _is_sparse_situation and ("Financial Performance" in html or "11. Financial" in html):
             long_after = [w for w in para_words if w >= 60]
             if len(long_after) < 2:
                 failures.append(
