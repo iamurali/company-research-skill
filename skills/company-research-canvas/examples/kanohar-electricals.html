@@ -1,0 +1,648 @@
+<title>Kanohar Electricals Canvas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a transformer rating-plate hero, then numbered "test bays" (sections) on a steel-blue ground; copper is the single accent. */
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --plate:#dfe4e8; --ink:#16212b; --muted:#5a6873; --line:#c9d1d8;
+  --copper:#b8622a; --copper-soft:#f3e1d3; --steel:#2f4a5e; --oil:#c9952a;
+  --good:#2f8a55; --good-bg:#dff1e6; --warn:#b07a10; --warn-bg:#fbefd2; --bad:#b33a2e; --bad-bg:#f8dedb; --idle:#6b7681; --idle-bg:#e5e9ec;
+  --f-display:"Saira Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --panel:#16212a; --plate:#1d2a35; --ink:#e3e9ee; --muted:#93a2ae; --line:#2a3946;
+  --copper:#e08a4c; --copper-soft:#3a2617; --steel:#8fb3cc; --oil:#e0b24a;
+  --good:#5fc98a; --good-bg:#16301f; --warn:#e3b448; --warn-bg:#33280f; --bad:#ef7d70; --bad-bg:#3a1b18; --idle:#9aa6b1; --idle-bg:#222e38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --panel:#16212a; --plate:#1d2a35; --ink:#e3e9ee; --muted:#93a2ae; --line:#2a3946;
+  --copper:#e08a4c; --copper-soft:#3a2617; --steel:#8fb3cc; --oil:#e0b24a;
+  --good:#5fc98a; --good-bg:#16301f; --warn:#e3b448; --warn-bg:#33280f; --bad:#ef7d70; --bad-bg:#3a1b18; --idle:#9aa6b1; --idle-bg:#222e38; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.05}
+h2{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:.01em}
+h3{font-size:22px;font-weight:600}
+p{margin:0;max-width:68ch}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.cu{color:var(--copper)}
+a{color:var(--copper)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+
+/* Hero nameplate */
+.plate{background:var(--plate);border:2px solid var(--steel);border-radius:6px;padding:28px;position:relative;display:grid;gap:24px}
+.plate::before,.plate::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:var(--steel);top:10px}
+.plate::before{left:10px}.plate::after{right:10px}
+.plate-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px}
+.plate h1{font-size:clamp(40px,7vw,76px);font-weight:800;letter-spacing:.005em;text-transform:uppercase}
+.plate h1 span{color:var(--copper)}
+.tick{display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-family:var(--f-mono);font-size:12px;padding:4px 9px;border:1px solid var(--line);border-radius:3px;background:var(--panel)}
+.specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+@media (min-width:1000px){.specs{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:560px){.specs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.spec{background:var(--panel);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.spec b{font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1}
+.spec small{color:var(--muted);font-size:12px}
+.thesis{font-size:17px;max-width:80ch}
+
+/* Section head */
+.sec{display:flex;flex-direction:column;gap:22px}
+.sec-head{display:flex;gap:16px;align-items:baseline;border-top:3px solid var(--ink);padding-top:12px;flex-wrap:wrap}
+.bay{font-family:var(--f-mono);font-size:12px;color:var(--copper);letter-spacing:.1em}
+.lede{font-size:16px;color:var(--muted)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h3{font-size:20px}
+ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+ul.clean li{max-width:70ch}
+
+/* Value chain */
+.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.link{background:var(--panel);border:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column;gap:6px;position:relative;min-width:0}
+.link.kan{border:2px solid var(--copper);background:var(--copper-soft)}
+.link .step{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.link h4{margin:0;font-family:var(--f-display);font-size:19px;font-weight:600}
+.link p{font-size:13px}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:2px 6px;border-radius:2px;background:var(--copper);color:var(--panel);width:max-content}
+@media (max-width:760px){.chain{grid-template-columns:1fr}}
+
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--plate);white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--copper-soft);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+/* status pills */
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-good{color:var(--good);background:var(--good-bg)}
+.p-warn{color:var(--warn);background:var(--warn-bg)}
+.p-bad{color:var(--bad);background:var(--bad-bg)}
+.p-idle{color:var(--idle);background:var(--idle-bg)}
+
+/* products */
+.prod{background:var(--panel);border:1px solid var(--line);border-radius:4px;display:grid;grid-template-columns:200px 1fr;min-width:0;overflow:hidden}
+.prod .art{background:var(--plate);display:flex;align-items:center;justify-content:center;padding:14px;border-right:1px solid var(--line)}
+.prod .art svg{width:100%;max-width:170px;height:auto}
+.prod .body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prod .meta{display:flex;flex-wrap:wrap;gap:8px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.kv div{border-left:2px solid var(--copper);padding-left:8px;display:flex;flex-direction:column}
+.kv b{font-family:var(--f-mono);font-size:15px}
+.kv span{font-size:12px;color:var(--muted)}
+.use{font-size:14px;background:var(--bg);padding:10px 12px;border-radius:3px}
+.use strong{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--copper);display:block;margin-bottom:2px}
+@media (max-width:640px){.prod{grid-template-columns:1fr}.prod .art{border-right:0;border-bottom:1px solid var(--line)}}
+
+/* bars */
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:150px 1fr 56px;gap:10px;align-items:center;font-size:13px}
+.bar .track{height:14px;background:var(--plate);border-radius:2px;overflow:hidden;position:relative}
+.bar .fill{height:100%;background:var(--steel)}
+.bar .fill.cu{background:var(--copper)}
+.bar .v{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.bar{grid-template-columns:110px 1fr 48px}}
+.stack{display:flex;height:26px;border-radius:3px;overflow:hidden;border:1px solid var(--line)}
+.stack span{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:11px;color:var(--panel);white-space:nowrap;overflow:hidden}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* timeline (history) */
+.hist{display:flex;flex-direction:column;border-left:2px solid var(--line);margin-left:6px}
+.ev{display:grid;grid-template-columns:70px 1fr;gap:12px;padding:8px 0 8px 18px;position:relative}
+.ev::before{content:"";position:absolute;left:-7px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--steel)}
+.ev.key::before{background:var(--copper);border-color:var(--copper)}
+.ev b{font-family:var(--f-mono);font-size:14px}
+.ev p{font-size:14px}
+
+/* KPI quarterly horizontal timeline */
+.qt{overflow-x:auto;padding-bottom:6px}
+.qt-row{display:grid;grid-template-columns:repeat(9,minmax(210px,1fr));gap:0;min-width:1890px;position:relative}
+.qt-row::before{content:"";position:absolute;left:0;right:0;top:44px;height:3px;background:var(--line)}
+.q{padding:0 12px;display:flex;flex-direction:column;gap:10px;position:relative}
+.q .qh{font-family:var(--f-display);font-size:22px;font-weight:700;height:34px;display:flex;align-items:flex-end;gap:8px}
+.q .dot{width:16px;height:16px;border-radius:50%;background:var(--panel);border:3px solid var(--steel);position:relative;z-index:1;margin-top:2px}
+.q.done .dot{background:var(--good);border-color:var(--good)}
+.q.now .dot{background:var(--copper);border-color:var(--copper)}
+.q .when{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.q ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.q li{font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:7px 9px}
+.q li b{font-family:var(--f-mono);font-size:12px;display:block}
+.q li.act{border-left:3px solid var(--good)}
+.q li.tgt{border-left:3px solid var(--copper)}
+.q li.evt{border-left:3px solid var(--steel)}
+
+.callout{border-left:4px solid var(--copper);background:var(--panel);padding:16px 18px;border-radius:0 4px 4px 0;display:flex;flex-direction:column;gap:8px}
+.quote{font-size:15px;font-style:italic}
+.src{font-size:12px;color:var(--muted)}
+.foot{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:10px}
+.foot ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+svg text{font-family:var(--f-mono)}
+@media (prefers-reduced-motion:no-preference){.fill{transition:width .6s ease}}
+</style>
+
+<div class="wrap">
+
+<!-- HERO -->
+<header class="plate" aria-label="Company nameplate">
+  <div class="plate-top">
+    <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+      <span class="label">Rating plate · Equity research canvas · as of 25 Oct 2026</span>
+      <h1>Kanohar <span>Electricals</span> Ltd</h1>
+      <div class="tick">
+        <span class="chip">NSE: KANOHAR</span><span class="chip">BSE: 544911</span><span class="chip">Est. 1972 · Meerut, UP</span><span class="chip">Listed 16 Sep 2026 @ ₹632</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0">
+      <span class="label">CMP (mid-Oct 2026)</span>
+      <span style="font-family:var(--f-display);font-size:44px;font-weight:700;line-height:1">≈ ₹1,000</span>
+      <span class="muted mono" style="font-size:12px">Mcap ≈ ₹7,900–8,600 cr · TTM P/E ≈ 57–61x</span>
+    </div>
+  </div>
+  <div class="specs">
+    <div class="spec"><span class="label">FY26 revenue</span><b>₹653.8 cr</b><small>3-yr CAGR 53.7%</small></div>
+    <div class="spec"><span class="label">FY26 EBITDA margin</span><b class="cu">27.6%</b><small>from 11.2% in FY24</small></div>
+    <div class="spec"><span class="label">FY26 PAT</span><b>₹129.6 cr</b><small>ROE 42% · ROCE 70%</small></div>
+    <div class="spec"><span class="label">Order book · 30 Jun 26</span><b>₹2,026 cr</b><small>+₹867 cr added Jul–Sep</small></div>
+    <div class="spec"><span class="label">Installed capacity</span><b>19,200 MVA</b><small>FY26 utilisation 46%</small></div>
+    <div class="spec"><span class="label">Credit rating</span><b>A- / A2+</b><small>CRISIL, Stable (Mar 2026)</small></div>
+  </div>
+  <p class="thesis">A 54-year-old, family-run Meerut transformer maker that spent FY24 paying for short-circuit certifications, and is now cashing that ticket: it is one of five Indian makers certified for <b>500 MVA / 400 kV</b> units and one of two for <b>100 MVA / 220 kV Scott</b> railway transformers. 400 kV units were 70% of transformer sales in Q1 FY27. Management guides ₹950 cr revenue for FY27 at FY26-like margins, and is doubling capacity for FY29.</p>
+</header>
+
+<!-- 1 INDUSTRY -->
+<section class="sec" id="industry">
+  <div class="sec-head"><span class="bay">BAY 01</span><h2>Industry &amp; where Kanohar sits</h2></div>
+  <p class="lede">A transformer works like a pressure valve for electricity: it raises voltage so power can travel hundreds of kilometres with little loss, then lowers it so homes, factories and trains can use it. Every new substation, renewable park and electrified rail line needs one.</p>
+
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">India transformer market by product (USD mn) · CARE Report in RHP</span>
+      <div class="tbl" style="border:0">
+      <table>
+        <thead><tr><th>Segment</th><th class="n">CY25</th><th class="n">CY30P</th><th class="n">CAGR</th><th>Kanohar plays?</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>Power transformer</td><td class="n">2,455.9</td><td class="n">3,673.6</td><td class="n">8.4%</td><td>Core · up to 500 MVA</td></tr>
+          <tr><td>Distribution</td><td class="n">1,988.0</td><td class="n">2,526.4</td><td class="n">4.9%</td><td>Token · up to 5.5 MVA</td></tr>
+          <tr class="hl"><td>Shunt reactor</td><td class="n">917.2</td><td class="n">1,158.1</td><td class="n">4.8%</td><td>Fast-growing in order book</td></tr>
+          <tr class="hl"><td>Traction</td><td class="n">226.3</td><td class="n">333.8</td><td class="n">8.1%</td><td>Yes · 30.24 MVA</td></tr>
+          <tr class="hl"><td>Scott-connected</td><td class="n">95.5</td><td class="n">106.0</td><td class="n">2.1%</td><td>1 of 2 at 220 kV</td></tr>
+          <tr><td><b>Total India</b></td><td class="n"><b>4,944.9</b></td><td class="n"><b>6,854.2</b></td><td class="n"><b>6.7%</b></td><td>Global: $47.5 bn → $63.9 bn</td></tr>
+        </tbody>
+      </table></div>
+      <p class="src">Within power transformers, 400 kV and 765 kV classes are guided at ~9% CAGR through CY30 as renewable-rich states connect to the grid. Note: the CARE report was commissioned and paid for by the company, which is standard for RHPs.</p>
+    </div>
+
+    <div class="panel">
+      <span class="label">Why the 400 kV club is small</span>
+      <h3>Certification is the moat</h3>
+      <ul class="clean">
+        <li>Utilities only accept extra-high-voltage units whose design has passed a <b>short-circuit test</b> at an accredited lab (CPRI or NHPTL). Each test is expensive and a failure costs a unit.</li>
+        <li>Kanohar spent <span class="mono">₹5.22 cr</span> on testing in FY24 and has short-circuit tested <b>200+ ratings</b>. That campaign directly won the <span class="mono">₹568.67 cr</span> POWERGRID 500 MVA order in June 2025, its largest ever.</li>
+        <li>Only <b>5</b> Indian companies hold 500 MVA/400 kV certification; only <b>4</b> are RDSO-approved for 100 MVA/132 kV Scott and <b>2</b> for 220 kV Scott.</li>
+        <li>Management on the Q1 FY27 call: industry lead times are <b>18–24 months</b>, so tenders being bid now are for FY29 delivery.</li>
+      </ul>
+    </div>
+  </div>
+
+  <span class="label">Value chain · Kanohar operates two links and part of a third</span>
+  <div class="chain">
+    <div class="link"><span class="step">01 · Inputs</span><h4>Raw materials</h4><p>CRGO electrical steel (largely imported), copper conductor, transformer oil, steel plate. Top-10 suppliers = 71.5% of COGS, no long-term contracts.</p></div>
+    <div class="link kan"><span class="step">02 · Components</span><h4>Tanks &amp; radiators</h4><p>Made in-house from steel plate and CRCA coil. Bushings, tap-changers bought out.</p><span class="tag">BACKWARD INTEGRATED</span></div>
+    <div class="link kan"><span class="step">03 · OEM</span><h4>Transformer &amp; reactor</h4><p>Design, winding, drying, assembly, factory test at Gangol &amp; Rithani. 83.4% of FY26 revenue.</p><span class="tag">CORE</span></div>
+    <div class="link kan"><span class="step">04 · Installation</span><h4>EPC</h4><p>Turnkey substations (AIS/GIS) and 132–400 kV lines, built in 13 states. 16.4% of FY26 revenue.</p><span class="tag">HYBRID BIDS</span></div>
+    <div class="link"><span class="step">05 · Owners</span><h4>Utilities &amp; railways</h4><p>POWERGRID, state transcos, CPSUs, railway contractors (e.g. Blue Star), Bhutan Power. Central govt 58.8%, state 40.8% of Q1 revenue.</p></div>
+  </div>
+
+  <div class="panel">
+    <span class="label">Listed peers · RHP comparison (FY26)</span>
+    <div class="tbl" style="border:0">
+    <table>
+      <thead><tr><th>Company</th><th class="n">Revenue (₹ cr)</th><th class="n">RoNW</th><th class="n">P/E at IPO date</th><th>Overlap with Kanohar</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td>Kanohar Electricals</td><td class="n">654</td><td class="n">34.8%</td><td class="n">38.6x post-issue</td><td>400 kV power, Scott, traction, reactors</td></tr>
+        <tr><td>Transformers &amp; Rectifiers (TRIL)</td><td class="n">2,509</td><td class="n">17.6%</td><td class="n">32.2x</td><td>Closest pure-play, up to 765 kV</td></tr>
+        <tr><td>GE Vernova T&amp;D India</td><td class="n">6,206</td><td class="n">45.9%</td><td class="n">89.4x</td><td>EHV/HVDC, MNC parent</td></tr>
+        <tr><td>Hitachi Energy India</td><td class="n">8,148</td><td class="n">19.1%</td><td class="n">159.6x</td><td>765 kV, HVDC leader</td></tr>
+        <tr><td>CG Power &amp; Industrial</td><td class="n">12,418</td><td class="n">15.8%</td><td class="n">114.8x</td><td>Power transformers, broad portfolio</td></tr>
+        <tr><td>Schneider Electric Infra</td><td class="n">2,891</td><td class="n">29.0%</td><td class="n">155.1x</td><td>Distribution-heavy</td></tr>
+        <tr><td>BHEL</td><td class="n">33,782</td><td class="n">6.1%</td><td class="n">91.3x</td><td>PSU, 765 kV, everything</td></tr>
+      </tbody>
+    </table></div>
+    <p class="src">Positioning: Kanohar is roughly a quarter of TRIL's size but earns a higher margin because 400 kV and Scott units dominate its mix. It is the smallest listed member of the 400 kV-certified group.</p>
+  </div>
+</section>
+
+<!-- 2 BUSINESS -->
+<section class="sec" id="business">
+  <div class="sec-head"><span class="bay">BAY 02</span><h2>Business verticals, unit by unit</h2></div>
+  <p class="lede">Two segments, six product lines. The illustrations below are schematic drawings of each machine type, not photographs of Kanohar units.</p>
+
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">Transformer revenue by product</span>
+      <div class="bars">
+        <div class="bar"><span>Power · FY26</span><div class="track"><div class="fill" style="width:57.1%"></div></div><span class="v">57.1%</span></div>
+        <div class="bar"><span>Power · Q1 FY27</span><div class="track"><div class="fill cu" style="width:70.4%"></div></div><span class="v">70.4%</span></div>
+        <div class="bar"><span>Traction · FY26</span><div class="track"><div class="fill" style="width:25.3%"></div></div><span class="v">25.3%</span></div>
+        <div class="bar"><span>Traction · Q1 FY27</span><div class="track"><div class="fill cu" style="width:11.5%"></div></div><span class="v">11.5%</span></div>
+        <div class="bar"><span>Scott · FY26</span><div class="track"><div class="fill" style="width:0.9%"></div></div><span class="v">0.9%</span></div>
+        <div class="bar"><span>Shunt reactor · Q1</span><div class="track"><div class="fill cu" style="width:2.8%"></div></div><span class="v">2.8%</span></div>
+      </div>
+      <p class="src">Share of total revenue; EPC is the balance (16.5% FY26, 14.8% Q1 FY27). Source: Q1 FY27 investor presentation.</p>
+    </div>
+    <div class="panel">
+      <span class="label">Transformer sales by voltage class</span>
+      <div class="bars">
+        <div class="bar"><span>400 kV · FY24</span><div class="track"><div class="fill" style="width:10%"></div></div><span class="v">~10%</span></div>
+        <div class="bar"><span>400 kV · FY26</span><div class="track"><div class="fill" style="width:52.2%"></div></div><span class="v">52.2%</span></div>
+        <div class="bar"><span>400 kV · Q1 FY27</span><div class="track"><div class="fill cu" style="width:70.2%"></div></div><span class="v">70.2%</span></div>
+        <div class="bar"><span>220–400 kV · FY26</span><div class="track"><div class="fill" style="width:11%"></div></div><span class="v">11.0%</span></div>
+        <div class="bar"><span>132–220 kV · FY26</span><div class="track"><div class="fill" style="width:17.8%"></div></div><span class="v">17.8%</span></div>
+        <div class="bar"><span>&lt;132 kV · FY26</span><div class="track"><div class="fill" style="width:2.5%"></div></div><span class="v">2.5%</span></div>
+      </div>
+      <p class="src">The mix shift to 400 kV is the margin story: gross margin rose from 23.6% (FY23) to 38.9% (FY26) and 41.9% in Q1 FY27.</p>
+    </div>
+  </div>
+
+  <!-- products -->
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="40" y="55" width="90" height="70" rx="3" fill="var(--steel)"/>
+      <g fill="var(--muted)">
+        <rect x="18" y="60" width="18" height="60"/><rect x="134" y="60" width="18" height="60"/></g>
+      <g stroke="var(--panel)" stroke-width="1.5"><line x1="22" y1="60" x2="22" y2="120"/><line x1="27" y1="60" x2="27" y2="120"/><line x1="32" y1="60" x2="32" y2="120"/><line x1="138" y1="60" x2="138" y2="120"/><line x1="143" y1="60" x2="143" y2="120"/><line x1="148" y1="60" x2="148" y2="120"/></g>
+      <g fill="var(--copper)"><rect x="56" y="18" width="7" height="37"/><rect x="81" y="10" width="8" height="45"/><rect x="107" y="18" width="7" height="37"/></g>
+      <g fill="var(--oil)"><circle cx="59.5" cy="16" r="5"/><circle cx="85" cy="8" r="6"/><circle cx="110.5" cy="16" r="5"/></g>
+      <rect x="45" y="40" width="30" height="12" rx="6" fill="var(--muted)"/>
+      <rect x="36" y="125" width="98" height="8" fill="var(--ink)"/>
+      <text x="85" y="95" text-anchor="middle" font-size="11" fill="var(--panel)">500 MVA</text></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">Core · 57% of FY26 rev</span><span class="pill p-idle">69.6% of order book</span></div>
+      <h3>Power transformers</h3>
+      <div class="kv"><div><b>Up to 500 MVA</b><span>rating</span></div><div><b>Up to 400 kV</b><span>voltage (765 kV-ready plant)</span></div><div><b>₹65.7 → 242.2 cr</b><span>revenue FY24 → FY25</span></div></div>
+      <p>The large oil-filled machines that sit at grid substations. Kanohar's biggest are <b>500 MVA, 400/220/33 kV auto-transformers</b>, short-circuit tested at NHPTL in 2023. These link the 400 kV inter-state backbone to state 220 kV networks.</p>
+      <p class="use"><strong>Final application</strong>Inter-state and state transmission substations, renewable-energy evacuation (solar parks in Rajasthan and Gujarat), Green Energy Corridor links. Main buyer: POWERGRID (₹573 cr of the FY26 order book) and other CPSUs.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><line x1="10" y1="22" x2="160" y2="22" stroke="var(--ink)" stroke-width="2"/>
+      <path d="M85 22 L70 50 L100 50 Z" fill="none" stroke="var(--muted)" stroke-width="2"/>
+      <rect x="25" y="52" width="120" height="55" rx="8" fill="var(--steel)"/>
+      <rect x="62" y="72" width="46" height="24" fill="var(--copper)"/>
+      <text x="85" y="88" text-anchor="middle" font-size="10" fill="var(--panel)">30.24</text>
+      <g fill="var(--ink)"><circle cx="45" cy="115" r="9"/><circle cx="70" cy="115" r="9"/><circle cx="100" cy="115" r="9"/><circle cx="125" cy="115" r="9"/></g>
+      <line x1="5" y1="126" x2="165" y2="126" stroke="var(--muted)" stroke-width="3"/>
+      <g stroke="var(--muted)" stroke-width="3"><line x1="20" y1="126" x2="20" y2="134"/><line x1="55" y1="126" x2="55" y2="134"/><line x1="90" y1="126" x2="90" y2="134"/><line x1="125" y1="126" x2="125" y2="134"/><line x1="160" y1="126" x2="160" y2="134"/></g></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">25.3% of FY26 rev</span><span class="pill p-idle">1.8% of order book</span></div>
+      <h3>Traction transformers</h3>
+      <div class="kv"><div><b>30.24 MVA</b><span>rating</span></div><div><b>132 kV &amp; 220 kV</b><span>primary voltage</span></div><div><b>RDSO</b><span>approved facility</span></div></div>
+      <p>Installed at <b>traction sub-stations</b> beside the railway track. They take power from the state grid and convert it to the single-phase 25 kV that feeds the overhead wire the train's pantograph touches.</p>
+      <p class="use"><strong>Final application</strong>Indian Railways electrification and freight corridors, supplied via EPC contractors such as Blue Star. Watch: traction share of the order book is only 1.8%, so FY26's 25% revenue weight is unlikely to repeat this year.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="30" y="40" width="110" height="80" rx="3" fill="var(--steel)"/>
+      <g fill="none" stroke="var(--copper)" stroke-width="5"><line x1="85" y1="58" x2="85" y2="105"/><line x1="55" y1="58" x2="115" y2="58"/></g>
+      <g fill="var(--oil)"><circle cx="55" cy="58" r="5"/><circle cx="115" cy="58" r="5"/><circle cx="85" cy="105" r="5"/></g>
+      <g fill="var(--copper)"><rect x="48" y="12" width="7" height="28"/><rect x="82" y="12" width="7" height="28"/><rect x="116" y="12" width="7" height="28"/></g>
+      <text x="85" y="134" text-anchor="middle" font-size="10" fill="var(--muted)">3-phase → 2 × 55 kV</text></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">Scarce · 1 of 2 at 220 kV</span><span class="pill p-idle">4.2% of order book</span></div>
+      <h3>Scott-connected transformers</h3>
+      <div class="kv"><div><b>100 MVA</b><span>rating</span></div><div><b>220 / 2×55 kV</b><span>and 132 / 2×55 kV</span></div><div><b>2024</b><span>short-circuit tested at NHPTL &amp; CPRI</span></div></div>
+      <p>A special winding arrangement (two transformers joined in a "T") that turns the grid's balanced three-phase supply into two single-phase outputs. That keeps the grid balanced when a heavy rail load draws power, and supports the 2×25 kV system used on high-speed and heavy-haul lines.</p>
+      <p class="use"><strong>Final application</strong>Dedicated Freight Corridors, high-speed rail, heavy-haul electrification. Management sizes the Scott opportunity at ~₹1,000 cr by FY30. Introduced to the portfolio in FY25.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="55" y="45" width="60" height="80" rx="3" fill="var(--steel)"/>
+      <g fill="var(--muted)"><rect x="30" y="52" width="20" height="66"/><rect x="120" y="52" width="20" height="66"/></g>
+      <rect x="81" y="8" width="8" height="37" fill="var(--copper)"/><circle cx="85" cy="7" r="6" fill="var(--oil)"/>
+      <g fill="none" stroke="var(--copper)" stroke-width="2.5"><path d="M70 70 q7 -8 15 0 t15 0"/><path d="M70 85 q7 -8 15 0 t15 0"/><path d="M70 100 q7 -8 15 0 t15 0"/></g>
+      <rect x="50" y="125" width="70" height="8" fill="var(--ink)"/></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-warn">Emerging · 13.1% of order book</span><span class="pill p-idle">2.8% of Q1 rev</span></div>
+      <h3>Shunt reactors</h3>
+      <div class="kv"><div><b>Up to 125 MVAR</b><span>rating</span></div><div><b>400 kV</b><span>voltage</span></div><div><b>₹0 → ₹248 cr</b><span>order book FY24 → FY26</span></div></div>
+      <p>A coil that "soaks up" excess voltage. Long 400 kV lines carrying little power (common at night on solar evacuation routes) see voltage rise dangerously; a reactor connected to the line holds it steady.</p>
+      <p class="use"><strong>Final application</strong>Renewable-energy transmission lines and long EHV corridors. Management expects reactors to settle at 10–15% of revenue.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="80" y="5" width="10" height="140" fill="var(--muted)"/>
+      <line x1="45" y1="20" x2="125" y2="20" stroke="var(--muted)" stroke-width="5"/>
+      <g fill="var(--oil)"><circle cx="50" cy="18" r="4"/><circle cx="85" cy="18" r="4"/><circle cx="120" cy="18" r="4"/></g>
+      <rect x="92" y="55" width="44" height="48" rx="4" fill="var(--steel)"/>
+      <g fill="var(--copper)"><rect x="98" y="44" width="5" height="11"/><rect x="111" y="44" width="5" height="11"/><rect x="124" y="44" width="5" height="11"/></g>
+      <line x1="90" y1="70" x2="92" y2="70" stroke="var(--ink)" stroke-width="6"/></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-idle">Legacy · 0.1% of FY26 rev</span></div>
+      <h3>Distribution transformers</h3>
+      <div class="kv"><div><b>Up to 5.5 MVA</b><span>rating</span></div><div><b>Up to 33 kV</b><span>voltage</span></div><div><b>Rithani plant</b><span>est. 1983, up to 25 MVA/66 kV</span></div></div>
+      <p>The small units on poles and in neighbourhood kiosks that step voltage down to 415/230 V for homes and shops. This is where Kanohar started; today it is a crowded, low-margin market the company has effectively exited.</p>
+      <p class="use"><strong>Final application</strong>Last-mile power to homes, shops and factories. The Rithani plant ran at very low utilisation in FY26, which drags the reported 46% plant average.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><g fill="none" stroke="var(--steel)" stroke-width="2.5"><path d="M30 135 L55 15 L80 135"/><path d="M38 100 L72 100 M44 70 L66 70 M50 40 L60 40 M38 100 L66 70 L50 40 M72 100 L44 70 L60 40"/><line x1="25" y1="25" x2="85" y2="25"/></g>
+      <path d="M85 25 Q120 60 165 35" fill="none" stroke="var(--copper)" stroke-width="2"/>
+      <rect x="105" y="95" width="45" height="35" fill="var(--muted)"/><rect x="113" y="82" width="6" height="13" fill="var(--copper)"/><rect x="136" y="82" width="6" height="13" fill="var(--copper)"/>
+      <line x1="10" y1="136" x2="165" y2="136" stroke="var(--ink)" stroke-width="2"/></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">16.4% of FY26 rev</span><span class="pill p-idle">11.2% of order book</span></div>
+      <h3>EPC: substations &amp; transmission lines</h3>
+      <div class="kv"><div><b>132–400 kV</b><span>lines and bays</span></div><div><b>13 states</b><span>executed</span></div><div><b>6–24 months</b><span>job duration</span></div></div>
+      <p>Turnkey construction of air- and gas-insulated substations, bay additions in existing substations up to 400 kV, and transmission lines. FY26 EPC was ₹107.5 cr, split roughly 9.7% / 6.7% of revenue between the two sub-lines.</p>
+      <p class="use"><strong>Final application</strong>Utility substations and grid lines. Strategic role: lets Kanohar bid "hybrid" tenders that bundle supply and installation, which pure OEMs cannot. Management treats it as a door-opener, not a volume engine. A gas-insulated switchgear (GIS) tie-up with Chung-Hsin (CHEM), Taiwan, runs to 2027 but GIS has billed nothing in three years.</p>
+    </div>
+  </article>
+
+  <div class="grid3">
+    <div class="panel">
+      <span class="label">Order book split · 30 Jun 2026</span>
+      <div class="stack" role="img" aria-label="Order book by product">
+        <span style="width:69.6%;background:var(--steel)">Power 69.6</span><span style="width:13.1%;background:var(--copper)">13.1</span><span style="width:11.2%;background:var(--oil)">11.2</span><span style="width:4.2%;background:var(--muted)"></span><span style="width:1.9%;background:var(--ink)"></span>
+      </div>
+      <div class="legend"><span><i style="background:var(--steel)"></i>Power 69.6%</span><span><i style="background:var(--copper)"></i>Shunt reactor 13.1%</span><span><i style="background:var(--oil)"></i>EPC 11.2%</span><span><i style="background:var(--muted)"></i>Scott 4.2%</span><span><i style="background:var(--ink)"></i>Traction + dist. 1.9%</span></div>
+      <p class="src">Government 88.4% · Private 11.6% (private was ~6% at FY26 end).</p>
+    </div>
+    <div class="panel">
+      <span class="label">Revenue by state · Q1 FY27</span>
+      <div class="bars">
+        <div class="bar"><span>Gujarat</span><div class="track"><div class="fill" style="width:44.8%"></div></div><span class="v">44.8%</span></div>
+        <div class="bar"><span>Haryana</span><div class="track"><div class="fill" style="width:22.9%"></div></div><span class="v">22.9%</span></div>
+        <div class="bar"><span>Rajasthan</span><div class="track"><div class="fill" style="width:14.6%"></div></div><span class="v">14.6%</span></div>
+        <div class="bar"><span>West Bengal</span><div class="track"><div class="fill" style="width:11%"></div></div><span class="v">11.0%</span></div>
+        <div class="bar"><span>Others (PB, UP…)</span><div class="track"><div class="fill" style="width:6.7%"></div></div><span class="v">6.7%</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="label">Plants &amp; utilisation</span>
+      <div class="bars">
+        <div class="bar"><span>FY24 (15,000 MVA)</span><div class="track"><div class="fill" style="width:16.5%"></div></div><span class="v">16.5%</span></div>
+        <div class="bar"><span>FY25 (19,200 MVA)</span><div class="track"><div class="fill" style="width:29.7%"></div></div><span class="v">29.7%</span></div>
+        <div class="bar"><span>FY26 (19,200 MVA)</span><div class="track"><div class="fill" style="width:46%"></div></div><span class="v">46.0%</span></div>
+        <div class="bar"><span>FY28 mgmt target</span><div class="track"><div class="fill cu" style="width:90%"></div></div><span class="v">~90%</span></div>
+      </div>
+      <p class="src"><b>Gangol</b> (1997): up to 500 MVA/400 kV, laid out for 765 kV. <b>Rithani</b> (1983): up to 25 MVA/66 kV. Both in Meerut. In-house NABL-accredited test labs, vapour-phase drying oven, impulse test set.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 PROMOTERS -->
+<section class="sec" id="promoters">
+  <div class="sec-head"><span class="bay">BAY 03</span><h2>Promoters: history &amp; skin in the game</h2></div>
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">Three generations of engineers</span>
+      <ul class="clean">
+        <li><b>Late Kanohar Lal Singhal</b> founded the company in 1972.</li>
+        <li><b>Dinesh Singhal</b>, CMD (IIT Roorkee), with the company since 1976 and running it for 40+ years.</li>
+        <li><b>Adesh Singhal</b>, WTD (IIT Roorkee, since 1981), Dinesh's brother; engineering and quality.</li>
+        <li><b>Vivek Singhal</b>, WTD (IIT Bombay, since 2000), Dinesh's son; built the EPC business.</li>
+        <li><b>Abhishek Singhal</b>, WTD (IIT Delhi, since 2002), Dinesh's son; design, ERP, CAE. He fronted the first post-listing results.</li>
+        <li>Virat and Aditya Singhal are also named promoters, alongside <b>K Sons Family Trust</b> and Kanohar International Pvt Ltd.</li>
+      </ul>
+      <div class="callout">
+        <span class="label">In management's words · Q1 FY27 presentation</span>
+        <p class="quote">"Certifications and Pre-qualification are large entry barriers in the Transformers industry."</p>
+        <p class="src">Abhishek Singhal, Whole Time Director, 6 Oct 2026</p>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="label">Skin in the game</span>
+      <div class="bars">
+        <div class="bar"><span>Pre-IPO holding</span><div class="track"><div class="fill" style="width:99.72%"></div></div><span class="v">99.7%</span></div>
+        <div class="bar"><span>Post-IPO holding</span><div class="track"><div class="fill cu" style="width:78.64%"></div></div><span class="v">78.6%</span></div>
+      </div>
+      <ul class="clean">
+        <li><b>Cash taken out:</b> ₹755.7 cr OFS by K Sons Family Trust, 72% of the ₹1,056 cr IPO. Only ₹300 cr went to the company.</li>
+        <li><b>Still owned:</b> ~78.6% of a ~₹8,000 cr company, roughly ₹6,200 cr at mid-October prices. Alignment remains very high.</li>
+        <li><b>Pay:</b> the CMD's and whole-time directors' terms (Dinesh and Adesh shown in the RHP) include a commission of <b>1.5% of PBT</b>, paid quarterly (per RHP). Ties pay to profit, but scales automatically with growth; check the total in the first annual report.</li>
+        <li><b>Balance sheet behaviour:</b> CRISIL notes promoters are likely to extend equity or unsecured loans if needed. Gross debt/equity 0.1x.</li>
+        <li><b>Credit track:</b> CRISIL BBB+/A2 (2023–24) → upgraded to A-/A2+ (Jul 2025), reaffirmed Mar 2026; bank limits enhanced ₹248 → ₹360 → ₹456 cr.</li>
+      </ul>
+      <div class="callout" style="border-color:var(--warn)">
+        <span class="label">Governance flags to keep in mind</span>
+        <p style="font-size:14px">The company was listed on BSE, Delhi and UP exchanges from 1995 and <b>voluntarily delisted in 2010</b>, then relisted in 2026 at a much higher valuation. The RHP also notes some public-shareholder records from the old listing are untraceable. CRISIL's rating history carries an older facility line marked "withdrawn (issuer not cooperating)" at the start of 2023.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="label">Company timeline</span>
+    <div class="hist">
+      <div class="ev key"><b>1972</b><p>Incorporated as Kanohar Electricals Pvt Ltd in Meerut.</p></div>
+      <div class="ev"><b>1983</b><p>Rithani plant starts (distribution and small power units).</p></div>
+      <div class="ev"><b>1994–95</b><p>Converted to public limited; listed on BSE, DSE and UPSE.</p></div>
+      <div class="ev key"><b>1997</b><p>Gangol plant commissioned; today rated 500 MVA/400 kV and 765 kV-ready.</p></div>
+      <div class="ev"><b>2000–02</b><p>Third generation (Vivek, Abhishek) joins.</p></div>
+      <div class="ev"><b>2008</b><p>Distribution agreement with a US transformer maker for USA, Mexico and Canada.</p></div>
+      <div class="ev"><b>2010</b><p>Voluntary delisting from all three exchanges.</p></div>
+      <div class="ev"><b>2011</b><p>GIS manufacturing partnership with Chung-Hsin Electric (CHEM), Taiwan.</p></div>
+      <div class="ev"><b>2013–14</b><p>Enters EPC, starting with gas-insulated substations.</p></div>
+      <div class="ev"><b>2021–22</b><p>Enters transmission-line EPC.</p></div>
+      <div class="ev key"><b>2023</b><p>500 MVA 400/220/33 kV auto-transformer passes short-circuit test at NHPTL.</p></div>
+      <div class="ev key"><b>2024</b><p>100 MVA Scott transformers (220 kV and 132 kV) pass at NHPTL and CPRI.</p></div>
+      <div class="ev key"><b>Jun 2025</b><p>Largest-ever order: ₹568.67 cr from POWERGRID for 500 MVA/400 kV units. Capacity reaches 19,200 MVA.</p></div>
+      <div class="ev key"><b>Sep 2026</b><p>IPO at ₹632, subscribed 90.6x (QIB 215x). Lists 16 Sep at ₹685.5. Large CPSU 400 kV order (₹250 cr+) on 30 Sep.</p></div>
+    </div>
+    <p class="src">Dates for EPC entry differ slightly between the RHP (2013 substations, 2021 lines) and the investor presentation (2014, 2022).</p>
+  </div>
+</section>
+
+<!-- 4 POLICY -->
+<section class="sec" id="policy">
+  <div class="sec-head"><span class="bay">BAY 04</span><h2>Government policy &amp; tailwinds</h2></div>
+  <div class="grid3">
+    <div class="panel"><span class="label">Transmission</span><h3>₹9.15 lakh cr to FY32</h3><p>National Electricity Plan (Transmission): network grows from 5.00 to 6.48 lakh circuit-km; ~143,000 ckm of new lines by FY32 with 400 kV taking the biggest share. Each 400 kV substation needs multiple 315–500 MVA transformers and reactors.</p><span class="pill p-good">Direct demand for core product</span></div>
+    <div class="panel"><span class="label">Renewables</span><h3>500 GW non-fossil by 2030</h3><p>India has crossed 200 GW of renewables; CEA plans ~594 GW RE by FY32. Green Energy Corridor Phase III builds evacuation lines from RE-rich states. Gujarat and Rajasthan, Kanohar's top markets, are the biggest RE evacuation states.</p><span class="pill p-good">Reactors + 400 kV units</span></div>
+    <div class="panel"><span class="label">Railways</span><h3>National Rail Plan 2030</h3><p>Targets 100% electrification, freight corridors and high-speed corridors that use the 2×25 kV system, which needs Scott and auto-transformers. Management sees traction transformers as a ~₹20,000 cr opportunity over 5–10 years.</p><span class="pill p-warn">Order book share still small</span></div>
+    <div class="panel"><span class="label">Distribution</span><h3>₹2.86 lakh cr, FY27–30</h3><p>CEA Draft Distribution Perspective Plan 2030 and ageing-asset replacement. Low relevance for Kanohar, which has de-emphasised distribution units.</p><span class="pill p-idle">Indirect</span></div>
+    <div class="panel"><span class="label">Localisation</span><h3>Make in India</h3><p>Public procurement preference for domestic makers and limits on bidders from bordering countries narrow the field in PSU tenders. Global transformer shortages also lengthen lead times, which favours makers with free capacity.</p><span class="pill p-good">Supports pricing</span></div>
+    <div class="panel"><span class="label">Contract terms</span><h3>IEEMA price variation</h3><p>Utility contracts carry IEEMA price-variation clauses that pass copper and CRGO movements through. CRISIL notes escalation clauses in all contracts; the RHP says 4 of 35 contracts are fixed-price.</p><span class="pill p-good">Margin protection</span></div>
+  </div>
+</section>
+
+<!-- 5 TRIGGERS -->
+<section class="sec" id="triggers">
+  <div class="sec-head"><span class="bay">BAY 05</span><h2>Key growth triggers</h2></div>
+  <div class="legend"><span><span class="pill p-good">Done / on track</span></span><span><span class="pill p-warn">In progress</span></span><span><span class="pill p-bad">Not started / at risk</span></span><span><span class="pill p-idle">Dormant</span></span></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Trigger</th><th>What it unlocks</th><th>Status &amp; evidence</th><th>Timeline</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td><b>FY27 revenue ₹950 cr</b></td><td>~45% growth at FY26-like 27–28% EBITDA</td><td>Q1 ₹137 cr; needs ~₹813 cr in 9 months (~₹270 cr/qtr). H2 is seasonally heavy</td><td class="mono">Mar 2027</td><td><span class="pill p-warn">In progress</span></td></tr>
+      <tr><td><b>FY28 growth 40–45%</b></td><td>Revenue path to ~₹1,350 cr (derived)</td><td>Guided on Q1 call; FY27-end order book expected to cover FY28–29</td><td class="mono">Mar 2028</td><td><span class="pill p-warn">Guided</span></td></tr>
+      <tr><td><b>Order inflow</b></td><td>Visibility beyond FY28</td><td>₹332 cr in Q1 + ₹867 cr in Q2, incl. CPSU 400 kV order ≥₹250 cr (30 Sep 2026, 24-month execution)</td><td class="mono">Achieved Sep 2026</td><td><span class="pill p-good">On track</span></td></tr>
+      <tr><td><b>Gangol brownfield +18,000 MVA</b></td><td>Capacity nearly doubles to ~37,200 MVA</td><td>₹64.2 cr from IPO (₹24.2 cr FY27, ₹40 cr FY28); machinery, radiator line, test system</td><td class="mono">Complete FY28 end · live FY29</td><td><span class="pill p-warn">In progress</span></td></tr>
+      <tr><td><b>First 765 kV order</b></td><td>Entry to the top voltage class; re-rating lever</td><td>Plant capable; bidding. Mgmt: 3–4 years of performance demonstration before meaningful revenue</td><td class="mono">FY28–FY30</td><td><span class="pill p-bad">Not yet won</span></td></tr>
+      <tr><td><b>Shunt reactors to 10–15% of revenue</b></td><td>Second leg in RE transmission</td><td>13.1% of order book vs 2.8% of Q1 revenue</td><td class="mono">FY27–FY28</td><td><span class="pill p-warn">In progress</span></td></tr>
+      <tr><td><b>High-speed rail V-connected &amp; auto-transformers</b></td><td>New railway product line</td><td>Design stage per RHP</td><td class="mono">FY28+</td><td><span class="pill p-bad">Early</span></td></tr>
+      <tr><td><b>Working-capital infusion ₹155 cr</b></td><td>Lock in CRGO/copper, faster supplier payments</td><td>Fully slated for FY27 deployment</td><td class="mono">FY27</td><td><span class="pill p-warn">Deploying</span></td></tr>
+      <tr><td><b>CRISIL upgrade to A / A+</b></td><td>Cheaper guarantees for bigger bids</td><td>Upward trigger: revenue &gt;₹700 cr with 22–24% margin, met on guidance; post-IPO equity helps</td><td class="mono">Next review 2027</td><td><span class="pill p-warn">Likely</span></td></tr>
+      <tr><td><b>Solar plant ~2.5 MW + EVs</b></td><td>Power cost savings</td><td>Funded from IPO proceeds</td><td class="mono">FY27–FY28</td><td><span class="pill p-warn">Planned</span></td></tr>
+      <tr><td><b>GIS revival</b></td><td>Switchgear revenue</td><td>No revenue in 3 years; CHEM tie-up ends 2027</td><td class="mono">2027 decision</td><td><span class="pill p-idle">Dormant</span></td></tr>
+      <tr><td><b>Exports</b></td><td>Global transformer shortage</td><td>Past US/Mexico/Canada distribution pact (2008); Bhutan Power a customer; no export target stated</td><td class="mono">Not guided</td><td><span class="pill p-idle">Dormant</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 6 J CURVE -->
+<section class="sec" id="jcurve">
+  <div class="sec-head"><span class="bay">BAY 06</span><h2>Is there a J-curve?</h2></div>
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">The first J has already played out · actuals</span>
+      <svg viewBox="0 0 460 260" role="img" aria-label="EBITDA margin and capacity utilisation, FY23 to FY26 and Q1 FY27" style="width:100%;height:auto">
+        <g stroke="var(--line)" stroke-width="1"><line x1="50" y1="30" x2="440" y2="30"/><line x1="50" y1="90" x2="440" y2="90"/><line x1="50" y1="150" x2="440" y2="150"/><line x1="50" y1="210" x2="440" y2="210"/></g>
+        <g font-size="11" fill="var(--muted)" text-anchor="end"><text x="44" y="214">0%</text><text x="44" y="154">15%</text><text x="44" y="94">30%</text><text x="44" y="34">45%</text></g>
+        <!-- y = 210 - v*4 ; x: FY23 90, FY24 170, FY25 250, FY26 330, Q1 410 -->
+        <polyline fill="none" stroke="var(--copper)" stroke-width="3" points="90,172.8 170,165.2 250,127.2 330,99.6 410,96.8"/>
+        <g fill="var(--copper)"><circle cx="90" cy="172.8" r="4"/><circle cx="170" cy="165.2" r="4"/><circle cx="250" cy="127.2" r="4"/><circle cx="330" cy="99.6" r="4"/><circle cx="410" cy="96.8" r="6"/></g>
+        <polyline fill="none" stroke="var(--steel)" stroke-width="3" stroke-dasharray="6 4" points="170,144 250,91.2 330,26"/>
+        <g fill="var(--steel)"><circle cx="170" cy="144" r="4"/><circle cx="250" cy="91.2" r="4"/><circle cx="330" cy="26" r="4"/></g>
+        <g font-size="11" fill="var(--ink)"><text x="90" y="190" text-anchor="middle">9.3%</text><text x="170" y="183" text-anchor="middle">11.2%</text><text x="250" y="145" text-anchor="middle">20.7%</text><text x="330" y="117" text-anchor="middle">27.6%</text><text x="410" y="88" text-anchor="middle">28.3%</text>
+        <text x="186" y="140">16.5%</text><text x="266" y="88">29.7%</text><text x="342" y="30">46.0%</text></g>
+        <g font-size="11" fill="var(--muted)" text-anchor="middle"><text x="90" y="232">FY23</text><text x="170" y="232">FY24</text><text x="250" y="232">FY25</text><text x="330" y="232">FY26</text><text x="410" y="232">Q1 FY27</text></g>
+        <g font-size="11"><rect x="60" y="244" width="10" height="3" fill="var(--copper)"/><text x="76" y="249" fill="var(--ink)">EBITDA margin</text><rect x="190" y="244" width="10" height="3" fill="var(--steel)"/><text x="206" y="249" fill="var(--ink)">Capacity utilisation</text></g>
+      </svg>
+      <p style="font-size:14px">FY24 was the bottom of the J: revenue fell 9% to ₹277 cr, cash flow was negative, ₹5.2 cr went on short-circuit tests and the plant ran at 16.5%. Those certifications then won 400 kV orders, and margin more than doubled in two years. This is a completed J, now priced in at ~60x trailing earnings.</p>
+    </div>
+    <div class="panel">
+      <span class="label">The next two curves to watch</span>
+      <h3>Curve 2 · 765 kV qualification</h3>
+      <p style="font-size:14px">The same playbook one step up: spend on testing and prototype units, win a first order, then use the track record to win more. Management says it needs 3–4 years of field performance before 765 kV adds meaningful revenue. If it works, it repeats FY24→FY26 in a larger, less crowded class. Cost so far is small because Gangol is already built for 765 kV.</p>
+      <h3>Curve 3 · Capacity doubling in FY29</h3>
+      <p style="font-size:14px">Utilisation is guided to ~90% by FY28, then capacity nearly doubles. Management does <b>not</b> expect growth above 40–45% in FY29, so utilisation would fall back toward ~50–60% (derived). Fixed cost is low (depreciation was ₹3 cr in FY26), so this is a shallow dip, not a deep J.</p>
+      <div class="callout" style="border-color:var(--warn)">
+        <span class="label">Verdict</span>
+        <p style="font-size:14px">No large J-curve ahead with heavy near-term pain. The upside optionality is 765 kV plus high-speed rail; the visible risk is management's own warning of possible 400 kV margin pressure 3–4 years out as industry supply catches up.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 KPI TIMELINE -->
+<section class="sec" id="kpis">
+  <div class="sec-head"><span class="bay">BAY 07</span><h2>KPIs to track, quarter by quarter</h2></div>
+  <div class="legend"><span><i style="background:var(--good)"></i>Reported actual</span><span><i style="background:var(--copper)"></i>Target / guidance to test</span><span><i style="background:var(--steel)"></i>Scheduled event</span><span class="muted">Scroll sideways →</span></div>
+  <div class="qt" tabindex="0" aria-label="Quarterly KPI timeline">
+    <div class="qt-row">
+      <div class="q done"><div class="qh"><span class="dot"></span>Q1 FY27</div><span class="when">Apr–Jun 2026 · reported 6 Oct</span>
+        <ul><li class="act"><b>Revenue ₹137.1 cr</b>+103.5% YoY</li><li class="act"><b>EBITDA 28.3%</b>gross margin 41.9%</li><li class="act"><b>PAT ₹27.3 cr</b>EPS ₹3.67</li><li class="act"><b>Order book ₹2,026 cr</b>inflow ₹332 cr</li><li class="act"><b>400 kV mix 70.2%</b>of transformer sales</li></ul></div>
+      <div class="q now"><div class="qh"><span class="dot"></span>Q2 FY27</div><span class="when">Jul–Sep 2026 · results ~Nov</span>
+        <ul><li class="act"><b>Inflow ₹867 cr</b>disclosed in Q1 deck</li><li class="tgt"><b>Revenue run-rate</b>should step up from ₹137 cr</li><li class="tgt"><b>EBITDA ≥ 26%</b>mix-driven</li><li class="evt"><b>Anchor 50% unlock</b>10–13 Oct 2026</li><li class="evt"><b>First IPO-proceeds monitoring report</b></li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q3 FY27</div><span class="when">Oct–Dec 2026</span>
+        <ul><li class="tgt"><b>9M revenue ≥ ~₹600 cr</b>to stay on ₹950 cr path</li><li class="tgt"><b>Order book &gt; ₹2,500 cr</b></li><li class="evt"><b>Anchor 100% unlock</b>9–15 Dec 2026</li><li class="tgt"><b>Gangol machinery orders placed</b>₹24.2 cr FY27 capex</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q4 FY27</div><span class="when">Jan–Mar 2027</span>
+        <ul><li class="tgt"><b>FY27 revenue ~₹950 cr</b>EBITDA ~27.6%</li><li class="tgt"><b>NWC 110–120 days</b>guided</li><li class="tgt"><b>CFO / PAT &gt; 50%</b>FY26 was 20%</li><li class="tgt"><b>₹155 cr WC deployed</b></li><li class="evt"><b>First annual report as listed co.</b></li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q1 FY28</div><span class="when">Apr–Jun 2027</span>
+        <ul><li class="tgt"><b>Shunt reactor share rising</b>toward 10–15% of revenue</li><li class="tgt"><b>Private share of order book</b>&gt; 11.6%</li><li class="evt"><b>CHEM (GIS) tie-up decision</b>expires 2027</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q2 FY28</div><span class="when">Jul–Sep 2027</span>
+        <ul><li class="tgt"><b>Utilisation &gt; 70%</b>on 19,200 MVA</li><li class="tgt"><b>765 kV bid wins?</b>first order is the signal</li><li class="tgt"><b>Top-10 customer share</b>below 90%</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q3 FY28</div><span class="when">Oct–Dec 2027</span>
+        <ul><li class="tgt"><b>Gangol expansion civil + machinery</b>₹40 cr FY28 capex</li><li class="tgt"><b>EBITDA band 22–28%</b>watch for tender-price pressure</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q4 FY28</div><span class="when">Jan–Mar 2028</span>
+        <ul><li class="tgt"><b>FY28 growth 40–45%</b>guided</li><li class="tgt"><b>Utilisation ~90%</b>guided</li><li class="tgt"><b>+18,000 MVA ready</b>end FY28</li><li class="tgt"><b>Order book covers FY29</b></li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>FY29</div><span class="when">Apr 2028 →</span>
+        <ul><li class="tgt"><b>~37,200 MVA operational</b></li><li class="tgt"><b>Growth ≤ 40–45%</b>per mgmt</li><li class="tgt"><b>765 kV &amp; HSR products</b>first revenue?</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 RISKS -->
+<section class="sec" id="risks">
+  <div class="sec-head"><span class="bay">BAY 08</span><h2>Key risks &amp; mitigating actions</h2></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Risk</th><th>Evidence</th><th>Mitigation</th><th>Closure / check date</th><th>Severity</th></tr></thead>
+    <tbody>
+      <tr><td><b>Weak cash conversion</b></td><td>FY26 CFO ₹25.8 cr vs PAT ₹129.6 cr; ₹107 cr absorbed by working capital. Receivables ₹211 cr (32% of revenue), heavy March billing</td><td>₹155 cr IPO working capital; mgmt guides 110–120 NWC days; CRISIL says receivables realise in 30–40 days on average</td><td class="mono">FY27 cash flow, May 2027</td><td><span class="pill p-bad">High</span></td></tr>
+      <tr><td><b>Customer concentration</b></td><td>Top-10 = 93.2% of FY26 revenue; govt = 88.4% of order book; POWERGRID alone ₹573 cr</td><td>Wider certified product set; private orders up to 11.6% of book. Payment risk low (budgeted PSU projects)</td><td class="mono">Ongoing · structural</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Tender dependence &amp; lumpy orders</b></td><td>85% of FY26 revenue via competitive bids; Q1 utilisation dipped to 30–40%</td><td>Order book ~2–3x revenue; 18–24 month lead times give advance warning</td><td class="mono">Quarterly inflow check</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Raw material cost &amp; supply</b></td><td>CRGO largely imported; top-10 suppliers 71.5% of COGS, no long-term contracts</td><td>IEEMA price-variation clauses; liquidity to pay suppliers faster; 4 of 35 contracts fixed-price</td><td class="mono">Fixed-price jobs run off by ~FY28</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Margin mean-reversion</b></td><td>EBITDA tripled in 3 years on mix; mgmt itself flags possible 400 kV pressure in 3–4 years as industry capacity grows</td><td>Move up to 765 kV, reactors, Scott; backward integration in tanks and radiators</td><td class="mono">Watch from FY29</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Single-location plants</b></td><td>Both plants in Meerut; brownfield expansion adds to the same site</td><td>No stated mitigation beyond insurance</td><td class="mono">No closure</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Execution of ₹950 cr target</b></td><td>Needs ~2x Q1 run-rate for the rest of the year</td><td>H2-weighted billing history; spare capacity (46% used in FY26)</td><td class="mono">Q3 results, Feb 2027</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Share supply overhang</b></td><td>Anchor lock-ins: 50% ended 10–13 Oct; balance ends 9–15 Dec 2026</td><td>Anchors include ICICI Pru, Kotak, Mirae, Motilal MFs (55.6% domestic MF)</td><td class="mono">Closes Dec 2026</td><td><span class="pill p-warn">Near term</span></td></tr>
+      <tr><td><b>Valuation</b></td><td>~57–61x trailing vs 38.6x at IPO; stock up ~60% from issue</td><td>On guidance, FY27 EBITDA ≈ ₹260 cr (derived), which lowers the forward multiple materially</td><td class="mono">Re-check each result</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>EPC execution</b></td><td>FY25 EPC was weak; jobs run 6–24 months with approval and vendor delays</td><td>Tighter planning buffers; EPC kept small (11% of book)</td><td class="mono">Ongoing</td><td><span class="pill p-idle">Low</span></td></tr>
+      <tr><td><b>GIS line idle</b></td><td>No GIS revenue for 3 years</td><td>Tie-up with CHEM up for renewal</td><td class="mono">2027</td><td><span class="pill p-idle">Low</span></td></tr>
+      <tr><td><b>Legacy governance</b></td><td>2010 delisting; untraceable old shareholder records; PBT-linked director commission</td><td>Now under LODR with four independent directors</td><td class="mono">First AR, mid-2027</td><td><span class="pill p-idle">Low</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 9 FINANCIALS -->
+<section class="sec" id="fin">
+  <div class="sec-head"><span class="bay">BAY 09</span><h2>Financial track record</h2></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>₹ cr</th><th class="n">FY23</th><th class="n">FY24</th><th class="n">FY25</th><th class="n">FY26</th><th class="n">Q1 FY26</th><th class="n">Q1 FY27</th><th class="n">FY27 guide</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue</td><td class="n">303.8</td><td class="n">276.7</td><td class="n">450.6</td><td class="n">653.8</td><td class="n">67.4</td><td class="n">137.1</td><td class="n">~950</td></tr>
+      <tr><td>Gross margin</td><td class="n">23.6%</td><td class="n">28.8%</td><td class="n">32.5%</td><td class="n">38.9%</td><td class="n">43.2%</td><td class="n">41.9%</td><td class="n">–</td></tr>
+      <tr><td>EBITDA</td><td class="n">28.4</td><td class="n">31.1</td><td class="n">93.4</td><td class="n">180.4</td><td class="n">15.4</td><td class="n">38.8</td><td class="n">~262 (derived)</td></tr>
+      <tr class="hl"><td>EBITDA margin</td><td class="n">9.3%</td><td class="n">11.2%</td><td class="n">20.7%</td><td class="n">27.6%</td><td class="n">22.8%</td><td class="n">28.3%</td><td class="n">~27.6%</td></tr>
+      <tr><td>PAT</td><td class="n">16.8</td><td class="n">17.8</td><td class="n">65.1</td><td class="n">129.6</td><td class="n">11.4</td><td class="n">27.3</td><td class="n">–</td></tr>
+      <tr><td>Operating cash flow</td><td class="n">-23.1</td><td class="n">-16.3</td><td class="n">79.4</td><td class="n">25.8</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
+      <tr><td>Net working capital days</td><td class="n">64</td><td class="n">124</td><td class="n">113</td><td class="n">107</td><td class="n">–</td><td class="n">–</td><td class="n">110–120</td></tr>
+      <tr><td>Order book (year-end)</td><td class="n">–</td><td class="n">595.9</td><td class="n">861.5</td><td class="n">1,818.3</td><td class="n">–</td><td class="n">2,026.0</td><td class="n">–</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">Source: RHP restated consolidated financials and Q1 FY27 investor presentation. Some outlets quote FY26 "revenue" of ₹662.9 cr; that is total income including ₹9.0 cr other income.</p>
+</section>
+
+<footer class="foot">
+  <span class="label">Sources &amp; coverage note</span>
+  <p><b>What was available:</b> the company has been listed only since 16 Sep 2026, so there is no annual report as a listed company yet; the RHP's restated financials and the Q1 FY27 investor presentation and press release (NSE filings, 6 Oct 2026) are the official documents used. The Q1 FY27 concall is cited via a third-party transcript summary. Credit data is from CRISIL rationales (Oct 2023, Dec 2024, Jul 2025, Mar 2026). No ValuePickr thread, Discord notes or Substack write-ups on Kanohar were found in search; nothing here is drawn from them.</p>
+  <ol>
+    <li><a href="https://nsearchives.nseindia.com/corporate/KANOHARNSE2026_06102026212951_Intimations_for_Investor_Presentation.pdf">Q1 FY27 Investor Presentation (NSE)</a></li>
+    <li><a href="https://nsearchives.nseindia.com/corporate/KANOHARNSE2026_06102026213732_Intimations_for_Press_Release.pdf">Q1 FY27 Press Release (NSE)</a></li>
+    <li><a href="https://www.crisil.com/mnt/winshare/Ratings/RatingList/RatingDocs/KanoharElectricalsLimited_March%2026_%202026_RR_391181.html">CRISIL rating rationale, 26 Mar 2026</a></li>
+    <li><a href="https://www.crisil.com/mnt/winshare/Ratings/RatingList/RatingDocs/KanoharElectricalsLimited_July%2008_%202025_RR_369587.html">CRISIL upgrade, 8 Jul 2025</a></li>
+    <li><a href="https://ipowatch.in/wp-content/uploads/2026/09/IPO-Report-Kanohar-Electricals-Ltd-SMC-Global.pdf">SMC Global IPO report (RHP-based)</a></li>
+    <li><a href="https://insights.dsij.in/dsijarticledetail/kanohar-electricals-ipo-a-high-margin-transformer-maker-with-a-28x-revenue-order-book-taps-the-markets-should-you-subscribe-59440">DSIJ IPO analysis</a></li>
+    <li><a href="https://www.bajajbroking.in/blog/kanohar-electricals-ipo">Bajaj Broking RHP summary</a></li>
+    <li><a href="https://www.arthneeti.com/insights/kanohar-elect-q2-fy27-earnings">Arthneeti concall summary (15 Oct 2026)</a></li>
+    <li><a href="https://www.whalesbook.com/corporate-news/English/industrial-goodsservices/Kanohar-Electricals-Q1-PAT-Jumps-140percent-Order-Book-Hits-Rs-2026-Crore/6acf4338b2eb76fd08c346c8">Whalesbook Q1 FY27 coverage</a></li>
+    <li><a href="https://www.business-standard.com/markets/news/kanohar-electricals-share-price-soars-20-on-huge-volumes-what-s-driving-newly-listed-stock-126100700382_1.html">Business Standard, 7 Oct 2026</a></li>
+    <li><a href="https://hdfcsky.com/news/kanohar-electricals-gets-psu-order-shares-rise-0-23percent">CPSU 400 kV order, 30 Sep 2026</a></li>
+    <li><a href="https://ipocentral.in/kanohar-electricals-ipo-anchor-book/">Anchor book (IPO Central)</a> · <a href="https://www.chittorgarh.com/ipo/kanohar-electricals-ipo-ipo/2856/">Lock-in dates (Chittorgarh)</a></li>
+    <li><a href="https://www.indiainfoline.com/company/kanohar-electricals-ltd/reports/directors-report">Director terms (IIFL, from RHP)</a></li>
+  </ol>
+  <p>"Derived" figures are simple arithmetic on company guidance, not company statements. This is a personal research canvas, not investment advice.</p>
+</footer>
+
+</div>

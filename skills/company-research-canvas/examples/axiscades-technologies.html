@@ -1,0 +1,619 @@
+<title>Axiscades Technologies Canvas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: an avionics "mission display" header with a sweeping scope, then numbered "channels" (CH-01…) on a field-grey ground; signal amber is the single accent, olive the structural colour. */
+:root{
+  --bg:#eceee9; --panel:#ffffff; --plate:#dde1d8; --ink:#1a221d; --muted:#56615a; --line:#c6ccc2;
+  --amber:#b8740a; --amber-soft:#f6e8cf; --olive:#4a5a35; --sky:#2c6a7c;
+  --good:#2f8a55; --good-bg:#dff1e6; --warn:#a97406; --warn-bg:#fbefd2; --bad:#b33a2e; --bad-bg:#f8dedb; --idle:#69736c; --idle-bg:#e3e7e1;
+  --f-display:"Chakra Petch","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#101512; --panel:#171e19; --plate:#1e2721; --ink:#e2e8e2; --muted:#94a198; --line:#2b362f;
+  --amber:#f0a73a; --amber-soft:#3a2a10; --olive:#a9bf86; --sky:#7cc0d3;
+  --good:#5fc98a; --good-bg:#16301f; --warn:#e3b448; --warn-bg:#33280f; --bad:#ef7d70; --bad-bg:#3a1b18; --idle:#9aa69d; --idle-bg:#222b25; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101512; --panel:#171e19; --plate:#1e2721; --ink:#e2e8e2; --muted:#94a198; --line:#2b362f;
+  --amber:#f0a73a; --amber-soft:#3a2a10; --olive:#a9bf86; --sky:#7cc0d3;
+  --good:#5fc98a; --good-bg:#16301f; --warn:#e3b448; --warn-bg:#33280f; --bad:#ef7d70; --bad-bg:#3a1b18; --idle:#9aa69d; --idle-bg:#222b25; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.08}
+h2{font-size:clamp(26px,3.8vw,38px);font-weight:700}
+h3{font-size:21px;font-weight:600}
+p{margin:0;max-width:70ch}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.am{color:var(--amber)}
+a{color:var(--amber)}
+a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+/* HERO */
+.hud{background:var(--panel);border:1px solid var(--line);border-radius:6px;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:0;overflow:hidden}
+.hud-main{padding:28px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.hud h1{font-size:clamp(38px,6.4vw,70px);font-weight:700;letter-spacing:-.005em}
+.hud h1 span{color:var(--amber)}
+.scope{background:var(--plate);border-left:1px solid var(--line);display:flex;align-items:center;justify-content:center;padding:16px}
+.scope svg{width:100%;max-width:230px;height:auto}
+@media (max-width:760px){.hud{grid-template-columns:1fr}.scope{border-left:0;border-top:1px solid var(--line)}}
+.tick{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--f-mono);font-size:12px;padding:4px 9px;border:1px solid var(--line);border-radius:3px;background:var(--bg)}
+.specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+@media (max-width:560px){.specs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.spec{background:var(--panel);padding:13px 15px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.spec b{font-family:var(--f-display);font-size:28px;font-weight:700;line-height:1}
+.spec small{color:var(--muted);font-size:12.5px}
+.thesis{font-size:17px;max-width:82ch}
+@media (prefers-reduced-motion:no-preference){.sweep{transform-origin:110px 110px;animation:sweep 6s linear infinite}@keyframes sweep{to{transform:rotate(360deg)}}}
+
+.sec{display:flex;flex-direction:column;gap:22px}
+.sec-head{display:flex;gap:16px;align-items:baseline;border-top:3px solid var(--olive);padding-top:12px;flex-wrap:wrap}
+.ch{font-family:var(--f-mono);font-size:12px;color:var(--amber);letter-spacing:.1em}
+.lede{font-size:16.5px;color:var(--muted)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+ul.clean li{max-width:72ch}
+
+.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.link{background:var(--panel);border:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.link.ax{border:2px solid var(--amber);background:var(--amber-soft)}
+.link .step{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.link h4{margin:0;font-family:var(--f-display);font-size:18px;font-weight:600}
+.link p{font-size:13.5px}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:2px 6px;border-radius:2px;background:var(--amber);color:var(--panel);width:max-content}
+@media (max-width:760px){.chain{grid-template-columns:1fr}}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--plate);white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--amber-soft);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-good{color:var(--good);background:var(--good-bg)}
+.p-warn{color:var(--warn);background:var(--warn-bg)}
+.p-bad{color:var(--bad);background:var(--bad-bg)}
+.p-idle{color:var(--idle);background:var(--idle-bg)}
+
+.prod{background:var(--panel);border:1px solid var(--line);border-radius:4px;display:grid;grid-template-columns:200px 1fr;min-width:0;overflow:hidden}
+.prod .art{background:var(--plate);display:flex;align-items:center;justify-content:center;padding:14px;border-right:1px solid var(--line)}
+.prod .art svg{width:100%;max-width:170px;height:auto}
+.prod .body{padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.prod .meta{display:flex;flex-wrap:wrap;gap:8px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.kv div{border-left:2px solid var(--amber);padding-left:8px;display:flex;flex-direction:column}
+.kv b{font-family:var(--f-mono);font-size:14.5px}
+.kv span{font-size:12.5px;color:var(--muted)}
+.use{font-size:14.5px;background:var(--bg);padding:10px 12px;border-radius:3px}
+.use strong{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:2px}
+@media (max-width:640px){.prod{grid-template-columns:1fr}.prod .art{border-right:0;border-bottom:1px solid var(--line)}}
+
+.bars{display:flex;flex-direction:column;gap:10px}
+.bar{display:grid;grid-template-columns:160px 1fr 64px;gap:10px;align-items:center;font-size:13.5px}
+.bar .track{height:14px;background:var(--plate);border-radius:2px;overflow:hidden}
+.bar .fill{height:100%;background:var(--olive)}
+.bar .fill.am{background:var(--amber)}
+.bar .v{font-family:var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:480px){.bar{grid-template-columns:112px 1fr 56px}}
+
+.hist{display:flex;flex-direction:column;border-left:2px solid var(--line);margin-left:6px}
+.ev{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:8px 0 8px 18px;position:relative}
+.ev::before{content:"";position:absolute;left:-7px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--olive)}
+.ev.key::before{background:var(--amber);border-color:var(--amber)}
+.ev b{font-family:var(--f-mono);font-size:13.5px}
+.ev p{font-size:14.5px}
+
+.qt{overflow-x:auto;padding-bottom:6px}
+.qt-row{display:grid;grid-template-columns:repeat(9,minmax(210px,1fr));min-width:1890px;position:relative}
+.qt-row::before{content:"";position:absolute;left:0;right:0;top:44px;height:3px;background:var(--line)}
+.q{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.q .qh{font-family:var(--f-display);font-size:21px;font-weight:700;height:34px;display:flex;align-items:flex-end;gap:8px}
+.q .dot{width:16px;height:16px;border-radius:50%;background:var(--panel);border:3px solid var(--olive);position:relative;z-index:1;margin-top:2px}
+.q.done .dot{background:var(--good);border-color:var(--good)}
+.q.now .dot{background:var(--amber);border-color:var(--amber)}
+.q .when{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.q ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.q li{font-size:13.5px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:7px 9px}
+.q li b{font-family:var(--f-mono);font-size:12px;display:block}
+.q li.act{border-left:3px solid var(--good)}
+.q li.tgt{border-left:3px solid var(--amber)}
+.q li.evt{border-left:3px solid var(--olive)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12.5px;color:var(--muted);align-items:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+.callout{border-left:4px solid var(--amber);background:var(--panel);padding:16px 18px;border-radius:0 4px 4px 0;display:flex;flex-direction:column;gap:8px}
+.callout.red{border-color:var(--bad)}
+.src{font-size:12.5px;color:var(--muted)}
+.foot{font-size:13.5px;color:var(--muted);display:flex;flex-direction:column;gap:10px}
+.foot ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+svg text{font-family:var(--f-mono)}
+</style>
+
+<div class="wrap">
+
+<header class="hud" aria-label="Company summary">
+  <div class="hud-main">
+    <span class="label">Mission brief · Equity research canvas · as of 25 Oct 2026</span>
+    <h1>Axiscades <span>Technologies</span></h1>
+    <div class="tick"><span class="chip">NSE: AXISCADES</span><span class="chip">BSE: 532395</span><span class="chip">Bengaluru</span><span class="chip">CMP ₹1,917 · 23 Oct 2026</span><span class="chip">Mcap ≈ ₹8,150 cr</span><span class="chip">52w ₹1,061–2,360</span></div>
+    <div class="specs">
+      <div class="spec"><span class="label">FY26 revenue</span><b>₹1,159 cr</b><small>+12.4% YoY, pre-divestment</small></div>
+      <div class="spec"><span class="label">Q1 FY27 continuing rev.</span><b class="am">₹183 cr</b><small>+94% YoY; defence ₹125 cr</small></div>
+      <div class="spec"><span class="label">Divestment value</span><b>₹2,256 cr</b><small>services sold to Akkodis</small></div>
+      <div class="spec"><span class="label">Assured visibility</span><b>₹4,557 cr</b><small>execution before FY30</small></div>
+      <div class="spec"><span class="label">Promoter holding</span><b>44.8%</b><small>from 58.0% in June 2026</small></div>
+      <div class="spec"><span class="label">Credit rating</span><b>CARE A-</b><small>on watch, developing (Jun 26)</small></div>
+    </div>
+    <p class="thesis">A company in mid-transformation. Axiscades is selling the engineering-services business that built it (about 60% of FY26 revenue) to Akkodis and using the cash to become a <b>defence electronics, aerospace manufacturing and space</b> company. The remaining business is growing fast but is not yet profitable after interest and depreciation, while the promoter has sold about 13% of the company in four months. Its "Power 930" plan targets ₹9,000 cr revenue and ₹960 cr PAT by FY30.</p>
+  </div>
+  <div class="scope" aria-hidden="true">
+    <svg viewBox="0 0 220 220">
+      <circle cx="110" cy="110" r="100" fill="none" stroke="var(--olive)" stroke-width="1.5"/>
+      <circle cx="110" cy="110" r="70" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <circle cx="110" cy="110" r="40" fill="none" stroke="var(--line)" stroke-width="1"/>
+      <line x1="10" y1="110" x2="210" y2="110" stroke="var(--line)"/><line x1="110" y1="10" x2="110" y2="210" stroke="var(--line)"/>
+      <g class="sweep"><path d="M110 110 L110 10 A100 100 0 0 1 180.7 39.3 Z" fill="var(--amber)" opacity=".22"/><line x1="110" y1="110" x2="110" y2="10" stroke="var(--amber)" stroke-width="2"/></g>
+      <g fill="var(--amber)"><circle cx="150" cy="62" r="4"/><circle cx="70" cy="150" r="3"/><circle cx="165" cy="140" r="3"/></g>
+      <g font-size="8" fill="var(--muted)"><text x="156" y="60">DEF</text><text x="40" y="160">AERO MFG</text><text x="170" y="150">XiDA</text></g>
+    </svg>
+  </div>
+</header>
+
+<!-- CH-01 INDUSTRY -->
+<section class="sec" id="industry">
+  <div class="sec-head"><span class="ch">CH-01</span><h2>Industry &amp; value-chain position</h2></div>
+  <p class="lede">After the divestment, Axiscades will sit in three industries: Indian defence electronics, aerospace manufacturing and supply chain, and embedded computing for AI hardware. In all three it is a supplier to bigger "prime" contractors, not the platform maker itself.</p>
+
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">Market backdrop</span>
+      <ul class="clean">
+        <li><b>Defence budget FY27:</b> about ₹7.85 lakh cr, roughly 15% above FY26, after Operation Sindoor, with a push toward ~2% of GDP and higher modernisation capex.</li>
+        <li><b>Import substitution:</b> India aims to cut imports from roughly 70% of procurement to under 30%. Positive indigenisation lists cover 300+ items, including radar subsystems, avionics and mission computers, which are Mistral's product lines.</li>
+        <li><b>A&amp;D market:</b> India's aerospace and defence market is estimated at USD 26.8 bn (2023) growing to USD 48.4 bn by 2032 (~6.8% CAGR), per Investorstack.</li>
+        <li><b>Civil aerospace:</b> Airbus and Boeing hold a combined backlog above 15,000 aircraft, which drives demand for offset-linked parts, harnesses and MRO in India.</li>
+        <li><b>Defence pipeline:</b> management says its addressable pipeline in unmanned systems, missiles, radar and electronic warfare exceeds ₹24,000 cr.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <span class="label">Why requalification is the moat</span>
+      <h3>Design wins last decades</h3>
+      <ul class="clean">
+        <li>Defence electronics take <b>3–7 years</b> from design to qualification and then stay in production for <b>15–30 years</b>. A supplier embedded on a platform (Tejas, Su-30 upgrade, Ashwini radar) is hard to displace because requalifying a replacement takes 2–4 years.</li>
+        <li>Certifications held: DO-254, DO-178 (airborne hardware and software), MIL-STD, CEMILAC. Cloud Wave brings AS9100D for aerospace parts.</li>
+        <li>Margin ladder cited by management: <b>25–40% EBITDA</b> on defence production versus <b>12–15%</b> on engineering services; prototype work can be single-digit or negative.</li>
+      </ul>
+    </div>
+  </div>
+
+  <span class="label">Defence-electronics value chain · where Axiscades plays after the sale</span>
+  <div class="chain">
+    <div class="link"><span class="step">01 · Silicon</span><h4>Chips &amp; IP</h4><p>FPGAs, GPUs, processors from Altera (Intel), NVIDIA, Qualcomm; partners, not owned.</p></div>
+    <div class="link ax"><span class="step">02 · Boards</span><h4>Rugged computing</h4><p>Mistral SBCs, signal and data processing units, I/O and storage boards; XiDA embedded designs.</p><span class="tag">CORE IP</span></div>
+    <div class="link ax"><span class="step">03 · Subsystems</span><h4>LRUs &amp; integration</h4><p>Radar processing units, mission computers, multifunction displays, missile test benches, launcher work, counter-drone kits.</p><span class="tag">MARGIN ENGINE</span></div>
+    <div class="link"><span class="step">04 · Primes</span><h4>Platform makers</h4><p>HAL, BEL, DRDO labs, MBDA, Adani Defence, Indra. Axiscades sells through them.</p></div>
+    <div class="link"><span class="step">05 · Users</span><h4>Armed forces</h4><p>Indian Air Force, Army, Navy; export customers via MBDA and partners.</p></div>
+  </div>
+
+  <div class="panel">
+    <span class="label">Peers by business</span>
+    <div class="tbl" style="border:0">
+    <table>
+      <thead><tr><th>Area</th><th>Listed peers</th><th>Axiscades' edge</th><th>Axiscades' gap</th></tr></thead>
+      <tbody>
+        <tr><td>Defence electronics</td><td>Data Patterns, Astra Microwave, BEL</td><td>Chip-level FPGA depth; MBDA and Tejas footholds</td><td>Smaller, younger production base; margins below Data Patterns</td></tr>
+        <tr><td>Aerospace manufacturing</td><td>Azad Engineering, Unimech, PTC Industries</td><td>Cloud Wave (AS9100D, 7 units) plus Devanahalli land</td><td>Just starting; loss-making in Q1 FY27</td></tr>
+        <tr><td>Embedded / AI hardware</td><td>Tata Elxsi, LTTS, Cyient DLM</td><td>XiDA margin ~30%; US Fremont centre</td><td>Small (₹49.5 cr/qtr); hyperscaler pilots unproven</td></tr>
+        <tr><td>Engineering services (sold)</td><td>Tata Technologies, Cyient, QuEST</td><td colspan="2">Exiting this business to Akkodis; Airbus and Bombardier relationships go with it</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- CH-02 BUSINESS -->
+<section class="sec" id="business">
+  <div class="sec-head"><span class="ch">CH-02</span><h2>Business verticals, explained simply</h2></div>
+  <p class="lede">What stays, what goes, and what each unit actually makes. Illustrations are schematic drawings of the product type, not photographs of Axiscades hardware.</p>
+
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">Q1 FY27 revenue · ₹346.7 cr total</span>
+      <div class="bars">
+        <div class="bar"><span>Defence Solutions</span><div class="track"><div class="fill am" style="width:36.1%"></div></div><span class="v">125.0</span></div>
+        <div class="bar"><span>XiDA (ex-ESAI)</span><div class="track"><div class="fill am" style="width:14.3%"></div></div><span class="v">49.5</span></div>
+        <div class="bar"><span>Aerospace mfg</span><div class="track"><div class="fill am" style="width:1.8%"></div></div><span class="v">6.1</span></div>
+        <div class="bar"><span>Other continuing</span><div class="track"><div class="fill am" style="width:0.8%"></div></div><span class="v">2.8</span></div>
+        <div class="bar"><span>Discontinued (sold)</span><div class="track"><div class="fill" style="width:47.1%"></div></div><span class="v">163.3</span></div>
+      </div>
+      <p class="src">₹ cr. Amber = continuing (₹183.4 cr); olive = engineering services being transferred to Akkodis.</p>
+    </div>
+    <div class="panel">
+      <span class="label">Q1 FY27 segment EBITDA</span>
+      <div class="tbl" style="border:0">
+      <table>
+        <thead><tr><th>Segment</th><th class="n">EBITDA ₹ cr</th><th class="n">Margin</th></tr></thead>
+        <tbody>
+          <tr><td>Defence (reported)</td><td class="n">2.6</td><td class="n">2%</td></tr>
+          <tr><td>Defence (ex ₹9.6 cr receivable provision)</td><td class="n">~11–13</td><td class="n">~10%</td></tr>
+          <tr class="hl"><td>XiDA</td><td class="n">14.7</td><td class="n">29.7%</td></tr>
+          <tr><td>Aerospace manufacturing</td><td class="n">-5.4</td><td class="n">neg.</td></tr>
+          <tr><td>Group normalised (incl. discontinued)</td><td class="n">41.0</td><td class="n">11.8%</td></tr>
+        </tbody>
+      </table></div>
+      <p class="src">FY26 segment margins for comparison: Defence 22.9%, Aerospace 17.3%, Engineering services 26.1% (Arihant). The sold business carried the best margins.</p>
+    </div>
+  </div>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="20" y="25" width="130" height="100" rx="4" fill="var(--olive)"/>
+      <rect x="60" y="52" width="40" height="40" fill="var(--ink)"/><text x="80" y="76" text-anchor="middle" font-size="9" fill="var(--panel)">FPGA</text>
+      <g fill="var(--amber)"><rect x="30" y="38" width="20" height="12"/><rect x="110" y="38" width="28" height="12"/><rect x="110" y="96" width="28" height="18"/><rect x="30" y="100" width="20" height="14"/></g>
+      <g fill="var(--plate)"><rect x="24" y="125" width="6" height="10"/><rect x="36" y="125" width="6" height="10"/><rect x="48" y="125" width="6" height="10"/><rect x="60" y="125" width="6" height="10"/><rect x="72" y="125" width="6" height="10"/><rect x="84" y="125" width="6" height="10"/><rect x="96" y="125" width="6" height="10"/></g>
+      <g stroke="var(--plate)" stroke-width="1"><line x1="50" y1="44" x2="60" y2="60"/><line x1="100" y1="60" x2="110" y2="44"/><line x1="100" y1="84" x2="110" y2="104"/><line x1="50" y1="106" x2="60" y2="84"/></g></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">Core · ₹125 cr in Q1 (+111%)</span><span class="pill p-idle">via Mistral Solutions</span></div>
+      <h3>Defence electronics: boards, processors, mission computers</h3>
+      <div class="kv"><div><b>₹112 → ₹170 cr</b><span>Mistral production rev. FY24 → FY25</span></div><div><b>~₹8–9 cr</b><span>content per Tejas Mk1A</span></div><div><b>₹80 cr</b><span>HAL order, Feb 2026</span></div></div>
+      <p>Mistral designs and builds the rugged "brains" inside military systems: single-board computers, radar signal processors, telemetry modules, warhead control units and mission computers that fuse sensor data for the pilot. A smart multifunction display shows that data in the cockpit.</p>
+      <p class="use"><strong>Final application</strong>LCA Tejas Mk1A (180 aircraft on order; mission computer, SMFD and SBCs), Su-30MKI upgrade (100+ jets, ~₹8 cr each), Netra AEW&amp;C radar processing (via Adani Defence), NCA Mk1 mission computer under development.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="70" y="100" width="30" height="30" fill="var(--olive)"/><rect x="40" y="128" width="90" height="10" fill="var(--ink)"/>
+      <g transform="rotate(-18 85 60)"><rect x="35" y="30" width="100" height="62" rx="3" fill="var(--sky)"/>
+      <g fill="var(--plate)"><rect x="42" y="37" width="12" height="10"/><rect x="58" y="37" width="12" height="10"/><rect x="74" y="37" width="12" height="10"/><rect x="90" y="37" width="12" height="10"/><rect x="106" y="37" width="12" height="10"/><rect x="42" y="51" width="12" height="10"/><rect x="58" y="51" width="12" height="10"/><rect x="74" y="51" width="12" height="10"/><rect x="90" y="51" width="12" height="10"/><rect x="106" y="51" width="12" height="10"/><rect x="42" y="65" width="12" height="10"/><rect x="58" y="65" width="12" height="10"/><rect x="74" y="65" width="12" height="10"/><rect x="90" y="65" width="12" height="10"/><rect x="106" y="65" width="12" height="10"/></g></g>
+      <g fill="none" stroke="var(--amber)" stroke-width="2"><path d="M140 20 q10 10 0 20"/><path d="M148 14 q16 16 0 32"/></g></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">Ramping</span><span class="pill p-idle">Radar integration hangars due Q3 FY27</span></div>
+      <h3>Radar subsystems &amp; integration</h3>
+      <div class="kv"><div><b>₹100 cr</b><span>Ashwini LLTR order, Jan 2026</span></div><div><b>2 years</b><span>execution</span></div><div><b>DAC</b><span>Devanahalli integration cluster</span></div></div>
+      <p>Radars send out radio pulses and read the echoes. Axiscades supplies the processing electronics that turn raw echoes into tracks, and is building hangars to integrate whole radar systems. The Ashwini low-level transportable radar (LLTR) finds low-flying aircraft and drones.</p>
+      <p class="use"><strong>Final application</strong>Air-defence ground radars for the Air Force via DRDO/BEL; AESA radar components for Tejas from aircraft 21 onward.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><path d="M20 75 L120 75 L140 65 L140 85 L120 75" fill="none" stroke="var(--ink)" stroke-width="0"/>
+      <rect x="25" y="62" width="100" height="22" rx="11" fill="var(--olive)"/><path d="M125 62 L150 73 L125 84 Z" fill="var(--amber)"/>
+      <path d="M30 62 L20 48 L42 62 Z M30 84 L20 98 L42 84 Z" fill="var(--olive)"/>
+      <rect x="25" y="108" width="120" height="24" rx="3" fill="var(--plate)" stroke="var(--muted)"/>
+      <g fill="var(--amber)"><circle cx="40" cy="120" r="4"/><circle cx="55" cy="120" r="4"/></g><rect x="70" y="113" width="60" height="14" fill="var(--sky)"/>
+      <line x1="75" y1="84" x2="75" y2="108" stroke="var(--muted)" stroke-dasharray="3 3"/></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">MBDA · 10-year relationship</span><span class="pill p-warn">Missile complex FY28</span></div>
+      <h3>Missile test benches, launchers &amp; seekers</h3>
+      <div class="kv"><div><b>~5 / year</b><span>MBDA test benches for 3 years</span></div><div><b>8 acres</b><span>Missile Atmanirbhar Complex, Hyderabad</span></div><div><b>FY28</b><span>BrahMos-NG seeker revenue expected</span></div></div>
+      <p>Before a missile is loaded on a jet, a test bench checks every circuit. Axiscades has built these for MBDA since the MICA programme and is moving into launcher systems. It is also developing an RF seeker (the missile's "eye") whose prototype for BrahMos-NG the customer has endorsed, and a 30 kW mobile laser weapon.</p>
+      <p class="use"><strong>Final application</strong>Air-to-air and cruise missiles for the Indian forces and MBDA programmes; Project Kusha (indigenous long-range air defence) work is deepening per management.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="70" y="62" width="30" height="20" rx="4" fill="var(--olive)"/>
+      <g stroke="var(--ink)" stroke-width="3"><line x1="72" y1="64" x2="40" y2="40"/><line x1="98" y1="64" x2="130" y2="40"/><line x1="72" y1="80" x2="40" y2="104"/><line x1="98" y1="80" x2="130" y2="104"/></g>
+      <g fill="none" stroke="var(--amber)" stroke-width="2.5"><ellipse cx="40" cy="40" rx="18" ry="4"/><ellipse cx="130" cy="40" rx="18" ry="4"/><ellipse cx="40" cy="104" rx="18" ry="4"/><ellipse cx="130" cy="104" rx="18" ry="4"/></g>
+      <g fill="none" stroke="var(--bad)" stroke-width="2"><circle cx="85" cy="72" r="34" stroke-dasharray="4 4"/></g></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-warn">Emerging</span><span class="pill p-idle">Within Defence Solutions</span></div>
+      <h3>Drones &amp; counter-drone systems</h3>
+      <div class="kv"><div><b>Heavy-lift, armed, tethered</b><span>drone types</span></div><div><b>CILAS (France)</b><span>laser partner</span></div><div><b>₹224 cr</b><span>Indian Army order, Aug–Sep 2025</span></div></div>
+      <p>Custom drones for surveillance and payload delivery, and systems that detect and disable hostile drones (jamming or lasers). Partnerships with CILAS and Electronic Bird Control supply key technology.</p>
+      <p class="use"><strong>Final application</strong>Base and border protection for the Army and Air Force; a fast-growing category after recent conflicts.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="30" y="30" width="110" height="78" rx="6" fill="var(--ink)"/>
+      <rect x="38" y="38" width="94" height="58" fill="var(--sky)"/>
+      <polyline points="40,82 60,70 78,76 96,56 114,62 130,48" fill="none" stroke="var(--amber)" stroke-width="2.5"/>
+      <rect x="62" y="108" width="46" height="8" fill="var(--muted)"/><rect x="48" y="116" width="74" height="6" fill="var(--olive)"/>
+      <text x="85" y="134" text-anchor="middle" font-size="9" fill="var(--muted)">EDGE AI · THERMAL</text></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-good">₹49.5 cr in Q1 (+63%)</span><span class="pill p-good">~30% EBITDA</span></div>
+      <h3>XiDA: embedded computing &amp; AI hardware</h3>
+      <div class="kv"><div><b>Fremont, USA</b><span>product development centre</span></div><div><b>46.2%</b><span>margin on newly transferred US business, Q1</span></div><div><b>2 new</b><span>global tech customers in Q1</span></div></div>
+      <p>Formerly called ESAI. Designs "chip-to-product" computing boards for edge AI, robotics and data-centre hardware, using Altera, Qualcomm and NVIDIA platforms. Hyperscaler pilot contracts were about USD 1 mn in FY26; management talks of 50–100x scale-up after facility certification, which is still unproven.</p>
+      <p class="use"><strong>Final application</strong>Custom servers and edge-computing hardware for global technology companies, autonomous systems and industrial AI. The German thermal-management unit ADD Solution, which was loss-making, entered voluntary liquidation on 5 Oct 2026.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><path d="M30 110 L60 40 L110 40 L140 110 Z" fill="var(--plate)" stroke="var(--olive)" stroke-width="3"/>
+      <g fill="var(--bg)" stroke="var(--olive)" stroke-width="2"><circle cx="70" cy="80" r="10"/><circle cx="100" cy="80" r="10"/></g>
+      <rect x="62" y="50" width="46" height="8" fill="var(--amber)"/>
+      <g stroke="var(--amber)" stroke-width="2"><line x1="148" y1="20" x2="120" y2="48"/><circle cx="150" cy="18" r="5" fill="var(--amber)"/></g>
+      <path d="M20 128 q20 -10 40 0 t40 0 t40 0" fill="none" stroke="var(--sky)" stroke-width="3"/></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-bad">Investment phase · EBITDA -₹5.4 cr</span><span class="pill p-good">Cloud Wave bought Sep 2026</span></div>
+      <h3>Aerospace manufacturing, supply chain &amp; MRO</h3>
+      <div class="kv"><div><b>₹234 cr</b><span>for 90% of Cloud Wave (EV ~₹260 cr)</span></div><div><b>₹37 → ₹108 cr</b><span>Cloud Wave revenue FY24 → FY26</span></div><div><b>165,000 sq ft</b><span>Devanahalli Aero Land, operational</span></div></div>
+      <p>Making physical parts rather than designing them: precision-machined components, sheet metal, injection-moulded plastics, 3D-printed parts and wire harnesses for aircraft and defence systems. Cloud Wave (Bengaluru, est. 2014, seven units, AS9100D) is the platform. An MoU with OGMA (Embraer) targets engine and aircraft MRO near Bengaluru airport.</p>
+      <p class="use"><strong>Final application</strong>Parts and assemblies for global aircraft makers' India sourcing, defence platforms and semiconductor equipment. Management cites a further ~₹180 cr-revenue, 22% EBIT acquisition in diligence and a 240,000 sq ft new facility.</p>
+    </div>
+  </article>
+
+  <article class="prod">
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 170 150"><rect x="68" y="58" width="34" height="34" fill="var(--olive)"/>
+      <g fill="var(--sky)"><rect x="14" y="66" width="48" height="18"/><rect x="108" y="66" width="48" height="18"/></g>
+      <g stroke="var(--plate)" stroke-width="1.5"><line x1="26" y1="66" x2="26" y2="84"/><line x1="38" y1="66" x2="38" y2="84"/><line x1="50" y1="66" x2="50" y2="84"/><line x1="120" y1="66" x2="120" y2="84"/><line x1="132" y1="66" x2="132" y2="84"/><line x1="144" y1="66" x2="144" y2="84"/></g>
+      <line x1="85" y1="58" x2="85" y2="38" stroke="var(--ink)" stroke-width="2"/><path d="M70 38 Q85 24 100 38 Z" fill="var(--amber)"/>
+      <g fill="var(--muted)"><circle cx="20" cy="20" r="1.5"/><circle cx="150" cy="30" r="1.5"/><circle cx="140" cy="125" r="1.5"/><circle cx="30" cy="120" r="1.5"/></g></svg>
+    </div>
+    <div class="body">
+      <div class="meta"><span class="pill p-bad">Pre-revenue</span><span class="pill p-idle">₹300 cr earmarked</span></div>
+      <h3>Space: microsatellites</h3>
+      <div class="kv"><div><b>U-Space (France)</b><span>cooperation, Sep 2026</span></div><div><b>₹120 cr</b><span>facilities &amp; training</span></div><div><b>₹180 cr</b><span>two planned JVs</span></div></div>
+      <p>A new division to build small satellites in India with French technology. Microsatellites (tens to a few hundred kg) are used for earth observation, communications and defence surveillance constellations.</p>
+      <p class="use"><strong>Final application</strong>Commercial and government satellite constellations under India's opened-up space policy. Funding depends on completing the Akkodis sale.</p>
+    </div>
+  </article>
+
+  <div class="panel">
+    <span class="label">What is being sold · the Akkodis transaction</span>
+    <div class="tbl" style="border:0">
+    <table>
+      <thead><tr><th>Tranche</th><th>Business</th><th class="n">Value</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Phase 1</td><td>Heavy engineering, automotive, energy services (Caterpillar-linked legacy work)</td><td class="n">₹292 cr (USD 23.2 mn fixed + earn-out)</td><td><span class="pill p-good">Closed 30 Sep 2026</span> USD 11.8 mn received; USD 4.1 mn held back</td></tr>
+        <tr><td>Phase 2 · Tranche 1</td><td>51% of aerospace engineering services (Airbus, Bombardier; Germany, France, UK, Canada units)</td><td class="n" rowspan="2">₹1,964 cr total<br>(₹1,463 cr assured + up to ₹501 cr contingent)</td><td><span class="pill p-warn">Expected Q3 FY27</span> regulatory approvals pending</td></tr>
+        <tr><td>Phase 2 · Tranche 2</td><td>Remaining 49%</td><td><span class="pill p-idle">24–30 months after Tranche 1</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="src">Management expects an extraordinary gain of ~₹1,255 cr on completion. Phase 1 had been targeted for 31 August and closed a month late. Proceeds fund acquisitions, Devanahalli/Hyderabad facilities and the space division "without equity dilution". Aerospace services was ~31% of revenue (₹322.6 cr in FY25).</p>
+  </div>
+</section>
+
+<!-- CH-03 PROMOTER -->
+<section class="sec" id="promoter">
+  <div class="sec-head"><span class="ch">CH-03</span><h2>Promoter: history &amp; skin in the game</h2></div>
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">Who controls the company</span>
+      <ul class="clean">
+        <li>The sole promoter entity is <b>Jupiter Capital Pvt Ltd</b>, a Bengaluru investment house associated with Rajeev Chandrasekhar. It is a financial owner rather than an operating founder.</li>
+        <li>Operations are run by professional managers: <b>Alfonso Martinez Fernandez</b>, Group CEO &amp; MD since January 2025 (after Arun Krishnamurthi resigned), and <b>Dr Sampath Ravinarayanan</b>, Chairman since January 2025.</li>
+        <li>Defence is led through Mistral Solutions, acquired in two phases (2017–19). The defence and ACAT units were merged into Mistral in December 2024.</li>
+      </ul>
+      <div class="callout red">
+        <span class="label">The key fact for this section</span>
+        <p style="font-size:15px">The promoter is <b>selling, not buying</b>. Jupiter sold 10 lakh shares on 30 June 2026 and 46.2 lakh shares (10.86%) on 28–29 Sep 2026, the latter as a block of ~₹830 cr at about ₹1,824 a share. Kotak MF (4.89%), Abakkus (3.03%) and Svadha were the buyers. This came days before the Phase 1 closing.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="label">Promoter holding &amp; pledge, % of equity</span>
+      <div class="bars">
+        <div class="bar"><span>Dec 2023</span><div class="track"><div class="fill" style="width:65.7%"></div></div><span class="v">65.7</span></div>
+        <div class="bar"><span>Mar 2024</span><div class="track"><div class="fill" style="width:60.3%"></div></div><span class="v">60.3</span></div>
+        <div class="bar"><span>Mar 2025</span><div class="track"><div class="fill" style="width:59.5%"></div></div><span class="v">59.5</span></div>
+        <div class="bar"><span>Jun 2026</span><div class="track"><div class="fill" style="width:58.0%"></div></div><span class="v">58.0</span></div>
+        <div class="bar"><span>30 Jun 2026 sale</span><div class="track"><div class="fill" style="width:55.7%"></div></div><span class="v">55.7</span></div>
+        <div class="bar"><span>29 Sep 2026 sale</span><div class="track"><div class="fill am" style="width:44.8%"></div></div><span class="v">44.8</span></div>
+      </div>
+      <div class="bars">
+        <div class="bar"><span>Pledge · Dec 2023</span><div class="track"><div class="fill" style="width:24.1%;background:var(--bad)"></div></div><span class="v">24.1</span></div>
+        <div class="bar"><span>Pledge · Jun 2026</span><div class="track"><div class="fill" style="width:9.5%;background:var(--bad)"></div></div><span class="v">9.5</span></div>
+        <div class="bar"><span>Encumbered · Sep 2026</span><div class="track"><div class="fill" style="width:5.5%;background:var(--bad)"></div></div><span class="v">5.5</span></div>
+      </div>
+      <p class="src">Pledge figures for 2023–Jun 2026 are % of promoter holding; Sep 2026 encumbrance is 23.51 lakh shares = 5.53% of company equity, leaving promoter voting rights at ~39.3%. The drop from 65.7% to 60.5% in January 2024 coincides with a fresh equity issue that diluted the promoter.</p>
+      <ul class="clean">
+        <li><b>Positive:</b> pledges have fallen steadily; a mutual-fund-led buyer base replaced part of the promoter stake.</li>
+        <li><b>Negative:</b> a financial promoter monetising into strength. At 44.8%, control is still clear, but the "skin" is shrinking just as the riskiest phase (M&amp;A, capex) begins.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="label">Company timeline</span>
+    <div class="hist">
+      <div class="ev"><b>1990</b><p>Incorporated as a software company serving call centres.</p></div>
+      <div class="ev"><b>2000s</b><p>Pivots to engineering design (mechanical, electronics).</p></div>
+      <div class="ev key"><b>2014</b><p>Axis Mechanical Engineering Design merges with aerospace specialist Cades Digitech to form Axiscades.</p></div>
+      <div class="ev key"><b>2017–19</b><p>Acquires Mistral Solutions, its defence electronics base.</p></div>
+      <div class="ev"><b>2024</b><p>Acquires ADD Solution GmbH (Germany); fresh equity issue (Jan); defence units merged into Mistral (Dec).</p></div>
+      <div class="ev"><b>Jan 2025</b><p>New CEO Alfonso Martinez Fernandez; Sampath Ravinarayanan becomes Chairman.</p></div>
+      <div class="ev"><b>2025</b><p>Altera alliance, Indra pact, MBDA expansion; Devanahalli Aero Land opens; Army ₹224 cr and DRDO ₹150 cr orders.</p></div>
+      <div class="ev"><b>Jan–Feb 2026</b><p>₹100 cr Ashwini radar order; ₹80 cr HAL Tejas order; OGMA MRO MoU.</p></div>
+      <div class="ev key"><b>Jun 2026</b><p>Board approves sale of engineering services to Akkodis (₹2,256 cr). CARE puts rating on watch.</p></div>
+      <div class="ev key"><b>Sep 2026</b><p>Buys 90% of Cloud Wave (₹234 cr) funded by ₹200 cr 12.5% NCDs; U-Space pact; promoter sells 10.86%; Phase 1 sale closes 30 Sep.</p></div>
+      <div class="ev"><b>Oct 2026</b><p>ADD Solution GmbH enters voluntary liquidation; stock hit a 52-week high of ₹2,360 on 5 Oct.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CH-04 POLICY -->
+<section class="sec" id="policy">
+  <div class="sec-head"><span class="ch">CH-04</span><h2>Government policy &amp; tailwinds</h2></div>
+  <div class="grid3">
+    <div class="panel"><span class="label">Budget</span><h3>₹7.85 lakh cr defence outlay</h3><p>FY27 budget estimate, ~15% above FY26, with a larger capital (modernisation) share after Operation Sindoor. Capital spend is what buys radars, missiles and avionics.</p><span class="pill p-good">Direct</span></div>
+    <div class="panel"><span class="label">Procurement rules</span><h3>DAP 2020 &amp; indigenisation lists</h3><p>"Buy Indian-IDDM" categories and 300+ items on positive indigenisation lists force primes to source locally, including radar subsystems and mission computers.</p><span class="pill p-good">Direct</span></div>
+    <div class="panel"><span class="label">Platforms</span><h3>Tejas, Su-30 upgrade, Kusha</h3><p>180 Tejas Mk1A on order; GE F404 engine deliveries, the main bottleneck, were easing by mid-2026. Su-30MKI upgrade and Project Kusha air defence add multi-year content.</p><span class="pill p-warn">Timing risk</span></div>
+    <div class="panel"><span class="label">Offsets &amp; exports</span><h3>Global OEMs localising</h3><p>Offset obligations and "Make in India" bring MBDA, Indra and Airbus supply chains to India, the basis for DAC, MAC and Cloud Wave work.</p><span class="pill p-good">Supports mfg</span></div>
+    <div class="panel"><span class="label">Semiconductors</span><h3>India Semiconductor Mission</h3><p>Incentives for electronics design and manufacturing support XiDA's chip-to-product work and Cloud Wave's semiconductor-equipment parts.</p><span class="pill p-idle">Indirect</span></div>
+    <div class="panel"><span class="label">Space</span><h3>Space Policy 2023 &amp; IN-SPACe</h3><p>Private companies can now build and operate satellites; Franco-Indian space cooperation underpins the U-Space tie-up.</p><span class="pill p-warn">Long-dated</span></div>
+  </div>
+</section>
+
+<!-- CH-05 TRIGGERS -->
+<section class="sec" id="triggers">
+  <div class="sec-head"><span class="ch">CH-05</span><h2>Key growth triggers</h2></div>
+  <div class="legend"><span class="pill p-good">Done / on track</span><span class="pill p-warn">In progress</span><span class="pill p-bad">Not started / at risk</span><span class="pill p-idle">Long-dated</span></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Trigger</th><th>What it unlocks</th><th>Status &amp; evidence</th><th>Timeline</th><th>State</th></tr></thead>
+    <tbody>
+      <tr><td><b>Akkodis Phase 1</b></td><td>₹292 cr cash; exit from low-margin legacy work</td><td>Closed 30 Sep 2026 (a month late); USD 4.1 mn held back pending contract and bank transfers</td><td class="mono">Done Oct 2026</td><td><span class="pill p-good">Done</span></td></tr>
+      <tr><td><b>Akkodis Phase 2, Tranche 1 (51%)</b></td><td>Bulk of ₹1,463 cr assured cash; ~₹1,255 cr gain</td><td>Signed 12 Jun 2026; awaiting regulatory and competition approvals; management targeted 30 Nov</td><td class="mono">Q3 FY27</td><td><span class="pill p-warn">Pending</span></td></tr>
+      <tr><td><b>FY27 guidance</b></td><td>Revenue ₹1,377 cr, EBITDA ~₹270 cr, PAT ~₹135 cr</td><td>Guidance mixes continuing and discontinued businesses and depends on deals closing on time; Q1 normalised PAT ₹20.2 cr</td><td class="mono">Mar 2027</td><td><span class="pill p-warn">At risk</span></td></tr>
+      <tr><td><b>Recover ₹140 cr deferred revenue</b></td><td>Lifts defence revenue in H1</td><td>~40% (₹60 cr+) recovered in Q1; balance planned for Q2–Q3</td><td class="mono">Dec 2026</td><td><span class="pill p-warn">In progress</span></td></tr>
+      <tr><td><b>Cloud Wave consolidation</b></td><td>~₹108 cr revenue, AS9100D base</td><td>90% bought 10 Sep 2026</td><td class="mono">From Q2/Q3 FY27</td><td><span class="pill p-good">Done</span></td></tr>
+      <tr><td><b>Second aero-manufacturing acquisition</b></td><td>~₹180 cr revenue at ~22% EBIT</td><td>Advanced diligence per Q1 call; "more in Q3–Q4"</td><td class="mono">H2 FY27</td><td><span class="pill p-warn">In progress</span></td></tr>
+      <tr><td><b>DAC radar integration hangars</b></td><td>Full radar system integration in-house</td><td>Under construction at Devanahalli</td><td class="mono">Q3 FY27</td><td><span class="pill p-warn">In progress</span></td></tr>
+      <tr><td><b>Missile Atmanirbhar Complex</b></td><td>Missile integration with a global partner</td><td>8 acres, Hyderabad; ~₹300 cr investment</td><td class="mono">Production FY28</td><td><span class="pill p-warn">Building</span></td></tr>
+      <tr><td><b>BrahMos-NG RF seeker</b></td><td>High-value missile content</td><td>Prototype endorsed by customer</td><td class="mono">Revenue FY28</td><td><span class="pill p-warn">Qualifying</span></td></tr>
+      <tr><td><b>Tejas Mk1A full-rate production</b></td><td>₹8–9 cr content × 16–24 jets a year</td><td>Engine supply improving; HAL received 7th F404 by July 2026</td><td class="mono">FY27–FY32</td><td><span class="pill p-warn">Engine-gated</span></td></tr>
+      <tr><td><b>Hyperscaler scale-up (XiDA)</b></td><td>50–100x on USD 1 mn pilots (mgmt aspiration)</td><td>Two new global customers in Q1; facility certification pending</td><td class="mono">FY28+</td><td><span class="pill p-bad">Unproven</span></td></tr>
+      <tr><td><b>Space JVs</b></td><td>Microsatellite manufacturing</td><td>U-Space cooperation; ₹300 cr earmarked subject to divestment</td><td class="mono">FY28+</td><td><span class="pill p-idle">Long-dated</span></td></tr>
+      <tr><td><b>Power 930</b></td><td>₹9,000 cr revenue, ₹960 cr PAT</td><td>~10x from FY26 base, needs heavy M&amp;A</td><td class="mono">FY30</td><td><span class="pill p-idle">Aspirational</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- CH-06 J CURVE -->
+<section class="sec" id="jcurve">
+  <div class="sec-head"><span class="ch">CH-06</span><h2>Is there a J-curve?</h2></div>
+  <div class="grid2">
+    <div class="panel">
+      <span class="label">Yes, and the company is near the bottom of it · schematic, not a forecast</span>
+      <svg viewBox="0 0 460 270" role="img" aria-label="Schematic J-curve of continuing-business profitability, FY26 to FY30" style="width:100%;height:auto">
+        <line x1="50" y1="140" x2="440" y2="140" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="444" y="144" font-size="10" fill="var(--muted)" text-anchor="end" dy="-6">break-even</text>
+        <line x1="50" y1="20" x2="50" y2="230" stroke="var(--line)"/>
+        <path d="M60 120 C 110 150, 140 190, 175 195 C 215 198, 245 170, 280 135 C 320 95, 370 60, 430 35" fill="none" stroke="var(--amber)" stroke-width="3.5"/>
+        <g fill="var(--amber)"><circle cx="60" cy="120" r="5"/><circle cx="175" cy="195" r="6"/><circle cx="280" cy="135" r="5"/><circle cx="430" cy="35" r="5"/></g>
+        <g font-size="10.5" fill="var(--ink)">
+          <text x="66" y="108">FY26: services fund the group</text>
+          <text x="120" y="218">FY27: sell services, losses in</text>
+          <text x="120" y="231">aero mfg, capex, 12.5% NCDs</text>
+          <text x="290" y="160">FY28: MAC, seeker, Cloud Wave</text>
+          <text x="300" y="28" >FY29–30: production margins?</text></g>
+        <g font-size="10" fill="var(--muted)" text-anchor="middle"><text x="60" y="255">FY26</text><text x="175" y="255">FY27</text><text x="280" y="255">FY28</text><text x="430" y="255">FY30</text></g>
+        <text x="30" y="30" font-size="10" fill="var(--muted)" transform="rotate(-90 30 30)" text-anchor="end">continuing PAT</text>
+      </svg>
+      <p class="src">Shape drawn from management statements; positions are illustrative. Reported FY27 profit will be inflated by the ~₹1,255 cr sale gain, which hides the dip in the operating business.</p>
+    </div>
+    <div class="panel">
+      <span class="label">Evidence for the dip</span>
+      <ul class="clean">
+        <li>Continuing operations excluding XiDA <b>did not cover</b> Q1 finance cost (₹8.9 cr) and depreciation (₹8.8 cr).</li>
+        <li>Aerospace manufacturing ran ₹12.9 cr of costs on ₹6.1 cr revenue in Q1.</li>
+        <li>The sold business earned the group's best segment margin (engineering services ~26% in FY26).</li>
+        <li>Organic investment plan of ~₹1,600 cr (Arihant) across Devanahalli and Hyderabad; net debt rose from ₹11 cr (Mar 2025) to ₹186 cr (Mar 2026), plus ₹200 cr NCDs in Sep 2026.</li>
+      </ul>
+      <span class="label">Evidence for the upswing</span>
+      <ul class="clean">
+        <li>Defence revenue doubled YoY in Q1; assured visibility of ₹4,557 cr is about 25x Q1 continuing revenue.</li>
+        <li>Production contracts carry 25–40% EBITDA per management; Cloud Wave and the target acquisition are already profitable.</li>
+        <li>Up to ~₹2,250 cr of sale proceeds can retire debt and fund capex without new equity.</li>
+      </ul>
+      <div class="callout">
+        <span class="label">Verdict</span>
+        <p style="font-size:15px">A genuine J-curve: profitable services are being swapped for a manufacturing build-out whose returns arrive from FY28. The curve's depth depends on Tranche 1 cash arriving in Q3 FY27, and its upswing on defence programmes (Tejas, MAC, seeker) staying on schedule.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CH-07 KPI TIMELINE -->
+<section class="sec" id="kpis">
+  <div class="sec-head"><span class="ch">CH-07</span><h2>KPIs to track, quarter by quarter</h2></div>
+  <div class="legend"><span><i style="background:var(--good)"></i>Reported actual</span><span><i style="background:var(--amber)"></i>Target / guidance to test</span><span><i style="background:var(--olive)"></i>Scheduled event</span><span>Scroll sideways →</span></div>
+  <div class="qt" tabindex="0" aria-label="Quarterly KPI timeline">
+    <div class="qt-row">
+      <div class="q done"><div class="qh"><span class="dot"></span>Q1 FY27</div><span class="when">Apr–Jun 2026 · reported 13 Aug</span>
+        <ul><li class="act"><b>Revenue ₹346.7 cr</b>continuing ₹183.4 cr (+94%)</li><li class="act"><b>Defence ₹125 cr</b>+111% YoY</li><li class="act"><b>Normalised EBITDA 11.8%</b>reported PAT -₹14.8 cr</li><li class="act"><b>Visibility ₹4,557 cr</b></li></ul></div>
+      <div class="q now"><div class="qh"><span class="dot"></span>Q2 FY27</div><span class="when">Jul–Sep 2026 · results ~Nov</span>
+        <ul><li class="act"><b>Cloud Wave bought</b>10 Sep</li><li class="act"><b>₹200 cr NCDs</b>12.5%, 24 Sep</li><li class="act"><b>Phase 1 closed</b>30 Sep</li><li class="act"><b>Promoter −10.86%</b>29 Sep</li><li class="tgt"><b>Defence rev ≥ ₹125 cr</b>with deferred catch-up</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q3 FY27</div><span class="when">Oct–Dec 2026</span>
+        <ul><li class="tgt"><b>Tranche 1 (51%) closes</b>mgmt target 30 Nov</li><li class="tgt"><b>Gain ~₹1,255 cr booked</b>across Q2–Q3</li><li class="tgt"><b>Deferred ₹140 cr fully recovered</b></li><li class="evt"><b>DAC radar hangars ready</b></li><li class="evt"><b>CARE watch resolved?</b></li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q4 FY27</div><span class="when">Jan–Mar 2027</span>
+        <ul><li class="tgt"><b>FY27 EBITDA ~₹270 cr</b>PAT ~₹135 cr ex-gain</li><li class="tgt"><b>Net debt toward zero</b>after proceeds</li><li class="tgt"><b>Second aero acquisition closed</b></li><li class="tgt"><b>Continuing EBITDA &gt; dep + interest</b></li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q1 FY28</div><span class="when">Apr–Jun 2027</span>
+        <ul><li class="tgt"><b>Aero mfg EBITDA positive</b></li><li class="tgt"><b>Defence EBITDA margin ≥ 20%</b>FY26 was 22.9%</li><li class="evt"><b>FY27 annual report</b>related-party &amp; deal accounting</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q2 FY28</div><span class="when">Jul–Sep 2027</span>
+        <ul><li class="tgt"><b>MAC production start</b>FY28 guided</li><li class="tgt"><b>Order inflow vs ₹24,000 cr pipeline</b></li><li class="tgt"><b>Tejas content run-rate</b>₹8–9 cr per jet</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q3 FY28</div><span class="when">Oct–Dec 2027</span>
+        <ul><li class="tgt"><b>BrahMos-NG seeker revenue</b></li><li class="tgt"><b>XiDA hyperscaler volume orders</b></li><li class="tgt"><b>Products &gt; 80% of revenue</b>FY28 target</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>Q4 FY28</div><span class="when">Jan–Mar 2028</span>
+        <ul><li class="tgt"><b>EBITDA margin up 150–200 bps a year</b>toward 25–27%</li><li class="tgt"><b>Akkodis earn-out (up to ₹501 cr)</b>performance-linked</li></ul></div>
+      <div class="q"><div class="qh"><span class="dot"></span>FY29–30</div><span class="when">Apr 2028 →</span>
+        <ul><li class="evt"><b>Tranche 2 (49%) sale</b>24–30 months after T1</li><li class="tgt"><b>Power 930</b>₹9,000 cr rev, ₹960 cr PAT by FY30</li><li class="tgt"><b>Visibility ₹4,557 cr executed</b>before FY30</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- CH-08 RISKS -->
+<section class="sec" id="risks">
+  <div class="sec-head"><span class="ch">CH-08</span><h2>Key risks &amp; mitigating actions</h2></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Risk</th><th>Evidence</th><th>Mitigation</th><th>Closure / check date</th><th>Severity</th></tr></thead>
+    <tbody>
+      <tr><td><b>Promoter selldown</b></td><td>58.0% → 44.8% in four months; ~₹830 cr block on 29 Sep; 5.5% still encumbered</td><td>Stake moved to MFs (Kotak, Abakkus); pledge trend falling. No stated promoter commitment on future sales</td><td class="mono">Each shareholding filing</td><td><span class="pill p-bad">High</span></td></tr>
+      <tr><td><b>Divestment closing</b></td><td>₹1,964 cr Phase 2 needs regulatory approvals; ₹501 cr is contingent; Phase 1 slipped a month</td><td>Signed agreements; 18–24 month transition partnership with Akkodis; bridge facility up to ₹250 cr</td><td class="mono">Tranche 1: Q3 FY27</td><td><span class="pill p-bad">High</span></td></tr>
+      <tr><td><b>M&amp;A and integration load</b></td><td>Cloud Wave done, another deal in diligence, more planned; four platforms at once with a new CEO (2025)</td><td>Buying profitable, certified targets; ADD Solution liquidated rather than funded</td><td class="mono">FY27–FY28</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Operating losses in build-out</b></td><td>Continuing ops ex-XiDA below dep + interest in Q1; aero mfg negative</td><td>Sale proceeds to retire debt; targeted 150–200 bps annual margin gains</td><td class="mono">Positive by Q4 FY27?</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Defence revenue timing</b></td><td>₹142 cr deferred in Q4 FY26; ₹9.6 cr aged defence receivables provided in Q1; ~₹100 cr land-systems WIP</td><td>Deferred revenue being recovered (40% in Q1)</td><td class="mono">Dec 2026</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Programme delays</b></td><td>Tejas Mk1A gated by GE F404 engines; DAP timelines slip 1–3 years</td><td>Spread across Tejas, Su-30, radar, MBDA, Kusha</td><td class="mono">Ongoing</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Leverage &amp; cost of debt</b></td><td>Net debt ₹186 cr (Mar 2026) plus ₹200 cr NCDs at 12.5%; CARE A- on watch</td><td>Proceeds expected to deleverage; positive CARE triggers include debt/EBITDA &lt; 1x</td><td class="mono">After Tranche 1</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Customer concentration</b></td><td>Top-2 clients were ~73% of standalone revenue (largely Airbus-linked work now sold)</td><td>New mix shifts to HAL, BEL, DRDO, MBDA, global tech firms</td><td class="mono">Re-check FY27 AR</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Earnings quality</b></td><td>FY27 reported profit inflated by ~₹1,255 cr one-off gain; ~36% tax rate; multiple restructuring charges</td><td>Management reports a normalised view; track continuing-ops PAT separately</td><td class="mono">Every quarter</td><td><span class="pill p-warn">Medium</span></td></tr>
+      <tr><td><b>Valuation</b></td><td>~₹8,150 cr market cap on FY26 PAT of ₹72 cr; trailing P/E above 200x</td><td>Prices in Power 930 delivery; Arihant downgraded to HOLD (TP ₹2,085)</td><td class="mono">Ongoing</td><td><span class="pill p-bad">High</span></td></tr>
+      <tr><td><b>Geopolitics</b></td><td>Su-30 upgrade is a Russian-origin platform; MBDA/European export licences</td><td>Diversified partner base (France, Spain, US)</td><td class="mono">Ongoing</td><td><span class="pill p-idle">Low</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- CH-09 FINANCIALS -->
+<section class="sec" id="fin">
+  <div class="sec-head"><span class="ch">CH-09</span><h2>Financial track record</h2></div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>₹ cr, consolidated</th><th class="n">FY24</th><th class="n">FY25</th><th class="n">FY26</th><th class="n">Q4 FY26</th><th class="n">Q1 FY27</th><th class="n">FY27 guide</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue</td><td class="n">955</td><td class="n">1,031</td><td class="n">1,159</td><td class="n">273</td><td class="n">346.7</td><td class="n">1,377</td></tr>
+      <tr><td>&nbsp;&nbsp;of which continuing</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">183.4</td><td class="n">–</td></tr>
+      <tr><td>EBITDA</td><td class="n">129</td><td class="n">145</td><td class="n">178</td><td class="n">34</td><td class="n">27.9 (41.0 norm.)</td><td class="n">~270</td></tr>
+      <tr class="hl"><td>EBITDA margin</td><td class="n">13.5%</td><td class="n">14.0%</td><td class="n">15.3%</td><td class="n">12.3%</td><td class="n">8.1% (11.8%)</td><td class="n">~19.6%</td></tr>
+      <tr><td>PAT</td><td class="n">33.4</td><td class="n">75.3</td><td class="n">72.1</td><td class="n">0.4</td><td class="n">-14.8 (20.2 norm.)</td><td class="n">~135 ex-gain</td></tr>
+      <tr><td>Overall gearing</td><td class="n">0.54x</td><td class="n">0.39x</td><td class="n">net D/E ~0.3x</td><td class="n">–</td><td class="n">–</td><td class="n">–</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src">FY24–FY25 from CARE (Oct 2025); FY26 and Q4 from Arihant Q4 FY26 update; Q1 FY27 from company press release and earnings-call coverage. FY27 margin is derived (₹270 / ₹1,377 cr). Guidance basis (with or without discontinued operations) is not fully clear in public summaries.</p>
+</section>
+
+<footer class="foot">
+  <span class="label">Sources &amp; coverage note</span>
+  <p><b>What was used:</b> company press release and earnings-call coverage for Q1 FY27 (13 Aug 2026), exchange disclosures on the Akkodis sale, Cloud Wave, NCDs and promoter sales, CARE Ratings (Oct 2025 and the June 2026 watch), Arihant's Q4 FY26 update, and two Substack write-ups (Investorstack, May 2026; Abhay's Terminal, ~Feb 2026). The Q1 FY27 investor presentation PDF on the company CDN would not download from here, so figures come from its press release and call summaries. No ValuePickr thread or Discord notes were found. The FY26 annual report was not read directly.</p>
+  <ol>
+    <li><a href="https://www.prnewswire.com/in/news-releases/axiscades-reports-record-rs-346-7-crore-revenue-from-operations-for-q1-fy27--including-discontinued-operations-up-42-2-yoy-302851790.html">Q1 FY27 press release</a></li>
+    <li><a href="https://finance.yahoo.com/markets/stocks/articles/axiscades-technologies-ltd-bom-532395-010854285.html">Q1 FY27 earnings call highlights</a></li>
+    <li><a href="https://www.multibagg.ai/market-pulse/articles/axiscades-q1fy27-98127">Q1 FY27 segment detail</a> · <a href="https://www.multibagg.ai/market-pulse/articles/axiscades-engineering-services-divestment-cmqeizuul1nbjs60jbvzp24fb">Divestment terms</a></li>
+    <li><a href="https://www.whalesbook.com/corporate-news/English/technology/Axiscades-Technologies-Completes-Transfer-of-Engineering-Services-Business-to-Akkodis/6abe745080ecbb8a5f1bf1e4">Phase 1 completion</a></li>
+    <li><a href="https://www.tradingview.com/news/moneycontrol:841d73f38094b:0-block-deals-jupiter-capital-sells-10-69-axiscades-stake-abakkus-kotak-amc-among-buyers/">Promoter block deal</a> · <a href="https://trendlyne.com/equity/share-holding/141/AXISCADES/31-03-2026/axiscades-technologies-ltd/">Shareholding history</a></li>
+    <li><a href="https://www.angelone.in/news/stocks/axiscades-share-price-in-focus-completes-acquisition-of-90-stake-in-cloud-wave-technologies-for-234-crore">Cloud Wave acquisition</a> · <a href="https://www.sahi.com/news/axiscades-teams-up-with-france-s-u-space-to-explore-indian-microsatellite-market-3272-PE1_COR">U-Space pact</a></li>
+    <li><a href="https://www.careratings.com/upload/CompanyFiles/PR/202510121013_Axiscades_Technologies_Limited.pdf">CARE rating, Oct 2025</a> · <a href="https://filingreader.com/news-wire/mumbai/2026-06-23/care-ratings-places-axiscades-on-watch-following-business-divestment">CARE watch, Jun 2026</a></li>
+    <li><a href="https://arihantresearch.arihantcapital.com/Mumbai_Research/AXISCADES_Technologies_Q4FY26_Result_update.pdf">Arihant Q4 FY26 update</a></li>
+    <li><a href="https://investorsstack.substack.com/p/axiscades">Investorstack (Substack)</a> · <a href="https://abhaysterminal.substack.com/p/axiscades">Abhay's Terminal (Substack)</a></li>
+    <li><a href="https://zerodha.com/markets/stocks/NSE/AXISCADES/">Corporate events log</a> · <a href="https://www.business-standard.com/markets/axiscades-technologies-ltd-share-price-21304.html">Share price</a></li>
+    <li><a href="https://www.businesstoday.in/amp/union-budget/story/budget-2026-defence-spending-gets-massive-rs784-lakh-crore-boost-after-operation-sindoor-513987-2026-02-01">Defence budget FY27</a> · <a href="https://www.businesstoday.in/amp/india/story/hal-gets-7th-ge-f404-engine-for-tejas-mk1a-fault-in-earlier-engine-resolved-542588-2026-07-13">Tejas engine status</a></li>
+  </ol>
+  <p>"Derived" figures are arithmetic on company data, not company statements. This is a personal research canvas, not investment advice.</p>
+</footer>
+</div>
